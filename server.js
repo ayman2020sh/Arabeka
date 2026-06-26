@@ -1,14 +1,20 @@
 const express = require('express');
 const axios = require('axios');
+const path = require('path');
 const app = express();
 
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// مفتاح المطور الخاص بـ Pi Network (تأكد من وضعه في إعدادات فيرسل لاحقاً أو اتركه للتجربة)
+// مفتاح المطور الخاص بـ Pi Network
 const PI_API_KEY = process.env.PI_API_KEY || "lblpyyemmskpmb1uqatuzfrueofkioh3operkym17j6pzwldslbsnu2hfrwm2vqj"; 
 
-// 1. نقطة الموافقة على الدفع (تستقبل الطلب وتوافق عليه فوراً دون البحث عن منتجات)
+// أمر برمي مخصص لعرض صفحة الدفع فوراً عند فتح الرابط الرئيسي للموقع
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'pi-payment.html'));
+});
+
+// 1. نقطة الموافقة على الدفع
 app.post('/api/approve', async (req, res) => {
     const { paymentId } = req.body;
     try {
@@ -24,7 +30,7 @@ app.post('/api/approve', async (req, res) => {
     }
 });
 
-// 2. نقطة إتمام الدفع بعد تحويل الحساب
+// 2. نقطة إتمام الدفع
 app.post('/api/complete', async (req, res) => {
     const { paymentId, txid } = req.body;
     try {
