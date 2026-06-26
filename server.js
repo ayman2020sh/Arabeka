@@ -5,7 +5,7 @@ const app = express();
 
 app.use(express.json());
 
-// ملاحظة: تأكد من وضع مفتاح Pi API الصحيح هنا لاحقاً
+/pylxuaiz7rqysb66sxgowxuhxgcl6sqk97gwzer1szofyvfsobjwasacvsgf6n74
 const PI_API_KEY = "YOUR_PI_API_KEY"; 
 
 app.get('/', (req, res) => {
