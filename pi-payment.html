@@ -55,15 +55,15 @@
 </div>
 
 <script>
-    // 2. تهيئة بيئة التطبيق التجريبية (Sandbox)
+    // تعديل: تحويل التطبيق للعمل على البيئة الحقيقية لإلغاء قيود الـ Sandbox
     try {
-        Pi.init({ version: "2.0", sandbox: true });
+        Pi.init({ version: "2.0", sandbox: false }); 
         console.log("Pi SDK Initialized");
     } catch (e) {
         document.getElementById('status-msg').innerText = "خطأ في تهيئة الحزمة: " + e.message;
     }
 
-    // 3. تسجيل دخول المستخدم تلقائياً فور فتح الصفحة (إجباري لتفعيل أزرار الدفع)
+    // تسجيل الدخول المباشر
     Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
       .then(function(auth) {
           document.getElementById('status-msg').innerText = "مرحباً بك: " + auth.user.username + " (جاهز للدفع)";
@@ -78,7 +78,6 @@
         console.log("Found incomplete payment", payment);
     }
 
-    // 4. دالة إطلاق الدفع واستدعاء المحفظة عند النقر
     function startPayment() {
         const btn = document.getElementById('pay-btn');
         const status = document.getElementById('status-msg');
@@ -95,7 +94,6 @@
             onReadyForServerApproval: function(paymentId) {
                 status.innerText = "جاري تأكيد المعاملة برمجياً مع سيرفر Vercel...";
                 
-                // إرسال كود المعاملة تلقائياً لسيرفرك ليعتمدها عبر الـ API Key
                 fetch('/approve-payment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -116,7 +114,7 @@
                 });
             },
             onReadyForServerCompletion: function(paymentId, txid) {
-                status.innerText = "🎉 مبروك! نجحت عملية الدفع التجريبية.";
+                status.innerText = "🎉 مبروك! نجحت عملية الدفع.";
                 status.style.color = "green";
                 btn.disabled = false;
             },
