@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر Pi - دفع تجريبي</title>
+    <title>متجر Pi التجريبي</title>
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: #f4f0fa;
+            font-family: Arial, sans-serif;
+            background-color: #f4f0fa;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -16,138 +17,122 @@
         }
         .card {
             background: white;
-            padding: 40px 30px;
+            padding: 30px;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(106, 63, 160, 0.15);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             text-align: center;
-            max-width: 400px;
-            width: 90%;
+            max-width: 90%;
+            width: 350px;
         }
-        h1 {
-            color: #4b2b7b;
-            margin-bottom: 10px;
-        }
-        .product {
-            font-size: 20px;
-            margin: 20px 0;
-        }
+        h1 { color: #5c2d91; font-size: 24px; }
+        .price { font-size: 20px; font-weight: bold; margin: 15px 0; }
         button {
-            background: linear-gradient(135deg, #7b4fbf, #5c2d91);
+            background-color: #5c2d91;
             color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 12px 25px;
             font-size: 18px;
-            border-radius: 50px;
+            border-radius: 25px;
             cursor: pointer;
-            transition: 0.3s;
             width: 100%;
             font-weight: bold;
+            transition: background 0.3s;
         }
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        button:hover:not(:disabled) {
-            background: linear-gradient(135deg, #5c2d91, #3e1e63);
-        }
-        #status {
-            margin-top: 25px;
-            font-size: 16px;
-            color: #333;
-            min-height: 24px;
-        }
-        .note {
-            font-size: 13px;
-            color: #888;
-            margin-top: 25px;
-        }
+        button:hover { background-color: #4a2275; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        .status { margin-top: 15px; color: #666; font-size: 14px; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>🛍️ متجر Pi التجريبي</h1>
-        <p class="product">☕ قهوة افتراضية<br><strong>السعر: 1 Pi</strong></p>
-        <button id="payBtn" disabled>🔐 ادفع باستخدام Pi</button>
-        <p id="status"></p>
-        <p class="note">⚠️ هذا تطبيق تجريبي (Sandbox) على شبكة Pi Testnet</p>
-    </div>
 
-    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-    <script>
-        let currentPayment = null;
+<div class="card">
+    <h1>🛍️ متجر Pi التجريبي</h1>
+    <p>☕ قهوة افتراضية</p>
+    <div class="price">السعر: 1 Pi</div>
+    
+    <button id="pay-btn" onclick="startPayment()">🔐 ادفع باستخدام Pi</button>
+    <div id="status-msg" class="status">جاري الاتصال بشبكة باي...</div>
+</div>
 
-        window.addEventListener('DOMContentLoaded', () => {
-            Pi.init({ version: "2.0", sandbox: true });
-            document.getElementById('payBtn').disabled = false;
-        });
+<script>
+    // 2. تهيئة بيئة التطبيق التجريبية (Sandbox)
+    try {
+        Pi.init({ version: "2.0", sandbox: true });
+        console.log("Pi SDK Initialized");
+    } catch (e) {
+        document.getElementById('status-msg').innerText = "خطأ في تهيئة الحزمة: " + e.message;
+    }
 
-        async function authenticateUser() {
-            const scopes = ['username', 'payments', 'wallet_address'];
-            try {
-                const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
-                document.getElementById('status').innerText = `مرحباً ${auth.user.username} 👋`;
-                return auth;
-            } catch (error) {
-                document.getElementById('status').innerText = 'فشل المصادقة. أعد المحاولة.';
-                return null;
-            }
-        }
+    // 3. تسجيل دخول المستخدم تلقائياً فور فتح الصفحة (إجباري لتفعيل أزرار الدفع)
+    Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
+      .then(function(auth) {
+          document.getElementById('status-msg').innerText = "مرحباً بك: " + auth.user.username + " (جاهز للدفع)";
+          document.getElementById('status-msg').style.color = "green";
+      })
+      .catch(function(error) {
+          document.getElementById('status-msg').innerText = "يرجى فتح التطبيق من داخل Pi Browser لتفعيل الدفع.";
+          document.getElementById('status-msg').style.color = "red";
+      });
 
-        async function startPayment(auth) {
-            const paymentData = {
-                amount: 1,
-                memo: "شراء قهوة افتراضية ☕",
-                metadata: { productId: "coffee_01" },
-            };
+    function onIncompletePaymentFound(payment) {
+        console.log("Found incomplete payment", payment);
+    }
 
-            try {
-                const payment = await Pi.createPayment(paymentData, {
-                    onReadyForServerApproval: async (paymentId) => {
-                        document.getElementById('status').innerText = '⏳ جاري إرسال الدفعة للسيرفر للموافقة...';
-                        
-                        // إرسال طلب الموافقة للسيرفر الخلفي الخاص بنا تلقائياً
-                        try {
-                            const response = await fetch('/approve-payment', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ paymentId })
-                            });
-                            const result = await response.json();
-                            if (result.success) {
-                                document.getElementById('status').innerText = '⏳ السيرفر وافق، بانتظار شبكة Pi...';
-                            }
-                        } catch (err) {
-                            document.getElementById('status').innerText = '❌ فشل اتصال المتجر بالسيرفر.';
-                        }
-                    },
-                    onReadyForServerCompletion: (paymentId, txid) => {
-                        document.getElementById('status').innerText = '✅ تم الدفع بنجاح ومكتمل!';
-                        console.log('الدفع مكتمل:', paymentId, txid);
-                    },
-                    onCancel: (paymentId) => {
-                        document.getElementById('status').innerText = '❌ ألغيت الدفع.';
-                    },
-                    onError: (error, payment) => {
-                        document.getElementById('status').innerText = '⚠️ حدث خطأ أثناء الدفع.';
-                        console.error(error);
-                    },
+    // 4. دالة إطلاق الدفع واستدعاء المحفظة عند النقر
+    function startPayment() {
+        const btn = document.getElementById('pay-btn');
+        const status = document.getElementById('status-msg');
+        
+        btn.disabled = true;
+        status.innerText = "جاري فتح محفظتك وإنشاء الطلب...";
+        status.style.color = "#5c2d91";
+
+        Pi.createPayment({
+            amount: 1,
+            memo: "شراء قهوة افتراضية من متجر أرابيكا",
+            metadata: { orderId: "12345" },
+        }, {
+            onReadyForServerApproval: function(paymentId) {
+                status.innerText = "جاري تأكيد المعاملة برمجياً مع سيرفر Vercel...";
+                
+                // إرسال كود المعاملة تلقائياً لسيرفرك ليعتمدها عبر الـ API Key
+                fetch('/approve-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ paymentId: paymentId })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        status.innerText = "تمت الموافقة من السيرفر! جاري إنهاء العملية...";
+                    } else {
+                        status.innerText = "فشل السيرفر في الاعتماد.";
+                        btn.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    status.innerText = "خطأ في الاتصال بالسيرفر.";
+                    btn.disabled = false;
                 });
-                currentPayment = payment;
-            } catch (error) {
-                document.getElementById('status').innerText = 'تعذر بدء الدفع.';
-            }
-        }
-
-        function onIncompletePaymentFound(payment) {
-            console.log('دفعة غير مكتملة وجِدت:', payment);
-        }
-
-        document.getElementById('payBtn').addEventListener('click', async () => {
-            const auth = await authenticateUser();
-            if (auth) {
-                await startPayment(auth);
+            },
+            onReadyForServerCompletion: function(paymentId, txid) {
+                status.innerText = "🎉 مبروك! نجحت عملية الدفع التجريبية.";
+                status.style.color = "green";
+                btn.disabled = false;
+            },
+            onCancel: function(paymentId) {
+                status.innerText = "تم إلغاء الدفع بواسطة المستخدم.";
+                status.style.color = "orange";
+                btn.disabled = false;
+            },
+            onError: function(error, payment) {
+                status.innerText = "حدث خطأ: " + error.message;
+                status.style.color = "red";
+                btn.disabled = false;
             }
         });
-    </script>
+    }
+</script>
+
 </body>
 </html>
