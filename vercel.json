@@ -8,16 +8,8 @@
   ],
   "routes": [
     {
-      "src": "/api/approve",
+      "src": "/(.*)",
       "dest": "server.js"
-    },
-    {
-      "src": "/api/complete",
-      "dest": "server.js"
-    },
-    {
-      "src": "/",
-      "dest": "/pi-payment.html"
     }
   ]
 }
