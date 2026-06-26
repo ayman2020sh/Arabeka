@@ -6,7 +6,7 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 // مفتاح المطور الخاص بـ Pi Network (تأكد من وضعه في إعدادات فيرسل لاحقاً أو اتركه للتجربة)
-const PI_API_KEY = process.env.PI_API_KEY || "YOUR_PI_API_KEY"; 
+const PI_API_KEY = process.env.PI_API_KEY || "lblpyyemmskpmb1uqatuzfrueofkioh3operkym17j6pzwldslbsnu2hfrwm2vqj"; 
 
 // 1. نقطة الموافقة على الدفع (تستقبل الطلب وتوافق عليه فوراً دون البحث عن منتجات)
 app.post('/api/approve', async (req, res) => {
