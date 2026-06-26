@@ -24,7 +24,8 @@
 
     <script>
         // تهيئة تطبيق Pi في الوضع الحقيقي المباشر للمتصفح
-        Pi.init({ version: "2.0", sandbox: false });
+        // السطر المعدل الصحيح:
+Pi.init({ version: "2.0", sandbox: true });
 
         // التحقق من تسجيل دخول المستخدم تلقائياً
         Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
