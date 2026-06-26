@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة دفع أرابيكا</title>
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f4f4f9; }
+        .btn { background-color: #6200ee; color: white; padding: 15px 30px; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background-color: #3700b3; }
+        #status { margin-top: 20px; font-weight: bold; color: #555; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+
+    <h2>بوابة دفع تطبيق Arabeka</h2>
+    <p>اضغط على الزر بالأسفل لإتمام عملية الشراء التجريبية بقيمة 1 Pi</p>
+
+    <button class="btn" onclick="startPayment()">ادفع باستخدام Pi</button>
+    <div id="status">جاري تهيئة الاتصال بشبكة Pi...</div>
+
+    <script>
+        // تهيئة تطبيق Pi في الوضع الحقيقي المباشر للمتصفح
+        Pi.init({ version: "2.0", sandbox: false });
+
+        // التحقق من تسجيل دخول المستخدم تلقائياً
+        Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
+        .then(function(auth) {
+            document.getElementById('status').innerHTML = "<span class='success'>تم الاتصال بحسابك بنجاح: " + auth.user.username + "</span>";
+        })
+        .catch(function(error) {
+            console.error(error);
+            document.getElementById('status').innerHTML = "<span class='error'>برجاء فتح الموقع من داخل تطبيق Pi Browser الرسمي ليعمل الدفع</span>";
+        });
+
+        // دالة إطلاق الدفع الثابتة
+        function startPayment() {
+            document.getElementById('status').innerText = "جاري فتح محفظة Pi الآن...";
+
+            Pi.createPayment({
+                amount: 1.00,
+                memo: "شراء منتج من تطبيق أرابيكا للألوميتال",
+                metadata: { orderId: "12345" }
+            }, {
+                // خطوة السيرفر الأولى: الموافقة
+                onReadyForServerApproval: function(paymentId) {
+                    fetch('/api/approve', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ paymentId: paymentId })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById('status').innerText = "تمت موافقة السيرفر، يرجى التأكيد في محفظتك...";
+                    });
+                },
+                // خطوة السيرفر الثانية: الإتمام
+                onReadyForServerCompletion: function(paymentId, txid) {
+                    fetch('/api/complete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ paymentId: paymentId, txid: txid })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById('status').innerHTML = "<span class='success'>🎉 مبروك! تم الدفع بنجاح تام!</span>";
+                    });
+                },
+                onCancel: function(paymentId) {
+                    document.getElementById('status').innerText = "تم إلغاء عملية الدفع بواسطة المستخدم.";
+                },
+                onError: function(error, paymentId) {
+                    document.getElementById('status').innerHTML = "<span class='error'>حدث خطأ أثناء الدفع: " + error.message + "</span>";
+                }
+            });
+        }
+
+        // معالجة المدفوعات المعلقة إن وجدت
+        function onIncompletePaymentFound(payment) {
+            fetch('/api/complete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paymentId: payment.identifier, txid: payment.txid })
+            });
+        }
+    </script>
+</body>
+</html>
