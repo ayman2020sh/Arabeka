@@ -57,7 +57,7 @@
 <script>
     // تشغيل مباشر كـ Sandbox لضمان عمل واجهة الدفع بدون قيود حقيقية
     try {
-        Pi.init({ version: "2.0", sandbox: true }); 
+        Pi.init({ version: "2.0", sandbox: false }); 
         console.log("Pi SDK Initialized");
     } catch (e) {
         document.getElementById('status-msg').innerText = "خطأ في التهيئة: " + e.message;
