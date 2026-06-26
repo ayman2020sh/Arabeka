@@ -12,6 +12,7 @@
         #status { margin-top: 20px; font-weight: bold; color: #555; }
         .success { color: green; }
         .error { color: red; }
+        #debug { margin-top: 30px; background: #222; color: #0f0; padding: 15px; border-radius: 8px; font-family: monospace; text-align: left; direction: ltr; max-height: 200px; overflow-y: auto; display: none; }
     </style>
 </head>
 <body>
@@ -22,10 +23,12 @@
     <button class="btn" onclick="startPayment()">ادفع باستخدام Pi</button>
     <div id="status">جاري تهيئة الاتصال بشبكة Pi...</div>
 
+    <!-- صندوق صائد الأخطاء (يظهر فقط عند وجود خطأ) -->
+    <div id="debug"></div>
+
     <script>
-        // تهيئة تطبيق Pi في الوضع الحقيقي المباشر للمتصفح
-        // السطر المعدل الصحيح:
-Pi.init({ version: "2.0", sandbox: true });
+        // 🔧 التعديل الأساسي: التحويل إلى الوضع الإنتاجي الحقيقي
+        Pi.init({ version: "2.0", sandbox: false });
 
         // التحقق من تسجيل دخول المستخدم تلقائياً
         Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
@@ -35,11 +38,13 @@ Pi.init({ version: "2.0", sandbox: true });
         .catch(function(error) {
             console.error(error);
             document.getElementById('status').innerHTML = "<span class='error'>برجاء فتح الموقع من داخل تطبيق Pi Browser الرسمي ليعمل الدفع</span>";
+            showDebug("فشل المصادقة: " + error.message);
         });
 
         // دالة إطلاق الدفع الثابتة
         function startPayment() {
             document.getElementById('status').innerText = "جاري فتح محفظة Pi الآن...";
+            hideDebug();
 
             Pi.createPayment({
                 amount: 1.25,
@@ -48,6 +53,7 @@ Pi.init({ version: "2.0", sandbox: true });
             }, {
                 // خطوة السيرفر الأولى: الموافقة
                 onReadyForServerApproval: function(paymentId) {
+                    document.getElementById('status').innerText = "تمت موافقة السيرفر، يرجى التأكيد في محفظتك...";
                     fetch('/api/approve', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -56,6 +62,9 @@ Pi.init({ version: "2.0", sandbox: true });
                     .then(res => res.json())
                     .then(data => {
                         document.getElementById('status').innerText = "تمت موافقة السيرفر، يرجى التأكيد في محفظتك...";
+                    })
+                    .catch(function(err) {
+                        showDebug("فشل الاتصال بـ /api/approve: " + err.message);
                     });
                 },
                 // خطوة السيرفر الثانية: الإتمام
@@ -68,6 +77,9 @@ Pi.init({ version: "2.0", sandbox: true });
                     .then(res => res.json())
                     .then(data => {
                         document.getElementById('status').innerHTML = "<span class='success'>🎉 مبروك! تم الدفع بنجاح تام!</span>";
+                    })
+                    .catch(function(err) {
+                        showDebug("فشل الاتصال بـ /api/complete: " + err.message);
                     });
                 },
                 onCancel: function(paymentId) {
@@ -75,6 +87,7 @@ Pi.init({ version: "2.0", sandbox: true });
                 },
                 onError: function(error, paymentId) {
                     document.getElementById('status').innerHTML = "<span class='error'>حدث خطأ أثناء الدفع: " + error.message + "</span>";
+                    showDebug("خطأ دفع: " + JSON.stringify(error));
                 }
             });
         }
@@ -86,6 +99,19 @@ Pi.init({ version: "2.0", sandbox: true });
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ paymentId: payment.identifier, txid: payment.txid })
             });
+        }
+
+        // دوال مساعدة لصندوق الأخطاء
+        function showDebug(msg) {
+            const box = document.getElementById('debug');
+            box.style.display = 'block';
+            box.innerHTML += "<div>> " + msg + "</div>";
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function hideDebug() {
+            document.getElementById('debug').innerHTML = "";
+            document.getElementById('debug').style.display = 'none';
         }
     </script>
 </body>
