@@ -17,7 +17,7 @@
 <body>
 
     <h2>بوابة دفع تطبيق Arabeka</h2>
-    <p>اضغط على الزر بالأسفل لإتمام عملية الشراء التجريبية بقيمة 1 Pi</p>
+    <p>اضغط على الزر بالأسفل لإتمام عملية الشراء بقيمة 1.25 Pi</p>
 
     <button class="btn" onclick="startPayment()">ادفع باستخدام Pi</button>
     <div id="status">جاري تهيئة الاتصال بشبكة Pi...</div>
@@ -41,8 +41,8 @@
             document.getElementById('status').innerText = "جاري فتح محفظة Pi الآن...";
 
             Pi.createPayment({
-                amount: 1.00,
-                memo: "شراء منتج من تطبيق أرابيكا للألوميتال",
+                amount: 1.25,
+                memo: "شراء منتج من تطبيق أرابيكا",
                 metadata: { orderId: "12345" }
             }, {
                 // خطوة السيرفر الأولى: الموافقة
