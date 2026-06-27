@@ -12,7 +12,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh; /* تم تعديلها لتصبح مرنة مع الإضافات الجديدة */
+            min-height: 100vh;
             margin: 0;
             background-color: #f7f9fa;
             padding: 20px 0;
@@ -36,7 +36,7 @@
             cursor: pointer;
             font-weight: bold;
             margin-top: 20px;
-            width: 100%; /* لجعل الزر متناسقاً */
+            width: 100%;
         }
         button:hover {
             background-color: #4b00b5;
@@ -50,10 +50,8 @@
         <p>اضغط على الزر بالأسفل لإتمام عملية الشراء بقيمة Pi 1.25</p>
         <button id="pay-button">ادفع باستخدام Pi</button>
 
-        <!-- 🔽 بداية كود لوحة تحكم المستخدم وسجل العمليات المدمج 🔽 -->
         <div style="background-color: #ffffff; border-radius: 12px; padding: 15px; margin-top: 25px; border: 1px solid #eaeaea; text-align: right;">
             
-            <!-- معلومات الحساب -->
             <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #f3f3f3; padding-bottom: 10px; margin-bottom: 15px;">
                 <div>
                     <span style="color: #666; font-size: 13px;">👤 الحساب:</span>
@@ -65,10 +63,8 @@
                 </div>
             </div>
 
-            <!-- عنوان الجدول -->
             <h3 style="color: #6200ee; font-size: 15px; margin-top: 0; margin-bottom: 12px;">⏱️ سجل المعاملات الأخيرة</h3>
             
-            <!-- جدول المعاملات -->
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 12px;">
                     <thead>
@@ -79,7 +75,6 @@
                         </tr>
                     </thead>
                     <tbody id="transactions-body">
-                        <!-- المعاملات ستظهر هنا تلقائياً لاحقاً عبر الـ JavaScript -->
                         <tr id="no-transactions">
                             <td colspan="3" style="padding: 15px; color: #999; font-style: italic;">لا توجد معاملات مسجلة بعد</td>
                         </tr>
@@ -87,7 +82,6 @@
                 </table>
             </div>
         </div>
-        <!-- 🔼 نهاية كود لوحة تحكم المستخدم وسجل العمليات المدمج 🔼 -->
 
     </div>
 
@@ -100,10 +94,41 @@
             console.error("فشل تهيئة SDK: " + e.message);
         }
 
+        // 🔄 دالة لتحديث واجهة المستخدم وقراءة المعاملات المحفوظة
+        function updateDashboard(username) {
+            if (username) {
+                document.getElementById('username-display').innerText = username;
+            }
+            
+            // جلب المعاملات المخزنة في ذاكرة المتصفح المحلية
+            const savedTx = localStorage.getItem('arabeka_tx');
+            if (savedTx) {
+                const txData = JSON.parse(savedTx);
+                document.getElementById('balance-display').innerText = txData.amount + " Pi";
+                
+                const tableBody = document.getElementById('transactions-body');
+                tableBody.innerHTML = `
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee;">شحن رصيد أرابيكا</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; color: #6200ee;">${txData.amount} Pi</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee; color: green; font-weight: bold;">🟢 مكتملة</td>
+                    </tr>
+                `;
+            }
+        }
+
+        // التوثيق التلقائي فور فتح التطبيق لعرض اسم المستخدم فوراً
+        Pi.authenticate(['username'], onIncompletePaymentFound)
+        .then(function(auth) {
+            updateDashboard(auth.user.username);
+        }).catch(function(err) {
+            document.getElementById('username-display').innerText = "زائر مجهول";
+        });
+
         document.getElementById('pay-button').addEventListener('click', function() {
             Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
             .then(function(auth) {
-                console.log("تم التوثيق بنجاح:", auth.user.username);
+                updateDashboard(auth.user.username);
                 
                 return Pi.createPayment({
                   amount: 1.25,
@@ -124,7 +149,12 @@
                       body: JSON.stringify({ paymentId: paymentId, txid: txid })
                     })
                     .then(res => res.json())
-                    .then(data => alert("تم الدفع بنجاح كامل!"));
+                    .then(data => {
+                        // 💾 حفظ العملية برمجياً في الذاكرة لتظهر بالجدول فوراً
+                        localStorage.setItem('arabeka_tx', JSON.stringify({ amount: 1.25, id: paymentId }));
+                        updateDashboard(auth.user.username);
+                        alert("تم الدفع بنجاح كامل!");
+                    });
                   },
                   onCancel: function(paymentId) {},
                   onError: function(error, paymentId) {
@@ -142,29 +172,22 @@
           const actualTxid = payment.txid || (payment.transaction ? payment.transaction.txid : null);
 
           if (!actualPaymentId) {
-              alert("تم رصد معاملة معلقة ولكن لم نتمكن من استخراج الـ ID الخاص بها برمجياً.");
               return;
           }
           
           fetch(`${BASE_URL}/api/complete`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                paymentId: actualPaymentId, 
-                txid: actualTxid 
-            })
+            body: JSON.stringify({ paymentId: actualPaymentId, txid: actualTxid })
           })
           .then(async response => {
-             const data = await response.json();
              if (response.ok) {
-                 alert("تم فك قفل وتسوية المعاملة المعلقة بنجاح! يرجى الضغط على الزر مرة أخرى لبدء الدفع الجديد والوصول لـ 10/10.");
-             } else {
-                 alert("السيرفر لا يزال يرفض. السبب: " + JSON.stringify(data));
+                 localStorage.setItem('arabeka_tx', JSON.stringify({ amount: 1.25, id: actualPaymentId }));
+                 alert("تم تسوية المعاملة المعلقة!");
+                 location.reload(); // إعادة تحميل الصفحة لتحديث الجدول
              }
           })
-          .catch(err => {
-             alert("فشل الاتصال بالسيرفر: " + err.message);
-          });
+          .catch(err => console.error(err));
         }
     </script>
 </body>
