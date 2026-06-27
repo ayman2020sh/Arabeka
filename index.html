@@ -53,12 +53,13 @@
         try {
             Pi.init({ version: "2.0", sandbox: true });
         } catch(e) {
-            alert("فشل تهيئة SDK: " + e.message);
+            console.error("فشل تهيئة SDK: " + e.message);
         }
 
         document.getElementById('pay-button').addEventListener('click', function() {
             Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
             .then(function(auth) {
+                console.log("تم التوثيق بنجاح:", auth.user.username);
                 
                 return Pi.createPayment({
                   amount: 1.25,
@@ -92,25 +93,35 @@
             });
         });
 
-        // ⭐ دالة فحص التسوية التفصيلية لمعرفة رد السيرفر الحقيقي
+        // ⭐ التحديث البرمجي لإرسال الـ ID بشكل صحيح وضمان وصوله للسيرفر
         function onIncompletePaymentFound(payment) {
-          alert("تم رصد معاملة معلقة برقم: " + payment.id + " .. جاري إرسالها للسيرفر للتسوية.");
+          // استخراج المعرّف بكل الأشكال المتاحة في Pi SDK لضمان عدم إرساله فارغاً
+          const actualPaymentId = payment.id || payment.identifier;
+          const actualTxid = payment.txid || (payment.transaction ? payment.transaction.txid : null);
+
+          if (!actualPaymentId) {
+              alert("تم رصد معاملة معلقة ولكن لم نتمكن من استخراج الـ ID الخاص بها برمجياً.");
+              return;
+          }
           
           fetch(`${BASE_URL}/api/complete`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ paymentId: payment.id, txid: payment.txid })
+            body: JSON.stringify({ 
+                paymentId: actualPaymentId, 
+                txid: actualTxid 
+            })
           })
           .then(async response => {
              const data = await response.json();
              if (response.ok) {
-                 alert("السيرفر نجح في التسوية! الرد: " + JSON.stringify(data));
+                 alert("تم فك قفل وتسوية المعاملة المعلقة بنجاح! يرجى الضغط على الزر مرة أخرى لبدء الدفع الجديد والوصول لـ 10/10.");
              } else {
-                 alert("السيرفر رفض التسوية! السبب: " + JSON.stringify(data));
+                 alert("السيرفر لا يزال يرفض. السبب: " + JSON.stringify(data));
              }
           })
           .catch(err => {
-             alert("فشل الاتصال بالسيرفر تماماً: " + err.message);
+             alert("فشل الاتصال بالسيرفر: " + err.message);
           });
         }
     </script>
