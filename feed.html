@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مجتمع أرابيكا</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5; /* لون خلفية فيسبوك الشهير */
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .feed-container {
+            max-width: 500px;
+            width: 100%;
+        }
+        /* صندوق إنشاء منشور جديد */
+        .create-post-box, .post-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #6200ee;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        textarea {
+            width: 100%;
+            border: none;
+            resize: none;
+            font-size: 16px;
+            outline: none;
+            margin-bottom: 10px;
+            background: transparent;
+        }
+        .media-buttons {
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        .media-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .media-btn:hover { background-color: #e2e2e2; }
+        .publish-btn {
+            width: 100%;
+            background-color: #6200ee;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        
+        /* شكل التعليق الصوتي */
+        .voice-comment-section {
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .mic-btn {
+            background-color: #ff3b30;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .mic-info {
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="feed-container">
+        <div class="create-post-box">
+            <div class="user-info">
+                <div class="avatar">A</div>
+                <strong id="current-user">Ayman_2026</strong>
+            </div>
+            <textarea rows="3" placeholder="بم تفكر الآن؟ شارك أفكارك، صورك، أو فيديوهاتك..."></textarea>
+            
+            <div class="media-buttons">
+                <button class="media-btn">📷 إضافة صورة</button>
+                <button class="media-btn">🎥 إضافة فيديو</button>
+            </div>
+            <button class="publish-btn">نشر الآن</button>
+        </div>
+
+        <div class="post-card">
+            <div class="user-info">
+                <div class="avatar" style="background-color: #28a745;">M</div>
+                <div>
+                    <strong>محمد أحمد</strong>
+                    <div style="font-size: 11px; color: #777;">منذ ساعتين</div>
+                </div>
+            </div>
+            <p>تطبيق أرابيكا أصبح رائعاً جداً! ما رأيكم بالتحديثات الجديدة؟</p>
+            
+            <div class="voice-comment-section">
+                <button class="mic-btn" title="اضغط للتسجيل">🎤</button>
+                <div class="mic-info">
+                    <strong>أضف تعليقاً صوتياً</strong><br>
+                    <span>الحد الأقصى: 1 دقيقة (00:60)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
