@@ -51,21 +51,30 @@
 
     <script>
         // 1️⃣ تهيئة الـ SDK الخاص بـ Pi للشبكة التجريبية
-        Pi.init({ version: "2.0", sandbox: true });
-
-        // 2️⃣ فرض تسجيل الدخول التلقائي عند فتح الصفحة (إلزامي لتفعيل الدفع)
-        Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
-        .then(function(auth) {
-            console.log("تم تسجيل الدخول بنجاح للمستخدم: ", auth.user.username);
+        try {
+            Pi.init({ version: "2.0", sandbox: true });
             
-            // تفعيل الزر بعد نجاح تسجيل الدخول
-            document.getElementById('pay-button').addEventListener('click', function() {
+            // طلب تسجيل الدخول بالخلفية بدون قفل الزر
+            Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
+            .then(function(auth) {
+                console.log("تم التوثيق بنجاح:", auth.user.username);
+            })
+            .catch(function(err) {
+                console.error("خطأ التوثيق الخلفي:", err);
+            });
+        } catch(e) {
+            console.error("فشل تهيئة SDK:", e);
+        }
+
+        // 2️⃣ تفعيل زر الدفع بشكل مستقل ومباشر فور الضغط عليه
+        document.getElementById('pay-button').addEventListener('click', function() {
+            try {
                 Pi.createPayment({
                   amount: 1.25,
                   memo: "شراء من تطبيق أرابيكا",
                   metadata: { auth: "arabeka" },
                 }, {
-                  // الخطوة الأولى: إرسال الطلب لملف approve.js للموافقة
+                  // الخطوة الأولى: الموافقة من السيرفر
                   onReadyForServerApproval: function(paymentId) {
                     fetch('/api/approve', {
                       method: 'POST',
@@ -73,11 +82,11 @@
                       body: JSON.stringify({ paymentId: paymentId })
                     })
                     .then(response => response.json())
-                    .then(data => console.log("Approved on server:", data))
+                    .then(data => console.log("Approved:", data))
                     .catch(err => console.error("Approval error:", err));
                   },
 
-                  // الخطوة الثانية: إرسال الـ txid لملف complete.js بعد خصم المحفظة لتأكيد المعاملة
+                  // الخطوة الثانية: التأكيد بعد الدفع
                   onReadyForServerCompletion: function(paymentId, txid) {
                     fetch('/api/complete', {
                       method: 'POST',
@@ -86,32 +95,27 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                       console.log("Completed on server:", data);
                        alert("تمت عملية الدفع بنجاح كامل!");
                     })
                     .catch(err => console.error("Completion error:", err));
                   },
 
-                  // الخطوة الثالثة: إذا ألغى المستخدم الدفع
                   onCancel: function(paymentId) {
-                    console.log("Payment canceled by user:", paymentId);
+                    console.log("Canceled:", paymentId);
                   },
 
-                  // الخطوة الرابعة: في حال حدوث أي خطأ مفاجئ
                   onError: function(error, paymentId) {
-                    console.error("Payment error occurred:", error);
+                    console.error("Error:", error);
+                    alert("حدث خطأ أثناء الاتصال بالمحفظة: " + error.message);
                   }
                 });
-            });
-        })
-        .catch(function(error) {
-            console.error("فشل تسجيل الدخول في Pi SDK:", error);
+            } catch (error) {
+                alert("خطأ برميجي عند تشغيل الدفع: " + error.message);
+            }
         });
 
-        // 3️⃣ التعامل التلقائي مع المدفوعات المعلقة وإغلاقها
+        // 3️⃣ معالجة المعاملات المعلقة
         function onIncompletePaymentFound(payment) {
-          console.log("Found an incomplete payment, resolving now...", payment.id);
-          
           fetch('/api/complete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -119,10 +123,9 @@
           })
           .then(response => response.json())
           .then(data => {
-             console.log("Incomplete payment resolved:", data);
-             alert("تمت تسوية المعاملة المعلقة السابقة بنجاح! يمكنك الضغط على زر الدفع الآن.");
+             alert("تمت تسوية المعاملة المعلقة بنجاح! أعد المحاولة الآن.");
           })
-          .catch(err => console.error("Error resolving incomplete payment:", err));
+          .catch(err => console.error("Incomplete payment error:", err));
         }
     </script>
 </body>
