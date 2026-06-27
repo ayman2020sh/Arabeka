@@ -49,29 +49,28 @@
     </div>
 
     <script>
-        // 1️⃣ تهيئة الـ SDK الخاص بـ Pi للشبكة التجريبية
+        // تغيير هذا المتغير للرابط الثابت والكامل لموقعك لضمان عمل الـ API
+        const BASE_URL = "https://arabeka.vercel.app";
+
         try {
             Pi.init({ version: "2.0", sandbox: true });
         } catch(e) {
             console.error("فشل تهيئة SDK:", e);
         }
 
-        // 2️⃣ عند الضغط على الزر: يتم التوثيق أولاً بالصلاحيات الكاملة ثم فتح الدفع مباشرة
         document.getElementById('pay-button').addEventListener('click', function() {
             
-            // طلب التوثيق للحساب والمدفوعات فوراً مع ربطها بمعالج المعاملات المعلقة
             Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
             .then(function(auth) {
-                console.log("تم التوثيق بنجاح وصلاحية الدفع جاهزة:", auth.user.username);
+                console.log("تم التوثيق بنجاح:", auth.user.username);
                 
-                // تشغيل عملية الدفع بعد تأكيد الصلاحية (Scope) مباشرة
                 return Pi.createPayment({
                   amount: 1.25,
                   memo: "شراء من تطبيق أرابيكا",
                   metadata: { auth: "arabeka" },
                 }, {
                   onReadyForServerApproval: function(paymentId) {
-                    fetch('/api/approve', {
+                    fetch(`${BASE_URL}/api/approve`, {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ paymentId: paymentId })
@@ -82,7 +81,7 @@
                   },
 
                   onReadyForServerCompletion: function(paymentId, txid) {
-                    fetch('/api/complete', {
+                    fetch(`${BASE_URL}/api/complete`, {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ paymentId: paymentId, txid: txid })
@@ -100,27 +99,27 @@
 
                   onError: function(error, paymentId) {
                     console.error("Error:", error);
-                    alert("حدث خطأ أثناء الاتصال بالمحفظة: " + error.message);
+                    alert("تنبيه الشبكة: " + error.message);
                   }
                 });
             })
             .catch(function(error) {
-                alert("فشل التوثيق أو رفض الصلاحية: " + error.message);
+                alert("فشل التوثيق: " + error.message);
             });
         });
 
-        // 3️⃣ معالجة وتصفية المعاملات المعلقة السابقة تلقائياً
+        // إرسال طلب التسوية بالرابط الكامل والمباشر للسيرفر
         function onIncompletePaymentFound(payment) {
-          console.log("وجد معاملة معلقة، يتم إغلاقها الآن بالخلفية...", payment.id);
+          console.log("تصفية المعاملة المعلقة عبر الرابط المباشر...", payment.id);
           
-          fetch('/api/complete', {
+          fetch(`${BASE_URL}/api/complete`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ paymentId: payment.id, txid: payment.txid })
           })
           .then(response => response.json())
           .then(data => {
-             alert("تمت تسوية المعاملة المعلقة السابقة بنجاح! يمكنك الآن إعادة الضغط على الزر مجدداً لإكمال فحص الخطوة العاشرة.");
+             alert("تمت تسوية وإغلاق المعاملة المعلقة بنجاح! اضغط على الزر مرة أخرى الآن لإتمام الدفع.");
           })
           .catch(err => console.error("Incomplete payment error:", err));
         }
