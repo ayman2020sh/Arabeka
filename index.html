@@ -21,20 +21,30 @@
     <div id="status">جاري تهيئة الاتصال بشبكة Pi...</div>
 
     <script>
-        // التهيئة في وضع الاختبار المتوافق مع حسابك (sandbox: true)
+        // تهيئة البيئة التجريبية للـ Sandbox
         Pi.init({ version: "2.0", sandbox: true });
 
-        Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
-        .then(function(auth) {
-            document.getElementById('status').innerHTML = "<span class='success'>مرحباً بك: " + auth.user.username + "</span>";
-        })
-        .catch(function(error) {
-            console.error(error);
-            document.getElementById('status').innerHTML = "<span class='error'>برجاء فتح الموقع من داخل تطبيق Pi Browser</span>";
-        });
+        // دالة المصادقة مع معالجة ذكية لتجنب حظر المتصفح
+        function authenticateUser() {
+            Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
+            .then(function(auth) {
+                document.getElementById('status').innerHTML = "<span class='success'>مرحباً بك: " + auth.user.username + "</span>";
+            })
+            .catch(function(error) {
+                console.error("Auth Error: ", error);
+                // إذا كنا داخل Pi Browser والخطأ عابر، نترك النص ترحيبي بسيط لتسهيل الدفع
+                document.getElementById('status').innerHTML = "<span class='error'>برجاء فتح الموقع من داخل تطبيق Pi Browser أو إعادة تحديث الصفحة</span>";
+            });
+        }
+
+        // تشغيل المصادقة فوراً بعد دقيقة تأكيد جاهزية النافذة
+        window.onload = function() {
+            setTimeout(authenticateUser, 500);
+        };
 
         function startPayment() {
-            document.getElementById('status').innerText = "جاري فتح المحفظة...";
+            document.getElementById('status').innerText = "جاري استدعاء محفظة Pi...";
+            
             Pi.createPayment({
                 amount: 1.25,
                 memo: "شراء منتج من تطبيق أرابيكا",
@@ -45,8 +55,13 @@
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ paymentId: paymentId })
-                    }).then(res => res.json()).then(data => {
-                        document.getElementById('status').innerText = "في انتظار تأكيدك من المحفظة...";
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById('status').innerText = "تمت الموافقة من السيرفر. في انتظار تأكيدك في المحفظة...";
+                    })
+                    .catch(err => {
+                        document.getElementById('status').innerHTML = "<span class='error'>خطأ في سيرفر الموافقة</span>";
                     });
                 },
                 onReadyForServerCompletion: function(paymentId, txid) {
@@ -54,15 +69,20 @@
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ paymentId: paymentId, txid: txid })
-                    }).then(res => res.json()).then(data => {
-                        document.getElementById('status').innerHTML = "<span class='success'>🎉 تم الدفع بنجاح!</span>";
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById('status').innerHTML = "<span class='success'>🎉 تم الدفع بنجاح! شكراً لك.</span>";
+                    })
+                    .catch(err => {
+                        document.getElementById('status').innerHTML = "<span class='error'>خطأ في سيرفر التأكيد النهائي</span>";
                     });
                 },
                 onCancel: function(paymentId) {
-                    document.getElementById('status').innerText = "تم الإلغاء بواسطة المستخدم.";
+                    document.getElementById('status').innerText = "تم إلغاء العملية بواسطة المستخدم.";
                 },
                 onError: function(error, paymentId) {
-                    document.getElementById('status').innerHTML = "<span class='error'>حدث خطأ: " + error.message + "</span>";
+                    document.getElementById('status').innerHTML = "<span class='error'>خطأ في المحفظة: " + error.message + "</span>";
                 }
             });
         }
