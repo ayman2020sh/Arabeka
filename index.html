@@ -83,7 +83,11 @@
             </div>
         </div>
 
-    </div>
+        <div style="margin-top: 30px; text-align: center;">
+            <p style="color: #666; font-size: 14px; margin-bottom: 10px;">استكشف ميزات المجتمع:</p>
+            <a href="feed.html" style="background-color: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; width: 100%; box-sizing: border-box;">🌍 الدخول إلى مجتمع أرابيكا</a>
+        </div>
+        </div>
 
     <script>
         const BASE_URL = "https://arabeka.vercel.app";
@@ -94,13 +98,10 @@
             console.error("فشل تهيئة SDK: " + e.message);
         }
 
-        // 🔄 دالة لتحديث واجهة المستخدم وقراءة المعاملات المحفوظة
         function updateDashboard(username) {
             if (username) {
                 document.getElementById('username-display').innerText = username;
             }
-            
-            // جلب المعاملات المخزنة في ذاكرة المتصفح المحلية
             const savedTx = localStorage.getItem('arabeka_tx');
             if (savedTx) {
                 const txData = JSON.parse(savedTx);
@@ -117,7 +118,6 @@
             }
         }
 
-        // التوثيق التلقائي فور فتح التطبيق لعرض اسم المستخدم فوراً
         Pi.authenticate(['username'], onIncompletePaymentFound)
         .then(function(auth) {
             updateDashboard(auth.user.username);
@@ -150,7 +150,6 @@
                     })
                     .then(res => res.json())
                     .then(data => {
-                        // 💾 حفظ العملية برمجياً في الذاكرة لتظهر بالجدول فوراً
                         localStorage.setItem('arabeka_tx', JSON.stringify({ amount: 1.25, id: paymentId }));
                         updateDashboard(auth.user.username);
                         alert("تم الدفع بنجاح كامل!");
@@ -171,9 +170,7 @@
           const actualPaymentId = payment.id || payment.identifier;
           const actualTxid = payment.txid || (payment.transaction ? payment.transaction.txid : null);
 
-          if (!actualPaymentId) {
-              return;
-          }
+          if (!actualPaymentId) return;
           
           fetch(`${BASE_URL}/api/complete`, {
             method: 'POST',
@@ -184,7 +181,7 @@
              if (response.ok) {
                  localStorage.setItem('arabeka_tx', JSON.stringify({ amount: 1.25, id: actualPaymentId }));
                  alert("تم تسوية المعاملة المعلقة!");
-                 location.reload(); // إعادة تحميل الصفحة لتحديث الجدول
+                 location.reload(); 
              }
           })
           .catch(err => console.error(err));
