@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f2f5; /* لون خلفية فيسبوك الشهير */
+            background-color: #f0f2f5;
             margin: 0;
             padding: 20px;
             display: flex;
@@ -18,7 +18,6 @@
             max-width: 500px;
             width: 100%;
         }
-        /* صندوق إنشاء منشور جديد */
         .create-post-box, .post-card {
             background-color: white;
             border-radius: 10px;
@@ -84,8 +83,6 @@
             margin-top: 10px;
             cursor: pointer;
         }
-        
-        /* شكل التعليق الصوتي */
         .voice-comment-section {
             border-top: 1px solid #eee;
             padding-top: 10px;
@@ -107,10 +104,6 @@
             justify-content: center;
             font-size: 18px;
         }
-        .mic-info {
-            font-size: 12px;
-            color: #777;
-        }
     </style>
 </head>
 <body>
@@ -119,36 +112,79 @@
         <div class="create-post-box">
             <div class="user-info">
                 <div class="avatar">A</div>
-                <strong id="current-user">Ayman_2026</strong>
+                <strong>Ayman_2026</strong>
             </div>
-            <textarea rows="3" placeholder="بم تفكر الآن؟ شارك أفكارك، صورك، أو فيديوهاتك..."></textarea>
+            <textarea id="post-text" rows="3" placeholder="بم تفكر الآن؟ شارك أفكارك..."></textarea>
             
             <div class="media-buttons">
                 <button class="media-btn">📷 إضافة صورة</button>
                 <button class="media-btn">🎥 إضافة فيديو</button>
             </div>
-            <button class="publish-btn">نشر الآن</button>
+            <button id="publish-btn" class="publish-btn">نشر الآن</button>
         </div>
 
-        <div class="post-card">
-            <div class="user-info">
-                <div class="avatar" style="background-color: #28a745;">M</div>
-                <div>
-                    <strong>محمد أحمد</strong>
-                    <div style="font-size: 11px; color: #777;">منذ ساعتين</div>
+        <div id="posts-area">
+            <div class="post-card">
+                <div class="user-info">
+                    <div class="avatar" style="background-color: #28a745;">M</div>
+                    <div>
+                        <strong>محمد أحمد</strong>
+                        <div style="font-size: 11px; color: #777;">الآن</div>
+                    </div>
                 </div>
-            </div>
-            <p>تطبيق أرابيكا أصبح رائعاً جداً! ما رأيكم بالتحديثات الجديدة؟</p>
-            
-            <div class="voice-comment-section">
-                <button class="mic-btn" title="اضغط للتسجيل">🎤</button>
-                <div class="mic-info">
-                    <strong>أضف تعليقاً صوتياً</strong><br>
-                    <span>الحد الأقصى: 1 دقيقة (00:60)</span>
+                <p>أهلاً بك في مجتمع أرابيكا! جرب كتابة منشور جديد بالأعلى.</p>
+                <div class="voice-comment-section">
+                    <button class="mic-btn" title="اضغط للتسجيل">🎤</button>
+                    <div style="font-size: 12px; color: #777;">
+                        <strong>أضف تعليقاً صوتياً</strong><br>
+                        <span>الحد الأقصى: 1 دقيقة (00:60)</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <script>
+        document.getElementById('publish-btn').addEventListener('click', function() {
+            // 1. قراءة النص الذي كتبه المستخدم
+            const postContent = document.getElementById('post-text').value;
+
+            // 2. التأكد من أن المربع ليس فارغاً
+            if (postContent.trim() === "") {
+                alert("الرجاء كتابة شيء قبل النشر!");
+                return; // إيقاف العملية إذا كان فارغاً
+            }
+
+            // 3. إنشاء شكل المنشور الجديد (HTML) باستخدام النص المكتوب
+            const newPostHTML = `
+                <div class="post-card">
+                    <div class="user-info">
+                        <div class="avatar" style="background-color: #6200ee;">A</div>
+                        <div>
+                            <strong>Ayman_2026</strong>
+                            <div style="font-size: 11px; color: #777;">الآن للتو</div>
+                        </div>
+                    </div>
+                    <p>${postContent}</p>
+                    
+                    <div class="voice-comment-section">
+                        <button class="mic-btn" title="اضغط للتسجيل">🎤</button>
+                        <div style="font-size: 12px; color: #777;">
+                            <strong>أضف تعليقاً صوتياً</strong><br>
+                            <span>الحد الأقصى: 1 دقيقة (00:60)</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 4. وضع المنشور الجديد في أعلى منطقة المنشورات
+            const postsArea = document.getElementById('posts-area');
+            // insertAdjacentHTML تُضيف المنشور الجديد في الأعلى فوق المنشورات القديمة
+            postsArea.insertAdjacentHTML('afterbegin', newPostHTML);
+
+            // 5. تفريغ مربع النص بعد النشر ليكون جاهزاً لمنشور جديد
+            document.getElementById('post-text').value = "";
+        });
+    </script>
 </body>
 </html>
