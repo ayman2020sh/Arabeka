@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بوابة دفع تطبيق Arabeka</title>
-    <!-- استدعاء حزمة الـ SDK الرسمية لشبكة Pi -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
         body {
@@ -53,28 +52,24 @@
         // 1️⃣ تهيئة الـ SDK الخاص بـ Pi للشبكة التجريبية
         try {
             Pi.init({ version: "2.0", sandbox: true });
-            
-            // طلب تسجيل الدخول بالخلفية بدون قفل الزر
-            Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
-            .then(function(auth) {
-                console.log("تم التوثيق بنجاح:", auth.user.username);
-            })
-            .catch(function(err) {
-                console.error("خطأ التوثيق الخلفي:", err);
-            });
         } catch(e) {
             console.error("فشل تهيئة SDK:", e);
         }
 
-        // 2️⃣ تفعيل زر الدفع بشكل مستقل ومباشر فور الضغط عليه
+        // 2️⃣ عند الضغط على الزر: يتم التوثيق أولاً بالصلاحيات الكاملة ثم فتح الدفع مباشرة
         document.getElementById('pay-button').addEventListener('click', function() {
-            try {
-                Pi.createPayment({
+            
+            // طلب التوثيق للحساب والمدفوعات فوراً مع ربطها بمعالج المعاملات المعلقة
+            Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
+            .then(function(auth) {
+                console.log("تم التوثيق بنجاح وصلاحية الدفع جاهزة:", auth.user.username);
+                
+                // تشغيل عملية الدفع بعد تأكيد الصلاحية (Scope) مباشرة
+                return Pi.createPayment({
                   amount: 1.25,
                   memo: "شراء من تطبيق أرابيكا",
                   metadata: { auth: "arabeka" },
                 }, {
-                  // الخطوة الأولى: الموافقة من السيرفر
                   onReadyForServerApproval: function(paymentId) {
                     fetch('/api/approve', {
                       method: 'POST',
@@ -86,7 +81,6 @@
                     .catch(err => console.error("Approval error:", err));
                   },
 
-                  // الخطوة الثانية: التأكيد بعد الدفع
                   onReadyForServerCompletion: function(paymentId, txid) {
                     fetch('/api/complete', {
                       method: 'POST',
@@ -109,13 +103,16 @@
                     alert("حدث خطأ أثناء الاتصال بالمحفظة: " + error.message);
                   }
                 });
-            } catch (error) {
-                alert("خطأ برميجي عند تشغيل الدفع: " + error.message);
-            }
+            })
+            .catch(function(error) {
+                alert("فشل التوثيق أو رفض الصلاحية: " + error.message);
+            });
         });
 
-        // 3️⃣ معالجة المعاملات المعلقة
+        // 3️⃣ معالجة وتصفية المعاملات المعلقة السابقة تلقائياً
         function onIncompletePaymentFound(payment) {
+          console.log("وجد معاملة معلقة، يتم إغلاقها الآن بالخلفية...", payment.id);
+          
           fetch('/api/complete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -123,7 +120,7 @@
           })
           .then(response => response.json())
           .then(data => {
-             alert("تمت تسوية المعاملة المعلقة بنجاح! أعد المحاولة الآن.");
+             alert("تمت تسوية المعاملة المعلقة السابقة بنجاح! يمكنك الآن إعادة الضغط على الزر مجدداً لإكمال فحص الخطوة العاشرة.");
           })
           .catch(err => console.error("Incomplete payment error:", err));
         }
