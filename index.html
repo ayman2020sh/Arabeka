@@ -44,25 +44,21 @@
     <div class="container">
         <h2>بوابة دفع تطبيق Arabeka</h2>
         <p>اضغط على الزر بالأسفل لإتمام عملية الشراء بقيمة Pi 1.25</p>
-        
         <button id="pay-button">ادفع باستخدام Pi</button>
     </div>
 
     <script>
-        // تغيير هذا المتغير للرابط الثابت والكامل لموقعك لضمان عمل الـ API
         const BASE_URL = "https://arabeka.vercel.app";
 
         try {
             Pi.init({ version: "2.0", sandbox: true });
         } catch(e) {
-            console.error("فشل تهيئة SDK:", e);
+            alert("فشل تهيئة SDK: " + e.message);
         }
 
         document.getElementById('pay-button').addEventListener('click', function() {
-            
             Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
             .then(function(auth) {
-                console.log("تم التوثيق بنجاح:", auth.user.username);
                 
                 return Pi.createPayment({
                   amount: 1.25,
@@ -74,32 +70,20 @@
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ paymentId: paymentId })
-                    })
-                    .then(response => response.json())
-                    .then(data => console.log("Approved:", data))
-                    .catch(err => console.error("Approval error:", err));
+                    });
                   },
-
                   onReadyForServerCompletion: function(paymentId, txid) {
                     fetch(`${BASE_URL}/api/complete`, {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ paymentId: paymentId, txid: txid })
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                       alert("تمت عملية الدفع بنجاح كامل!");
-                    })
-                    .catch(err => console.error("Completion error:", err));
+                    .then(res => res.json())
+                    .then(data => alert("تم الدفع بنجاح كامل!"));
                   },
-
-                  onCancel: function(paymentId) {
-                    console.log("Canceled:", paymentId);
-                  },
-
+                  onCancel: function(paymentId) {},
                   onError: function(error, paymentId) {
-                    console.error("Error:", error);
-                    alert("تنبيه الشبكة: " + error.message);
+                    alert("خطأ الشبكة: " + error.message);
                   }
                 });
             })
@@ -108,20 +92,26 @@
             });
         });
 
-        // إرسال طلب التسوية بالرابط الكامل والمباشر للسيرفر
+        // ⭐ دالة فحص التسوية التفصيلية لمعرفة رد السيرفر الحقيقي
         function onIncompletePaymentFound(payment) {
-          console.log("تصفية المعاملة المعلقة عبر الرابط المباشر...", payment.id);
+          alert("تم رصد معاملة معلقة برقم: " + payment.id + " .. جاري إرسالها للسيرفر للتسوية.");
           
           fetch(`${BASE_URL}/api/complete`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ paymentId: payment.id, txid: payment.txid })
           })
-          .then(response => response.json())
-          .then(data => {
-             alert("تمت تسوية وإغلاق المعاملة المعلقة بنجاح! اضغط على الزر مرة أخرى الآن لإتمام الدفع.");
+          .then(async response => {
+             const data = await response.json();
+             if (response.ok) {
+                 alert("السيرفر نجح في التسوية! الرد: " + JSON.stringify(data));
+             } else {
+                 alert("السيرفر رفض التسوية! السبب: " + JSON.stringify(data));
+             }
           })
-          .catch(err => console.error("Incomplete payment error:", err));
+          .catch(err => {
+             alert("فشل الاتصال بالسيرفر تماماً: " + err.message);
+          });
         }
     </script>
 </body>
