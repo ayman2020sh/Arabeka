@@ -3,32 +3,57 @@ Pi.createPayment({
   memo: "شراء من تطبيق أرابيكا",
   metadata: { auth: "arabeka" },
 }, {
+  // 1️⃣ الخطوة الأولى: إرسال الطلب لملف approve.js للموافقة
   onReadyForServerApproval: function(paymentId) {
-    // إرسال للموافقة إلى approve.js
     fetch('/api/approve', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ paymentId: paymentId })
-    });
+    })
+    .then(response => response.json())
+    .then(data => console.log("Approved on server:", data))
+    .catch(err => console.error("Approval error:", err));
   },
+
+  // 2️⃣ الخطوة الثانية: إرسال الـ txid لملف complete.js بعد خصم المحفظة لتأكيد المعاملة
   onReadyForServerCompletion: function(paymentId, txid) {
-    // إرسال للتأكيد إلى complete.js
     fetch('/api/complete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ paymentId: paymentId, txid: txid })
-    });
+    })
+    .then(response => response.json())
+    .then(data => {
+       console.log("Completed on server:", data);
+       alert("تمت عملية الدفع بنجاح كامل!");
+    })
+    .catch(err => console.error("Completion error:", err));
   },
-  onCancel: function(paymentId) { /* إلغاء الدفع */ },
-  onError: function(error, paymentId) { /* معالجة الخطأ */ },
-});
 
-// ⭐ هذه الدالة السحرية لحل مشكلة التعليق تلقائياً
-function onIncompletePaymentFound(payment) {
-  // إذا وجد دفع معلق، يرسله مباشرة لسيرفر الـ complete لتوثيقه وإغلاقه
-  fetch('/api/complete', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ paymentId: payment.id, txid: payment.txid })
-  });
-}
+  // 3️⃣ الخطوة الثالثة: إذا ألغى المستخدم الدفع
+  onCancel: function(paymentId) {
+    console.log("Payment canceled by user:", paymentId);
+  },
+
+  // 4️⃣ الخطوة الرابعة: في حال حدوث أي خطأ مفاجئ
+  onError: function(error, paymentId) {
+    console.error("Payment error occurred:", error);
+  },
+
+  // 5️⃣ الخطوة الخامسة (الحل السحري): التعامل التلقائي مع المدفوعات المعلقة وإغلاقها
+  onIncompletePaymentFound: function(payment) {
+    console.log("Found an incomplete payment, resolving now...", payment.id);
+    
+    fetch('/api/complete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ paymentId: payment.id, txid: payment.txid })
+    })
+    .then(response => response.json())
+    .then(data => {
+       console.log("Incomplete payment resolved:", data);
+       alert("تمت تسوية المعاملة المعلقة السابقة بنجاح! يمكنك إعادة المحاولة الآن.");
+    })
+    .catch(err => console.error("Error resolving incomplete payment:", err));
+  }
+});
