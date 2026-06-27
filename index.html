@@ -4,7 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بوابة دفع تطبيق Arabeka</title>
-    <script src="https://sdk.minepi.com/pi-sdk.js"></script><script>
+    <!-- استدعاء حزمة الـ SDK الرسمية لشبكة Pi -->
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f7f9fa;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #6200ee;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #4b00b5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>بوابة دفع تطبيق Arabeka</h2>
+        <p>اضغط على الزر بالأسفل لإتمام عملية الشراء بقيمة Pi 1.25</p>
+        
+        <button id="pay-button">ادفع باستخدام Pi</button>
+    </div>
+
+    <script>
         // 1️⃣ تهيئة الـ SDK الخاص بـ Pi للشبكة التجريبية
         Pi.init({ version: "2.0", sandbox: true });
 
@@ -79,117 +124,6 @@
           })
           .catch(err => console.error("Error resolving incomplete payment:", err));
         }
-    </script>
-</body>
-</html>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f7f9fa;
-        }
-        .container {
-            text-align: center;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        button {
-            background-color: #6200ee;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-        button:hover {
-            background-color: #4b00b5;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <h2>بوابة دفع تطبيق Arabeka</h2>
-        <p>اضغط على الزر بالأسفل لإتمام عملية الشراء بقيمة Pi 1.25</p>
-        
-        <button id="pay-button">ادفع باستخدام Pi</button>
-    </div>
-
-    <script>
-        // تهيئة الـ SDK الخاص بـ Pi
-        Pi.init({ version: "2.0", sandbox: true });
-
-        document.getElementById('pay-button').addEventListener('click', function() {
-            Pi.createPayment({
-              amount: 1.25,
-              memo: "شراء من تطبيق أرابيكا",
-              metadata: { auth: "arabeka" },
-            }, {
-              // 1️⃣ الخطوة الأولى: إرسال الطلب لملف approve.js للموافقة
-              onReadyForServerApproval: function(paymentId) {
-                fetch('/api/approve', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ paymentId: paymentId })
-                })
-                .then(response => response.json())
-                .then(data => console.log("Approved on server:", data))
-                .catch(err => console.error("Approval error:", err));
-              },
-
-              // 2️⃣ الخطوة الثانية: إرسال الـ txid لملف complete.js بعد خصم المحفظة لتأكيد المعاملة
-              onReadyForServerCompletion: function(paymentId, txid) {
-                fetch('/api/complete', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ paymentId: paymentId, txid: txid })
-                })
-                .then(response => response.json())
-                .then(data => {
-                   console.log("Completed on server:", data);
-                   alert("تمت عملية الدفع بنجاح كامل!");
-                })
-                .catch(err => console.error("Completion error:", err));
-              },
-
-              // 3️⃣ الخطوة الثالثة: إذا ألغى المستخدم الدفع
-              onCancel: function(paymentId) {
-                console.log("Payment canceled by user:", paymentId);
-              },
-
-              // 4️⃣ الخطوة الرابعة: في حال حدوث أي خطأ مفاجئ
-              onError: function(error, paymentId) {
-                console.error("Payment error occurred:", error);
-              },
-
-              // 5️⃣ الخطوة الخامسة (الحل السحري): التعامل التلقائي مع المدفوعات المعلقة وإغلاقها
-              onIncompletePaymentFound: function(payment) {
-                console.log("Found an incomplete payment, resolving now...", payment.id);
-                
-                fetch('/api/complete', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ paymentId: payment.id, txid: payment.txid })
-                })
-                .then(response => response.json())
-                .then(data => {
-                   console.log("Incomplete payment resolved:", data);
-                   alert("تمت تسوية المعاملة المعلقة السابقة بنجاح! يمكنك إعادة المحاولة الآن.");
-                })
-                .catch(err => console.error("Error resolving incomplete payment:", err));
-              }
-            });
-        });
     </script>
 </body>
 </html>
