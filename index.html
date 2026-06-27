@@ -12,9 +12,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh; /* تم تعديلها لتصبح مرنة مع الإضافات الجديدة */
             margin: 0;
             background-color: #f7f9fa;
+            padding: 20px 0;
         }
         .container {
             text-align: center;
@@ -22,6 +23,8 @@
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 90%;
         }
         button {
             background-color: #6200ee;
@@ -33,6 +36,7 @@
             cursor: pointer;
             font-weight: bold;
             margin-top: 20px;
+            width: 100%; /* لجعل الزر متناسقاً */
         }
         button:hover {
             background-color: #4b00b5;
@@ -45,6 +49,46 @@
         <h2>بوابة دفع تطبيق Arabeka</h2>
         <p>اضغط على الزر بالأسفل لإتمام عملية الشراء بقيمة Pi 1.25</p>
         <button id="pay-button">ادفع باستخدام Pi</button>
+
+        <!-- 🔽 بداية كود لوحة تحكم المستخدم وسجل العمليات المدمج 🔽 -->
+        <div style="background-color: #ffffff; border-radius: 12px; padding: 15px; margin-top: 25px; border: 1px solid #eaeaea; text-align: right;">
+            
+            <!-- معلومات الحساب -->
+            <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #f3f3f3; padding-bottom: 10px; margin-bottom: 15px;">
+                <div>
+                    <span style="color: #666; font-size: 13px;">👤 الحساب:</span>
+                    <strong id="username-display" style="color: #111; font-size: 14px;">جاري التحميل...</strong>
+                </div>
+                <div>
+                    <span style="color: #666; font-size: 13px;">💰 الرصيد:</span>
+                    <strong id="balance-display" style="color: #6200ee; font-size: 14px;">0 Pi</strong>
+                </div>
+            </div>
+
+            <!-- عنوان الجدول -->
+            <h3 style="color: #6200ee; font-size: 15px; margin-top: 0; margin-bottom: 12px;">⏱️ سجل المعاملات الأخيرة</h3>
+            
+            <!-- جدول المعاملات -->
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #f8f9fa; border-bottom: 1px solid #ddd;">
+                            <th style="padding: 8px; color: #555;">الخدمة</th>
+                            <th style="padding: 8px; color: #555;">المبلغ</th>
+                            <th style="padding: 8px; color: #555;">الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-body">
+                        <!-- المعاملات ستظهر هنا تلقائياً لاحقاً عبر الـ JavaScript -->
+                        <tr id="no-transactions">
+                            <td colspan="3" style="padding: 15px; color: #999; font-style: italic;">لا توجد معاملات مسجلة بعد</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- 🔼 نهاية كود لوحة تحكم المستخدم وسجل العمليات المدمج 🔼 -->
+
     </div>
 
     <script>
@@ -93,9 +137,7 @@
             });
         });
 
-        // ⭐ التحديث البرمجي لإرسال الـ ID بشكل صحيح وضمان وصوله للسيرفر
         function onIncompletePaymentFound(payment) {
-          // استخراج المعرّف بكل الأشكال المتاحة في Pi SDK لضمان عدم إرساله فارغاً
           const actualPaymentId = payment.id || payment.identifier;
           const actualTxid = payment.txid || (payment.transaction ? payment.transaction.txid : null);
 
