@@ -103,6 +103,7 @@
             align-items: center;
             justify-content: center;
             font-size: 18px;
+            transition: background-color 0.3s;
         }
     </style>
 </head>
@@ -132,11 +133,12 @@
                         <div style="font-size: 11px; color: #777;">الآن</div>
                     </div>
                 </div>
-                <p>أهلاً بك في مجتمع أرابيكا! جرب كتابة منشور جديد بالأعلى.</p>
+                <p>أهلاً بك في مجتمع أرابيكا! جرب تسجيل تعليق صوتي الآن.</p>
+                
                 <div class="voice-comment-section">
-                    <button class="mic-btn" title="اضغط للتسجيل">🎤</button>
+                    <button id="mic-btn" class="mic-btn" title="اضغط للتسجيل">🎤</button>
                     <div style="font-size: 12px; color: #777;">
-                        <strong>أضف تعليقاً صوتياً</strong><br>
+                        <strong id="mic-status">أضف تعليقاً صوتياً</strong><br>
                         <span>الحد الأقصى: 1 دقيقة (00:60)</span>
                     </div>
                 </div>
@@ -145,17 +147,17 @@
     </div>
 
     <script>
+        // ----------------------------------------------------
+        // 1. برمجة زر نشر المنشورات النصية
+        // ----------------------------------------------------
         document.getElementById('publish-btn').addEventListener('click', function() {
-            // 1. قراءة النص الذي كتبه المستخدم
             const postContent = document.getElementById('post-text').value;
 
-            // 2. التأكد من أن المربع ليس فارغاً
             if (postContent.trim() === "") {
                 alert("الرجاء كتابة شيء قبل النشر!");
-                return; // إيقاف العملية إذا كان فارغاً
+                return; 
             }
 
-            // 3. إنشاء شكل المنشور الجديد (HTML) باستخدام النص المكتوب
             const newPostHTML = `
                 <div class="post-card">
                     <div class="user-info">
@@ -166,24 +168,74 @@
                         </div>
                     </div>
                     <p>${postContent}</p>
-                    
-                    <div class="voice-comment-section">
-                        <button class="mic-btn" title="اضغط للتسجيل">🎤</button>
-                        <div style="font-size: 12px; color: #777;">
-                            <strong>أضف تعليقاً صوتياً</strong><br>
-                            <span>الحد الأقصى: 1 دقيقة (00:60)</span>
-                        </div>
-                    </div>
                 </div>
             `;
 
-            // 4. وضع المنشور الجديد في أعلى منطقة المنشورات
             const postsArea = document.getElementById('posts-area');
-            // insertAdjacentHTML تُضيف المنشور الجديد في الأعلى فوق المنشورات القديمة
             postsArea.insertAdjacentHTML('afterbegin', newPostHTML);
-
-            // 5. تفريغ مربع النص بعد النشر ليكون جاهزاً لمنشور جديد
             document.getElementById('post-text').value = "";
+        });
+
+        // ----------------------------------------------------
+        // 2. برمجة زر المايكروفون للتعليق الصوتي (للتعلم)
+        // ----------------------------------------------------
+        const micBtn = document.getElementById('mic-btn');
+        const micStatus = document.getElementById('mic-status');
+        let mediaRecorder;
+        let audioChunks = [];
+
+        micBtn.addEventListener('click', async () => {
+            try {
+                // إذا كان يسجل حالياً، ونريد إيقافه يدوياً
+                if (mediaRecorder && mediaRecorder.state === "recording") {
+                    mediaRecorder.stop();
+                    return;
+                }
+
+                // طلب إذن المايكروفون من هاتف المستخدم
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+
+                // تجميع الصوت أثناء التحدث
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                // ما يحدث عند توقف التسجيل
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    // إرجاع شكل الزر للحالة الطبيعية
+                    micBtn.style.backgroundColor = "#ff3b30";
+                    micStatus.innerText = "تم حفظ التعليق الصوتي بنجاح!";
+                    micStatus.style.color = "green";
+                    
+                    audioChunks = []; // تفريغ الذاكرة للتعليق القادم
+                    
+                    // إيقاف عمل المايكروفون تماماً في الهاتف لتوفير البطارية
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                // بدء عملية التسجيل
+                mediaRecorder.start();
+                
+                // تغيير شكل الزر ليفهم المستخدم أنه قيد التسجيل
+                micBtn.style.backgroundColor = "#28a745"; // لون أخضر
+                micStatus.innerText = "جاري التسجيل... اضغط للإيقاف";
+                micStatus.style.color = "#ff3b30";
+
+                // إيقاف إجباري بعد 60 ثانية (طلبك الخاص)
+                setTimeout(() => {
+                    if (mediaRecorder && mediaRecorder.state === "recording") {
+                        mediaRecorder.stop();
+                        alert("انتهى الوقت الأقصى للتسجيل (دقيقة واحدة)");
+                    }
+                }, 60000);
+
+            } catch (err) {
+                // في حال رفض المستخدم إعطاء إذن المايكروفون
+                alert("لم نتمكن من الوصول للمايكروفون. تأكد من إعطاء الصلاحية للمتصفح.");
+                console.error(err);
+            }
         });
     </script>
 </body>
