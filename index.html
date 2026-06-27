@@ -1,99 +1,34 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة دفع أرابيكا</title>
-    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f4f4f9; }
-        .btn { background-color: #6200ee; color: white; padding: 15px 30px; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; transition: 0.3s; }
-        .btn:hover { background-color: #3700b3; }
-        #status { margin-top: 20px; font-weight: bold; color: #555; }
-        .success { color: green; }
-        .error { color: red; }
-    </style>
-</head>
-<body>
-    <h2>بوابة دفع تطبيق Arabeka</h2>
-    <p>اضغط على الزر بالأسفل لإتمام عملية الشراء بقيمة 1.25 Pi</p>
-    <button class="btn" onclick="startPayment()">ادفع باستخدام Pi</button>
-    <div id="status">جاري تهيئة الاتصال بشبكة Pi...</div>
+Pi.createPayment({
+  amount: 1.25,
+  memo: "شراء من تطبيق أرابيكا",
+  metadata: { auth: "arabeka" },
+}, {
+  onReadyForServerApproval: function(paymentId) {
+    // إرسال للموافقة إلى approve.js
+    fetch('/api/approve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ paymentId: paymentId })
+    });
+  },
+  onReadyForServerCompletion: function(paymentId, txid) {
+    // إرسال للتأكيد إلى complete.js
+    fetch('/api/complete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ paymentId: paymentId, txid: txid })
+    });
+  },
+  onCancel: function(paymentId) { /* إلغاء الدفع */ },
+  onError: function(error, paymentId) { /* معالجة الخطأ */ },
+});
 
-    <script>
-        // تهيئة البيئة التجريبية للـ Sandbox
-        Pi.init({ version: "2.0", sandbox: true });
-
-        // دالة المصادقة مع معالجة ذكية لتجنب حظر المتصفح
-        function authenticateUser() {
-            Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
-            .then(function(auth) {
-                document.getElementById('status').innerHTML = "<span class='success'>مرحباً بك: " + auth.user.username + "</span>";
-            })
-            .catch(function(error) {
-                console.error("Auth Error: ", error);
-                // إذا كنا داخل Pi Browser والخطأ عابر، نترك النص ترحيبي بسيط لتسهيل الدفع
-                document.getElementById('status').innerHTML = "<span class='error'>برجاء فتح الموقع من داخل تطبيق Pi Browser أو إعادة تحديث الصفحة</span>";
-            });
-        }
-
-        // تشغيل المصادقة فوراً بعد دقيقة تأكيد جاهزية النافذة
-        window.onload = function() {
-            setTimeout(authenticateUser, 500);
-        };
-
-        function startPayment() {
-            document.getElementById('status').innerText = "جاري استدعاء محفظة Pi...";
-            
-            Pi.createPayment({
-                amount: 1.25,
-                memo: "شراء منتج من تطبيق أرابيكا",
-                metadata: { orderId: "Arabeka_" + Math.floor(Math.random() * 10000) }
-            }, {
-                onReadyForServerApproval: function(paymentId) {
-                    fetch('/api/approve', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ paymentId: paymentId })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        document.getElementById('status').innerText = "تمت الموافقة من السيرفر. في انتظار تأكيدك في المحفظة...";
-                    })
-                    .catch(err => {
-                        document.getElementById('status').innerHTML = "<span class='error'>خطأ في سيرفر الموافقة</span>";
-                    });
-                },
-                onReadyForServerCompletion: function(paymentId, txid) {
-                    fetch('/api/complete', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ paymentId: paymentId, txid: txid })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        document.getElementById('status').innerHTML = "<span class='success'>🎉 تم الدفع بنجاح! شكراً لك.</span>";
-                    })
-                    .catch(err => {
-                        document.getElementById('status').innerHTML = "<span class='error'>خطأ في سيرفر التأكيد النهائي</span>";
-                    });
-                },
-                onCancel: function(paymentId) {
-                    document.getElementById('status').innerText = "تم إلغاء العملية بواسطة المستخدم.";
-                },
-                onError: function(error, paymentId) {
-                    document.getElementById('status').innerHTML = "<span class='error'>خطأ في المحفظة: " + error.message + "</span>";
-                }
-            });
-        }
-
-        function onIncompletePaymentFound(payment) {
-            fetch('/api/complete', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ paymentId: payment.identifier, txid: payment.txid })
-            });
-        }
-    </script>
-</body>
-</html>
+// ⭐ هذه الدالة السحرية لحل مشكلة التعليق تلقائياً
+function onIncompletePaymentFound(payment) {
+  // إذا وجد دفع معلق، يرسله مباشرة لسيرفر الـ complete لتوثيقه وإغلاقه
+  fetch('/api/complete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ paymentId: payment.id, txid: payment.txid })
+  });
+}
