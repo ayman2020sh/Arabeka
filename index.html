@@ -10,7 +10,11 @@
         body { font-family: sans-serif; background-color: var(--dark-gold); padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; }
         .container { max-width: 500px; width: 100%; }
         h2 { color: var(--pi-purple); text-align: center; }
-        #user-info { color: var(--pi-purple); text-align: center; margin-bottom: 15px; font-weight: bold; background: rgba(255,255,255,0.7); padding: 8px; border-radius: 10px; }
+        
+        /* تصميم زر تسجيل الدخول الجديد */
+        .login-btn { width: 100%; background-color: #28a745; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-bottom: 15px; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        #user-info { color: var(--pi-purple); text-align: center; margin-bottom: 15px; font-weight: bold; background: rgba(255,255,255,0.9); padding: 10px; border-radius: 10px; display: none; }
+        
         .card { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         textarea { width: 100%; border: 1px solid #ddd; border-radius: 12px; padding: 12px; resize: none; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; }
         .publish-btn { width: 100%; background-color: var(--pi-purple); color: var(--dark-gold); border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
@@ -22,12 +26,16 @@
 
     <div class="container">
         <h2>أرابيكا ☕</h2>
-        <div id="user-info">جاري الاتصال...</div>
-        <div class="card">
+        
+        <button id="login-btn" class="login-btn">تسجيل الدخول بحساب Pi</button>
+        <div id="user-info"></div>
+
+        <div class="card" id="post-section" style="display: none;">
             <textarea id="post-text" rows="3" placeholder="بم تفكر؟"></textarea>
             <input type="text" id="media-url" placeholder="رابط صورة (اختياري)" style="width:100%; padding:10px; border:1px solid #eee; border-radius:10px; margin-bottom:10px; box-sizing:border-box;">
             <button id="publish-btn" class="publish-btn">نشر في أرابيكا</button>
         </div>
+        
         <div id="posts-container"></div>
     </div>
 
@@ -35,6 +43,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script>
+        // 1. إعداد Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
             authDomain: "arabeka-3336c.firebaseapp.com",
@@ -47,45 +56,82 @@
         const db = firebase.firestore();
         let currentUser = null;
 
-        // منطق Pi SDK مع Debugging
+        // 2. تهيئة مكتبة Pi في الخلفية
         function initPiSDK() {
             if (typeof Pi !== 'undefined') {
-                // alert("تم العثور على مكتبة Pi"); 
                 Pi.init({ version: "2.0", sandbox: true });
-                Pi.authenticate(['username'], {
-                    onSuccess: (user) => {
-                        currentUser = user.username;
-                        document.getElementById('user-info').innerText = "مرحباً: @" + currentUser;
-                    },
-                    onFailure: (error) => {
-                        alert("خطأ المصادقة: " + JSON.stringify(error));
-                    }
-                });
             } else {
-                setTimeout(initPiSDK, 1000);
+                setTimeout(initPiSDK, 500);
             }
         }
         window.onload = initPiSDK;
 
-        // منطق النشر
-        document.getElementById('publish-btn').onclick = function() {
-            const text = document.getElementById('post-text').value;
-            if(!text.trim()) return alert("اكتب شيئاً!");
-            if(!currentUser) return alert("يرجى الانتظار، لم يتم الاتصال بـ Pi بعد!");
+        // 3. أمر الاتصال (يعمل فقط عند الضغط على الزر)
+        document.getElementById('login-btn').onclick = function() {
+            const btn = document.getElementById('login-btn');
+            btn.innerText = "جاري الاتصال بـ Pi...";
             
-            db.collection("posts").add({ content: text, user: currentUser, likes: 0, timestamp: new Date() });
-            document.getElementById('post-text').value = "";
+            Pi.authenticate(['username'], {
+                onSuccess: function(user) {
+                    currentUser = user.username;
+                    
+                    // إخفاء الزر وإظهار الترحيب
+                    btn.style.display = 'none';
+                    const userInfo = document.getElementById('user-info');
+                    userInfo.style.display = 'block';
+                    userInfo.innerText = "مرحباً يا بطل: @" + currentUser;
+                    
+                    // إظهار مربع النشر
+                    document.getElementById('post-section').style.display = 'block';
+                },
+                onFailure: function(error) {
+                    btn.innerText = "تسجيل الدخول بحساب Pi";
+                    alert("حدث خطأ أثناء تسجيل الدخول: " + error.message);
+                }
+            });
         };
 
-        // عرض المنشورات
+        // 4. منطق النشر
+        document.getElementById('publish-btn').onclick = function() {
+            const text = document.getElementById('post-text').value;
+            const media = document.getElementById('media-url').value;
+            
+            if(!text.trim()) return alert("لا يمكنك نشر فراغ، اكتب شيئاً!");
+            if(!currentUser) return alert("يرجى تسجيل الدخول أولاً!");
+            
+            db.collection("posts").add({ 
+                content: text, 
+                media: media, 
+                user: currentUser, 
+                likes: 0, 
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+            });
+            
+            document.getElementById('post-text').value = "";
+            document.getElementById('media-url').value = "";
+        };
+
+        // 5. عرض المنشورات والتفاعل
         db.collection("posts").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
             const container = document.getElementById('posts-container');
             container.innerHTML = "";
             snapshot.forEach((doc) => {
                 const data = doc.data();
-                container.innerHTML += `<div class="post"><b>@${data.user || "مجهول"}</b><p>${data.content}</p></div>`;
+                container.innerHTML += `
+                    <div class="post">
+                        <small style="color: #3f1b62;"><b>@${data.user || "مجهول"}</b></small>
+                        <p style="font-size: 18px; margin-top: 10px;">${data.content}</p>
+                        ${data.media ? `<img src="${data.media}" style="width:100%; border-radius:10px; margin-top:10px;">` : ""}
+                        <div style="margin-top:15px; border-top: 1px solid #eee; padding-top: 10px;">
+                            <button class="btn-action" onclick="likePost('${doc.id}', ${data.likes || 0})">❤️ ${data.likes || 0}</button>
+                            ${data.user === currentUser && currentUser !== null ? `<button class="btn-action" onclick="deletePost('${doc.id}')" style="background:#d93025;">حذف</button>` : ""}
+                        </div>
+                    </div>`;
             });
         });
+
+        window.likePost = (id, likes) => db.collection("posts").doc(id).update({ likes: likes + 1 });
+        window.deletePost = (id) => db.collection("posts").doc(id).delete();
     </script>
 </body>
 </html>
