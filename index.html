@@ -11,7 +11,6 @@
         .container { max-width: 500px; width: 100%; }
         h2 { color: var(--pi-purple); text-align: center; }
         
-        /* تصميم زر تسجيل الدخول الجديد */
         .login-btn { width: 100%; background-color: #28a745; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-bottom: 15px; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         #user-info { color: var(--pi-purple); text-align: center; margin-bottom: 15px; font-weight: bold; background: rgba(255,255,255,0.9); padding: 10px; border-radius: 10px; display: none; }
         
@@ -43,7 +42,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // 1. إعداد Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
             authDomain: "arabeka-3336c.firebaseapp.com",
@@ -56,7 +54,6 @@
         const db = firebase.firestore();
         let currentUser = null;
 
-        // 2. تهيئة مكتبة Pi في الخلفية
         function initPiSDK() {
             if (typeof Pi !== 'undefined') {
                 Pi.init({ version: "2.0", sandbox: true });
@@ -66,32 +63,34 @@
         }
         window.onload = initPiSDK;
 
-        // 3. أمر الاتصال (يعمل فقط عند الضغط على الزر)
         document.getElementById('login-btn').onclick = function() {
             const btn = document.getElementById('login-btn');
             btn.innerText = "جاري الاتصال بـ Pi...";
             
-            Pi.authenticate(['username'], {
-                onSuccess: function(user) {
-                    currentUser = user.username;
-                    
-                    // إخفاء الزر وإظهار الترحيب
-                    btn.style.display = 'none';
-                    const userInfo = document.getElementById('user-info');
-                    userInfo.style.display = 'block';
-                    userInfo.innerText = "مرحباً يا بطل: @" + currentUser;
-                    
-                    // إظهار مربع النشر
-                    document.getElementById('post-section').style.display = 'block';
-                },
-                onFailure: function(error) {
-                    btn.innerText = "تسجيل الدخول بحساب Pi";
-                    alert("حدث خطأ أثناء تسجيل الدخول: " + error.message);
-                }
-            });
+            try {
+                Pi.authenticate(['username'], {
+                    onSuccess: function(user) {
+                        currentUser = user.username;
+                        btn.style.display = 'none';
+                        const userInfo = document.getElementById('user-info');
+                        userInfo.style.display = 'block';
+                        userInfo.innerText = "مرحباً يا بطل: @" + currentUser;
+                        document.getElementById('post-section').style.display = 'block';
+                    },
+                    onIncompletePaymentFound: function(payment) {
+                        console.log("تم العثور على دفعة غير مكتملة", payment);
+                    },
+                    onFailure: function(error) {
+                        btn.innerText = "تسجيل الدخول بحساب Pi";
+                        alert("تم رفض المصادقة أو فشلها: " + (error.message || JSON.stringify(error)));
+                    }
+                });
+            } catch (err) {
+                btn.innerText = "تسجيل الدخول بحساب Pi";
+                alert("خطأ في بدء الاتصال: " + err.message);
+            }
         };
 
-        // 4. منطق النشر
         document.getElementById('publish-btn').onclick = function() {
             const text = document.getElementById('post-text').value;
             const media = document.getElementById('media-url').value;
@@ -111,7 +110,6 @@
             document.getElementById('media-url').value = "";
         };
 
-        // 5. عرض المنشورات والتفاعل
         db.collection("posts").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
             const container = document.getElementById('posts-container');
             container.innerHTML = "";
