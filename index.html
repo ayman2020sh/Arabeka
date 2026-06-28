@@ -16,13 +16,14 @@
         .publish-btn { width: 100%; background-color: var(--pi-purple); color: var(--dark-gold); border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
         .post { background: var(--card-bg); padding: 20px; margin: 15px 0; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         .btn-action { background-color: var(--pi-purple); border: none; cursor: pointer; color: var(--dark-gold); padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 14px; margin-left: 5px; }
+        .comment-section { margin-top: 10px; font-size: 13px; color: #333; background: #f0f0f0; padding: 8px; border-radius: 8px; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h2>أرابيكا ☕</h2>
-        <div id="user-info">جاري تجهيز الاتصال بـ Pi...</div>
+        <div id="user-info">جاري الاتصال بـ Pi...</div>
         <div class="card">
             <textarea id="post-text" rows="3" placeholder="بم تفكر؟"></textarea>
             <input type="text" id="media-url" placeholder="رابط صورة (اختياري)" style="width:100%; padding:10px; border:1px solid #eee; border-radius:10px; margin-bottom:10px; box-sizing:border-box;">
@@ -31,10 +32,12 @@
         <div id="posts-container"></div>
     </div>
 
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script>
+        // إعداد Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
             authDomain: "arabeka-3336c.firebaseapp.com",
@@ -47,48 +50,40 @@
         const db = firebase.firestore();
         let currentUser = null;
 
-        // دالة ذكية للانتظار حتى تحميل مكتبة Pi
-        function initPi() {
+        // دالة الاتصال بـ Pi (مع حلقة الانتظار)
+        function initPiSDK() {
             if (typeof Pi !== 'undefined') {
-                console.log("مكتبة Pi جاهزة!");
                 Pi.init({ version: "2.0", sandbox: true });
-                
                 Pi.authenticate(['username'], {
                     onSuccess: (user) => {
                         currentUser = user.username;
                         document.getElementById('user-info').innerText = "مرحباً بك، @" + currentUser;
                     },
                     onFailure: (error) => {
-                        document.getElementById('user-info').innerText = "خطأ في الاتصال";
-                        console.error(error);
+                        document.getElementById('user-info').innerText = "فشل الاتصال";
                     }
-                }).catch((err) => {
-                    document.getElementById('user-info').innerText = "حدث خطأ أثناء المصادقة";
                 });
             } else {
-                console.log("الانتظار لتحميل Pi...");
-                setTimeout(initPi, 500); // محاولة ثانية بعد نصف ثانية
+                setTimeout(initPiSDK, 500); 
             }
         }
+        window.onload = initPiSDK;
 
-        // تشغيل الدالة عند تحميل الصفحة
-        window.addEventListener('load', initPi);
-
-        // منطق النشر والعرض (كما هو سابقاً)
+        // منطق النشر
         document.getElementById('publish-btn').onclick = function() {
             const text = document.getElementById('post-text').value;
+            const media = document.getElementById('media-url').value;
             if(!text.trim()) return alert("اكتب شيئاً!");
-            if(!currentUser) return alert("يرجى الانتظار، جاري التحقق من هويتك...");
+            if(!currentUser) return alert("انتظر تحميل البيانات...");
             
             db.collection("posts").add({ 
-                content: text, 
-                user: currentUser, 
-                likes: 0, 
-                timestamp: new Date() 
+                content: text, media: media, user: currentUser, likes: 0, comments: [], timestamp: new Date() 
             });
             document.getElementById('post-text').value = "";
+            document.getElementById('media-url').value = "";
         };
 
+        // عرض المنشورات
         db.collection("posts").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
             const container = document.getElementById('posts-container');
             container.innerHTML = "";
@@ -96,11 +91,19 @@
                 const data = doc.data();
                 container.innerHTML += `
                     <div class="post">
-                        <small>بواسطة: @${data.user || "مجهول"}</small>
+                        <small>@${data.user || "مجهول"}</small>
                         <p>${data.content}</p>
+                        ${data.media ? `<img src="${data.media}" style="width:100%; border-radius:10px;">` : ""}
+                        <div style="margin-top:10px;">
+                            <button class="btn-action" onclick="likePost('${doc.id}', ${data.likes || 0})">❤️ ${data.likes || 0}</button>
+                            <button class="btn-action" onclick="deletePost('${doc.id}')" style="background:#d93025;">حذف</button>
+                        </div>
                     </div>`;
             });
         });
+
+        window.likePost = (id, likes) => db.collection("posts").doc(id).update({ likes: likes + 1 });
+        window.deletePost = (id) => db.collection("posts").doc(id).delete();
     </script>
 </body>
 </html>
