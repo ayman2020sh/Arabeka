@@ -2,7 +2,6 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>أرابيكا - مجتمع باي</title>
     <style>
         body { font-family: sans-serif; background-color: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
@@ -10,9 +9,8 @@
         .card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         textarea { width: 100%; border: 1px solid #ddd; border-radius: 10px; padding: 10px; resize: none; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; }
         .publish-btn { width: 100%; background-color: #6200ee; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .media-input { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
         .post { background: white; padding: 15px; margin: 10px 0; border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .btn-del { color: #d93025; font-size: 13px; cursor: pointer; border: none; background: #fce8e6; padding: 5px 10px; border-radius: 5px; margin-top: 10px; }
+        .btn-action { background: none; border: none; font-size: 18px; cursor: pointer; margin-left: 15px; }
     </style>
 </head>
 <body>
@@ -21,7 +19,7 @@
         <h2>مجتمع أرابيكا</h2>
         <div class="card">
             <textarea id="post-text" rows="3" placeholder="بم تفكر؟"></textarea>
-            <input type="text" id="media-url" placeholder="رابط صورة (اختياري)" class="media-input">
+            <input type="text" id="media-url" placeholder="رابط صورة (اختياري)" style="width:100%; padding:8px; margin-bottom:10px; border-radius:5px; border:1px solid #ccc;">
             <button id="publish-btn" class="publish-btn">نشر الآن</button>
         </div>
         <div id="posts-container"></div>
@@ -42,17 +40,17 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // وظيفة النشر
+        // النشر مع تهيئة الإعجابات بـ 0
         document.getElementById('publish-btn').onclick = function() {
             const text = document.getElementById('post-text').value;
             const media = document.getElementById('media-url').value;
-            if(!text.trim()) return alert("يجب كتابة نص للمنشور!");
-            db.collection("posts").add({ content: text, media: media, timestamp: new Date() });
+            if(!text.trim()) return alert("اكتب شيئاً!");
+            db.collection("posts").add({ content: text, media: media, likes: 0, timestamp: new Date() });
             document.getElementById('post-text').value = "";
             document.getElementById('media-url').value = "";
         };
 
-        // عرض المنشورات
+        // عرض مع التفاعل
         db.collection("posts").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
             const container = document.getElementById('posts-container');
             container.innerHTML = "";
@@ -60,18 +58,25 @@
                 const data = doc.data();
                 container.innerHTML += `
                     <div class="post">
-                        <p style="font-size:17px; margin-bottom:10px;">${data.content}</p>
+                        <p>${data.content}</p>
                         ${data.media ? `<img src="${data.media}" style="width:100%; border-radius:10px;" onerror="this.style.display='none'">` : ""}
-                        <br><button class="btn-del" onclick="deletePost('${doc.id}')">🗑️ حذف المنشور</button>
+                        <div style="margin-top:10px;">
+                            <button class="btn-action" onclick="likePost('${doc.id}', ${data.likes || 0})">❤️ ${data.likes || 0}</button>
+                            <button class="btn-action" onclick="alert('قريباً!')">💬</button>
+                            <button class="btn-action" onclick="deletePost('${doc.id}')" style="color:red; font-size:12px;">🗑️</button>
+                        </div>
                     </div>`;
             });
         });
 
-        // وظيفة الحذف
+        // زيادة الإعجابات
+        window.likePost = function(id, currentLikes) {
+            db.collection("posts").doc(id).update({ likes: currentLikes + 1 });
+        };
+
+        // الحذف
         window.deletePost = function(id) {
-            if(confirm("هل أنت متأكد أنك تريد حذف هذا المنشور؟")) {
-                db.collection("posts").doc(id).delete();
-            }
+            if(confirm("حذف المنشور؟")) db.collection("posts").doc(id).delete();
         };
     </script>
 </body>
