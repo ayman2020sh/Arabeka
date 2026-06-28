@@ -5,16 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>أرابيكا - مجتمع باي</title>
     <style>
-        :root { --primary-color: #6200EE; --bg-color: #F4F5F7; --card-bg: #FFFFFF; }
-        body { font-family: sans-serif; background-color: var(--bg-color); padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        :root { 
+            --pi-purple: #3f1b62; /* بنفسجي باي */
+            --dark-gold: #c5a059; /* ذهبي داكن */
+            --card-bg: #ffffff; 
+        }
+        body { 
+            font-family: sans-serif; 
+            background-color: var(--pi-purple); 
+            padding: 20px; 
+            display: flex; flex-direction: column; align-items: center; 
+            margin: 0;
+        }
         .container { max-width: 500px; width: 100%; }
-        h2 { color: var(--primary-color); text-align: center; }
-        .card { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        h2 { color: var(--dark-gold); text-align: center; margin-bottom: 20px; }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         textarea { width: 100%; border: 1px solid #ddd; border-radius: 12px; padding: 12px; resize: none; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; }
-        .publish-btn { width: 100%; background-color: var(--primary-color); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        .post { background: var(--card-bg); padding: 20px; margin: 15px 0; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .comment-section { margin-top: 10px; font-size: 13px; color: #555; background: #f9f9f9; padding: 8px; border-radius: 8px; }
-        .btn-action { background: none; border: none; cursor: pointer; font-size: 16px; margin-left: 10px; }
+        
+        .publish-btn { 
+            width: 100%; 
+            background-color: var(--dark-gold); 
+            color: var(--pi-purple); 
+            border: none; 
+            padding: 14px; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            cursor: pointer; 
+        }
+        
+        .post { background: var(--card-bg); padding: 20px; margin: 15px 0; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .comment-section { margin-top: 10px; font-size: 13px; color: #333; background: #f0f0f0; padding: 8px; border-radius: 8px; }
+        .btn-action { background: none; border: none; cursor: pointer; font-size: 16px; margin-left: 10px; color: var(--dark-gold); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -58,14 +79,14 @@
             container.innerHTML = "";
             snapshot.forEach((doc) => {
                 const data = doc.data();
-                const commentsList = (data.comments || []).map(c => `<div>• ${c}</div>`).join('');
+                const commentsList = (data.comments || []).map(c => `<div style="padding:2px 0;">• ${c}</div>`).join('');
                 container.innerHTML += `
                     <div class="post">
-                        <p style="font-size:17px;">${data.content}</p>
+                        <p style="font-size:17px; margin-bottom:10px; color:#333;">${data.content}</p>
                         ${data.media ? `<img src="${data.media}" style="width:100%; border-radius:10px;" onerror="this.style.display='none'">` : ""}
-                        <div style="margin-top:10px;">
+                        <div style="margin-top:10px; border-top:1px solid #eee; padding-top:10px;">
                             <button class="btn-action" onclick="likePost('${doc.id}', ${data.likes || 0})">❤️ ${data.likes || 0}</button>
-                            <input type="text" id="comm-${doc.id}" placeholder="تعليق..." style="width:40%; padding:5px;">
+                            <input type="text" id="comm-${doc.id}" placeholder="تعليق..." style="width:30%; padding:5px; border-radius:5px; border:1px solid #ccc;">
                             <button class="btn-action" onclick="addComment('${doc.id}')">إرسال</button>
                             <button class="btn-action" onclick="deletePost('${doc.id}')" style="color:red; font-size:12px;">حذف</button>
                         </div>
