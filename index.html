@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -6,35 +7,38 @@
     <title>أرابيكا - مجتمع باي</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
-        :root { --pi-purple: #3f1b62; --dark-gold: #c5a059; --card-bg: #ffffff; }
-        body { font-family: sans-serif; background-color: var(--dark-gold); padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; }
+        :root { --bg: #c5a059; --card: #ffffff; --text: #3f1b62; }
+        .dark-mode { --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; }
+        
+        body { font-family: sans-serif; background-color: var(--bg); color: var(--text); padding: 20px; transition: 0.3s; margin: 0; display: flex; flex-direction: column; align-items: center; }
         .container { max-width: 500px; width: 100%; }
-        h2 { color: var(--pi-purple); text-align: center; font-size: 28px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .theme-btn { float: left; cursor: pointer; font-size: 24px; padding: 10px; }
         
-        .login-btn { width: 100%; background-color: #28a745; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-bottom: 5px; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        #debug-log { color: #d93025; font-size: 12px; text-align: center; margin-bottom: 15px; font-weight: bold; min-height: 15px; }
-        #user-info { color: var(--pi-purple); text-align: center; margin-bottom: 15px; font-weight: bold; background: rgba(255,255,255,0.9); padding: 10px; border-radius: 10px; display: none; }
+        .login-btn { width: 100%; background-color: #28a745; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+        #debug-log { color: #d93025; font-size: 12px; text-align: center; margin-bottom: 10px; font-weight: bold; }
+        #user-info { color: var(--text); text-align: center; margin-bottom: 15px; font-weight: bold; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 10px; display: none; }
         
-        .card { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        textarea { width: 100%; border: 1px solid #ddd; border-radius: 12px; padding: 12px; resize: none; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; }
-        .publish-btn { width: 100%; background-color: var(--pi-purple); color: var(--dark-gold); border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        .post { background: var(--card-bg); padding: 20px; margin: 15px 0; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .btn-action { background-color: var(--pi-purple); border: none; cursor: pointer; color: var(--dark-gold); padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 14px; margin-left: 5px; }
+        .card { background: var(--card); padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .post { background: var(--card); padding: 20px; margin-bottom: 15px; border-radius: 15px; border-right: 5px solid #3f1b62; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .post-time { font-size: 11px; color: #888; margin-right: 5px; }
+        .publish-btn { width: 100%; background-color: #3f1b62; color: #c5a059; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-action { background: #3f1b62; color: #fff; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; margin-left: 5px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>أرابيكا ☕</h2>
+        <span class="theme-btn" onclick="toggleTheme()">🌙</span>
+        <h2 style="text-align: center;">أرابيكا ☕</h2>
         
         <button id="login-btn" class="login-btn">تسجيل الدخول بحساب Pi</button>
         <div id="debug-log"></div>
         <div id="user-info"></div>
 
         <div class="card" id="post-section" style="display: none;">
-            <textarea id="post-text" rows="3" placeholder="بم تفكر؟"></textarea>
-            <input type="text" id="media-url" placeholder="رابط صورة (اختياري)" style="width:100%; padding:10px; border:1px solid #eee; border-radius:10px; margin-bottom:10px; box-sizing:border-box;">
-            <button id="publish-btn" class="publish-btn">نشر في أرابيكا</button>
+            <textarea id="post-text" style="width:100%; border:none; background:transparent; font-size:16px; color:var(--text);" rows="3" placeholder="بم تفكر يا قهوة؟"></textarea>
+            <input type="text" id="media-url" placeholder="رابط صورة (اختياري)" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; margin:10px 0; box-sizing:border-box;">
+            <button id="publish-btn" class="publish-btn">نشر</button>
         </div>
         
         <div id="posts-container"></div>
@@ -44,7 +48,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // 1. إعداد Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
             authDomain: "arabeka-3336c.firebaseapp.com",
@@ -56,89 +59,61 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         let currentUser = null;
-        
-        const debugLog = document.getElementById('debug-log');
-        const btn = document.getElementById('login-btn');
 
-        // 2. تهيئة مكتبة Pi
+        function toggleTheme() { document.body.classList.toggle('dark-mode'); }
+
         function initPiSDK() {
             if (typeof Pi !== 'undefined') {
                 Pi.init({ version: "2.0", sandbox: true });
-                debugLog.innerText = "جاهز للاتصال...";
             } else {
                 setTimeout(initPiSDK, 500);
             }
         }
         window.onload = initPiSDK;
 
-        // 3. الاتصال باستخدام الطريقة الحديثة (Promises)
-        btn.onclick = function() {
-            btn.innerText = "جاري الاتصال بـ Pi...";
-            debugLog.innerText = "جاري إرسال طلب المصادقة...";
-            
-            // دالة الدفعات المعلقة المطلوبة في التحديث الجديد
-            const onIncompletePaymentFound = function(payment) {
-                console.log("دفعة غير مكتملة", payment);
-            };
-
-            // بدء الاتصال بنظام V2
-            Pi.authenticate(['username'], onIncompletePaymentFound)
-                .then(function(authResult) {
-                    debugLog.innerText = "";
+        document.getElementById('login-btn').onclick = function() {
+            Pi.authenticate(['username'], () => {})
+                .then(authResult => {
                     currentUser = authResult.user.username;
-                    
-                    btn.style.display = 'none';
-                    const userInfo = document.getElementById('user-info');
-                    userInfo.style.display = 'block';
-                    userInfo.innerText = "مرحباً يا بطل: @" + currentUser;
+                    document.getElementById('login-btn').style.display = 'none';
+                    document.getElementById('user-info').style.display = 'block';
+                    document.getElementById('user-info').innerText = "مرحباً: @" + currentUser;
                     document.getElementById('post-section').style.display = 'block';
                 })
-                .catch(function(error) {
-                    btn.innerText = "تسجيل الدخول بحساب Pi";
-                    debugLog.innerText = "خطأ: " + (error.message || "رفض المستخدم الطلب أو حدث عطل.");
-                });
+                .catch(err => { document.getElementById('debug-log').innerText = "خطأ: " + err.message; });
         };
 
-        // 4. منطق النشر في قاعدة البيانات
         document.getElementById('publish-btn').onclick = function() {
             const text = document.getElementById('post-text').value;
             const media = document.getElementById('media-url').value;
-            
-            if(!text.trim()) return alert("لا يمكنك نشر فراغ، اكتب شيئاً!");
-            if(!currentUser) return alert("يرجى تسجيل الدخول أولاً!");
-            
+            if(!text.trim()) return;
             db.collection("posts").add({ 
-                content: text, 
-                media: media, 
-                user: currentUser, 
-                likes: 0, 
+                content: text, media: media, user: currentUser, likes: 0, 
                 timestamp: firebase.firestore.FieldValue.serverTimestamp() 
             });
-            
             document.getElementById('post-text').value = "";
             document.getElementById('media-url').value = "";
         };
 
-        // 5. جلب المنشورات وعرضها
-        db.collection("posts").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+        db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot => {
             const container = document.getElementById('posts-container');
             container.innerHTML = "";
-            snapshot.forEach((doc) => {
-                const data = doc.data();
+            snapshot.forEach(doc => {
+                const d = doc.data();
+                const time = d.timestamp ? d.timestamp.toDate().toLocaleDateString('ar-EG') : "";
                 container.innerHTML += `
                     <div class="post">
-                        <small style="color: #3f1b62;"><b>@${data.user || "مجهول"}</b></small>
-                        <p style="font-size: 18px; margin-top: 10px;">${data.content}</p>
-                        ${data.media ? `<img src="${data.media}" style="width:100%; border-radius:10px; margin-top:10px;">` : ""}
-                        <div style="margin-top:15px; border-top: 1px solid #eee; padding-top: 10px;">
-                            <button class="btn-action" onclick="likePost('${doc.id}', ${data.likes || 0})">❤️ ${data.likes || 0}</button>
-                            ${data.user === currentUser && currentUser !== null ? `<button class="btn-action" onclick="deletePost('${doc.id}')" style="background:#d93025;">حذف</button>` : ""}
+                        <b>@${d.user}</b> <span class="post-time">${time}</span>
+                        <p style="margin: 10px 0;">${d.content}</p>
+                        ${d.media ? `<img src="${d.media}" style="width:100%; border-radius:10px;">` : ""}
+                        <div style="margin-top:10px;">
+                            <button class="btn-action" onclick="likePost('${doc.id}', ${d.likes || 0})">❤️ ${d.likes || 0}</button>
+                            ${d.user === currentUser ? `<button class="btn-action" style="background:#d93025;" onclick="deletePost('${doc.id}')">حذف</button>` : ""}
                         </div>
                     </div>`;
             });
         });
 
-        // 6. دوال التفاعل (إعجاب وحذف)
         window.likePost = (id, likes) => db.collection("posts").doc(id).update({ likes: likes + 1 });
         window.deletePost = (id) => db.collection("posts").doc(id).delete();
     </script>
