@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أرابيكا - مجتمع باي</title>
+    <title>أرابيكا - مجتمع ومتجر باي</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
         /* الألوان والهوية والوضع الليلي */
@@ -14,10 +14,15 @@
         .container { max-width: 600px; width: 100%; position: relative; }
         
         /* الشريط العلوي */
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--card); padding: 10px 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: var(--card); padding: 10px 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .top-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text); }
         h2 { margin: 0; color: var(--accent); font-size: 24px; text-align: center; flex-grow: 1; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
         
+        /* التبويبات (الأقسام) */
+        .tabs-container { display: none; width: 100%; display: flex; gap: 10px; margin-bottom: 15px; }
+        .tab-btn { flex: 1; padding: 10px; font-size: 16px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; background: var(--card); color: var(--text); box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.3s; }
+        .tab-btn.active { background: var(--accent); color: white; }
+
         /* الإشعارات */
         .notification-badge { background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; font-weight: bold; position: absolute; top: 15px; right: 45px; display: none; }
         .notifications-panel { display: none; background: var(--card); border: 1px solid var(--accent); padding: 10px; border-radius: 10px; margin-bottom: 15px; max-height: 150px; overflow-y: auto; font-size: 14px; }
@@ -31,24 +36,27 @@
         
         .wallet-box { background: var(--light-bg); padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px dashed var(--accent); }
         .wallet-btn { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; margin: 5px; }
-        .shop-btn { background: var(--gold); color: #000; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; margin: 5px; }
         
-        /* المنشورات والتصويت */
+        /* الكروت والمنشورات */
         .card { background: var(--card); padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .post { background: var(--card); padding: 15px; margin-bottom: 15px; border-radius: 15px; border-right: 5px solid var(--accent); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .post-header { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 10px; }
         .post-avatar { width: 30px; height: 30px; border-radius: 50%; margin-left: 10px; object-fit: cover; }
         
-        textarea, input[type="text"] { width: 100%; border: 1px solid #ddd; border-radius: 10px; padding: 10px; font-size: 15px; margin-bottom: 10px; box-sizing: border-box; background: var(--card); color: var(--text); }
+        textarea, input[type="text"], input[type="number"] { width: 100%; border: 1px solid #ddd; border-radius: 10px; padding: 10px; font-size: 15px; margin-bottom: 10px; box-sizing: border-box; background: var(--card); color: var(--text); }
         .publish-btn { width: 100%; background-color: var(--accent); color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-action { background: var(--accent); color: #fff; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-left: 5px; margin-top: 5px; }
         
-        /* أشرطة التصويت */
+        /* المتجر والمنتجات */
+        .product-card { background: var(--card); padding: 15px; margin-bottom: 15px; border-radius: 15px; border: 1px solid #ddd; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .product-img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; }
+        .product-price { font-size: 20px; font-weight: bold; color: #28a745; margin: 10px 0; }
+        .buy-btn { background: #28a745; color: white; width: 100%; padding: 10px; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
+
+        /* أشرطة التصويت والتعليقات */
         .poll-option { display: flex; align-items: center; margin-bottom: 5px; cursor: pointer; background: var(--light-bg); border-radius: 5px; overflow: hidden; position: relative; padding: 8px; }
         .poll-bar { position: absolute; left: 0; top: 0; height: 100%; background: rgba(63, 27, 98, 0.2); z-index: 1; transition: width 0.3s; }
         .poll-text { z-index: 2; position: relative; font-size: 14px; flex-grow: 1; font-weight: bold; }
-        
-        /* التعليقات */
         .comments-section { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: none; }
         .comment { background: var(--light-bg); padding: 8px; border-radius: 8px; margin-bottom: 5px; font-size: 13px; }
         .comment-input-area { display: flex; gap: 5px; margin-top: 10px; }
@@ -71,6 +79,11 @@
         <button id="login-btn" class="publish-btn" style="background:#28a745; margin-bottom:20px;">تسجيل الدخول بحساب Pi</button>
         <div id="debug-log" style="color:red; text-align:center; font-size:12px;"></div>
 
+        <div id="main-tabs" class="tabs-container">
+            <button id="tab-feed" class="tab-btn active" onclick="switchTab('feed')">المجتمع 🏠</button>
+            <button id="tab-store" class="tab-btn" onclick="switchTab('store')">المتجر 🛒</button>
+        </div>
+
         <div id="notifications-panel" class="notifications-panel">
             <h4 style="margin:0 0 10px 0;">الإشعارات</h4>
             <div id="notif-list">لا توجد إشعارات جديدة.</div>
@@ -92,30 +105,42 @@
                 
                 <hr style="border: 0.5px solid #ddd; margin: 10px 0;">
                 <button class="wallet-btn" onclick="simulateDeposit()">إيداع (محاكاة)</button>
-                <button class="wallet-btn" style="background:#d93025;" onclick="alert('خاصية السحب تتطلب موافقة الإدارة وتكامل مع الخادم.')">سحب</button>
-                <br>
-                <button class="shop-btn" onclick="buyCoffee()">شراء قهوة (1 Pi) = 1 نقطة ولاء</button>
+                <button class="wallet-btn" style="background:#d93025;" onclick="alert('للسحب، يرجى التواصل مع الإدارة.')">سحب</button>
             </div>
         </div>
 
-        <div class="card" id="post-section" style="display: none;">
-            <textarea id="post-text" rows="3" placeholder="بم تفكر يا بطل أرابيكا؟"></textarea>
-            <input type="text" id="media-url" placeholder="رابط صورة (اختياري)">
-            
-            <div style="margin-bottom: 10px;">
-                <label style="font-size: 14px; cursor: pointer; font-weight:bold;">
-                    <input type="checkbox" id="is-poll" onchange="togglePollInputs()"> إضافة تصويت 📊
-                </label>
+        <div id="feed-section" style="display: none;">
+            <div class="card">
+                <textarea id="post-text" rows="3" placeholder="بم تفكر يا بطل أرابيكا؟"></textarea>
+                <input type="text" id="media-url" placeholder="رابط صورة (اختياري)">
+                
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 14px; cursor: pointer; font-weight:bold;">
+                        <input type="checkbox" id="is-poll" onchange="togglePollInputs()"> إضافة تصويت 📊
+                    </label>
+                </div>
+                <div id="poll-inputs" style="display:none; background: var(--light-bg); padding:10px; border-radius:10px; margin-bottom:10px;">
+                    <input type="text" id="poll-opt-1" placeholder="الخيار الأول">
+                    <input type="text" id="poll-opt-2" placeholder="الخيار الثاني">
+                </div>
+                
+                <button id="publish-btn" class="publish-btn">نشر</button>
             </div>
-            <div id="poll-inputs" style="display:none; background: var(--light-bg); padding:10px; border-radius:10px; margin-bottom:10px;">
-                <input type="text" id="poll-opt-1" placeholder="الخيار الأول (مثال: صعود)">
-                <input type="text" id="poll-opt-2" placeholder="الخيار الثاني (مثال: هبوط)">
-            </div>
-            
-            <button id="publish-btn" class="publish-btn">نشر</button>
+            <div id="posts-container"></div>
         </div>
-        
-        <div id="posts-container"></div>
+
+        <div id="store-section" style="display: none;">
+            <div class="card">
+                <h3 style="margin-top:0; color:var(--accent);">إضافة منتج للمتجر 🛍️</h3>
+                <input type="text" id="prod-name" placeholder="اسم المنتج">
+                <textarea id="prod-desc" rows="2" placeholder="وصف المنتج ومميزاته"></textarea>
+                <input type="text" id="prod-img" placeholder="رابط صورة المنتج (URL)">
+                <input type="number" id="prod-price" placeholder="السعر بعملة Pi">
+                <button id="add-product-btn" class="publish-btn" style="background:var(--gold); color:#000;">إضافة المنتج</button>
+            </div>
+            <div id="products-container"></div>
+        </div>
+
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -137,7 +162,7 @@
         let currentUserAvatar = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
         let currentBalance = 0;
 
-        // --- 2. دوال الواجهة الأساسية ---
+        // --- 2. دوال الواجهة الأساسية والتبويبات ---
         function toggleTheme() { document.body.classList.toggle('dark-mode'); }
         function toggleProfile() { 
             const p = document.getElementById('profile-panel'); 
@@ -156,6 +181,22 @@
             const sec = document.getElementById('comments-' + postId);
             sec.style.display = sec.style.display === 'block' ? 'none' : 'block';
         }
+        
+        // التبديل بين المتجر والمجتمع
+        function switchTab(tabName) {
+            document.getElementById('tab-feed').classList.remove('active');
+            document.getElementById('tab-store').classList.remove('active');
+            document.getElementById('feed-section').style.display = 'none';
+            document.getElementById('store-section').style.display = 'none';
+
+            if(tabName === 'feed') {
+                document.getElementById('tab-feed').classList.add('active');
+                document.getElementById('feed-section').style.display = 'block';
+            } else {
+                document.getElementById('tab-store').classList.add('active');
+                document.getElementById('store-section').style.display = 'block';
+            }
+        }
 
         // --- 3. تهيئة Pi SDK وتسجيل الدخول ---
         window.onload = () => { if (typeof Pi !== 'undefined') Pi.init({ version: "2.0", sandbox: true }); };
@@ -166,7 +207,10 @@
             Pi.authenticate(['username'], () => {}).then(auth => {
                 currentUser = auth.user.username;
                 btn.style.display = 'none';
-                document.getElementById('post-section').style.display = 'block';
+                
+                // إظهار الواجهة
+                document.getElementById('main-tabs').style.display = 'flex';
+                document.getElementById('feed-section').style.display = 'block';
                 document.getElementById('profile-btn').style.display = 'inline-block';
                 document.getElementById('bell-btn').style.display = 'inline-block';
                 
@@ -180,7 +224,6 @@
             document.getElementById('prof-name').innerText = "@" + currentUser;
             const userRef = db.collection("users").doc(currentUser);
             
-            // الاستماع المباشر لتحديثات المستخدم (المحفظة، الصورة، النبذة)
             userRef.onSnapshot(doc => {
                 if (doc.exists) {
                     const data = doc.data();
@@ -197,18 +240,15 @@
                     document.getElementById('wallet-balance').innerText = currentBalance;
                     document.getElementById('loyalty-points').innerText = data.loyaltyPoints || 0;
                 } else {
-                    // إنشاء ملف جديد للمستخدم الأول مرة
                     userRef.set({ bio: "", avatar: "", walletBalance: 0, loyaltyPoints: 0, joinDate: new Date().toLocaleDateString('ar-EG') });
                 }
             });
 
-            // حساب عدد المنشورات
             db.collection("posts").where("user", "==", currentUser).onSnapshot(snap => {
                 document.getElementById('prof-posts').innerText = snap.size;
             });
         }
 
-        // حفظ الصورة والنبذة
         window.saveProfile = () => {
             const bio = document.getElementById('prof-bio').value;
             const avatar = document.getElementById('prof-avatar-input').value;
@@ -216,23 +256,9 @@
               .then(() => alert("تم حفظ البيانات بنجاح!"));
         };
 
-        // محاكاة إيداع عملات داخل التطبيق
         window.simulateDeposit = () => {
-            db.collection("users").doc(currentUser).set({ 
-                walletBalance: firebase.firestore.FieldValue.increment(10) 
-            }, { merge: true }).then(() => alert("تم إيداع 10 Pi تجريبي في محفظتك بنجاح!"));
-        };
-
-        // نظام المشتريات ونقاط الولاء
-        window.buyCoffee = () => {
-            if(currentBalance >= 1) {
-                db.collection("users").doc(currentUser).set({ 
-                    walletBalance: firebase.firestore.FieldValue.increment(-1),
-                    loyaltyPoints: firebase.firestore.FieldValue.increment(1)
-                }, { merge: true }).then(() => alert("تم شراء القهوة! استمتع بها، لقد حصلت على 1 نقطة ولاء 🌟"));
-            } else {
-                alert("رصيدك غير كافٍ. يرجى الإيداع أولاً.");
-            }
+            db.collection("users").doc(currentUser).set({ walletBalance: firebase.firestore.FieldValue.increment(50) }, { merge: true })
+              .then(() => alert("تم إيداع 50 Pi تجريبي في محفظتك بنجاح!"));
         };
 
         // --- 5. الإشعارات ---
@@ -243,7 +269,8 @@
                 let newCount = 0;
                 snap.forEach(doc => {
                     const data = doc.data();
-                    list.innerHTML += `<div class="notif-item">👍 قام <b>@${data.fromUser}</b> بالإعجاب بمنشورك.</div>`;
+                    let msg = data.type === 'purchase' ? `💰 قام <b>@${data.fromUser}</b> بشراء منتجك!` : `👍 قام <b>@${data.fromUser}</b> بالإعجاب بمنشورك.`;
+                    list.innerHTML += `<div class="notif-item">${msg}</div>`;
                     newCount++;
                 });
                 if(newCount > 0) {
@@ -253,7 +280,68 @@
             });
         }
 
-        // --- 6. النشر (نصوص + تصويت + صورة المستخدم) ---
+        // --- 6. المتجر: النشر والشراء ---
+        // إضافة منتج
+        document.getElementById('add-product-btn').onclick = () => {
+            const name = document.getElementById('prod-name').value;
+            const desc = document.getElementById('prod-desc').value;
+            const img = document.getElementById('prod-img').value;
+            const price = parseFloat(document.getElementById('prod-price').value);
+
+            if(!name || !desc || !price || isNaN(price)) return alert("يرجى إكمال البيانات الأساسية والسعر!");
+            
+            db.collection("products").add({
+                name: name, desc: desc, image: img, price: price, seller: currentUser, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            document.getElementById('prod-name').value = ""; document.getElementById('prod-desc').value = "";
+            document.getElementById('prod-img').value = ""; document.getElementById('prod-price').value = "";
+            alert("تم إضافة المنتج للمتجر بنجاح!");
+        };
+
+        // عرض المنتجات
+        db.collection("products").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+            const container = document.getElementById('products-container');
+            container.innerHTML = "";
+            snapshot.forEach(doc => {
+                const p = doc.data();
+                container.innerHTML += `
+                    <div class="product-card">
+                        ${p.image ? `<img src="${p.image}" class="product-img">` : `<div class="product-img" style="background:#eee; display:flex; align-items:center; justify-content:center;">بدون صورة</div>`}
+                        <h3 style="margin:5px 0;">${p.name}</h3>
+                        <p style="font-size:14px; color:#666; margin:5px 0;">${p.desc}</p>
+                        <p style="font-size:12px; color:var(--accent);">البائع: @${p.seller}</p>
+                        <div class="product-price">${p.price} Pi</div>
+                        <button class="buy-btn" onclick="buyProduct('${doc.id}', ${p.price}, '${p.seller}')">شراء الآن</button>
+                    </div>`;
+            });
+        });
+
+        // عملية الشراء (خصم رصيد وإضافة ولاء)
+        window.buyProduct = (productId, price, seller) => {
+            if(seller === currentUser) return alert("لا يمكنك شراء منتجك الخاص!");
+            if(currentBalance < price) return alert("رصيدك غير كافٍ. يرجى شحن محفظتك.");
+            if(confirm(`هل أنت متأكد من شراء هذا المنتج بسعر ${price} Pi؟`)) {
+                
+                // خصم من المشتري وإضافة نقطة ولاء
+                db.collection("users").doc(currentUser).set({ 
+                    walletBalance: firebase.firestore.FieldValue.increment(-price),
+                    loyaltyPoints: firebase.firestore.FieldValue.increment(1) // نقطة ولاء على كل عملية شراء
+                }, { merge: true });
+
+                // إضافة الرصيد للبائع
+                db.collection("users").doc(seller).set({
+                    walletBalance: firebase.firestore.FieldValue.increment(price)
+                }, { merge: true });
+
+                // إرسال إشعار للبائع
+                db.collection("notifications").add({ toUser: seller, fromUser: currentUser, type: 'purchase', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+
+                alert("تم الشراء بنجاح! حصلت على 1 نقطة ولاء 🌟");
+            }
+        };
+
+        // --- 7. المجتمع: النشر والعرض والتفاعل ---
         document.getElementById('publish-btn').onclick = () => {
             const text = document.getElementById('post-text').value;
             const media = document.getElementById('media-url').value;
@@ -263,23 +351,13 @@
 
             if(!text.trim()) return alert("اكتب شيئاً!");
             
-            let postData = {
-                content: text, user: currentUser, userAvatar: currentUserAvatar, likes: 0, media: media, comments: [], timestamp: firebase.firestore.FieldValue.serverTimestamp(), isPoll: isPoll
-            };
-
-            if(isPoll && opt1 && opt2) {
-                postData.pollData = { [opt1]: 0, [opt2]: 0, totalVotes: 0, votedUsers: [] };
-            }
-
+            let postData = { content: text, user: currentUser, userAvatar: currentUserAvatar, likes: 0, media: media, comments: [], timestamp: firebase.firestore.FieldValue.serverTimestamp(), isPoll: isPoll };
+            if(isPoll && opt1 && opt2) { postData.pollData = { [opt1]: 0, [opt2]: 0, totalVotes: 0, votedUsers: [] }; }
             db.collection("posts").add(postData);
             
-            document.getElementById('post-text').value = "";
-            document.getElementById('media-url').value = "";
-            document.getElementById('is-poll').checked = false;
-            togglePollInputs();
+            document.getElementById('post-text').value = ""; document.getElementById('media-url').value = ""; document.getElementById('is-poll').checked = false; togglePollInputs();
         };
 
-        // --- 7. جلب وعرض المنشورات ---
         db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot => {
             const container = document.getElementById('posts-container');
             container.innerHTML = "";
@@ -288,7 +366,6 @@
                 const time = d.timestamp ? d.timestamp.toDate().toLocaleDateString('ar-EG') : "";
                 const avatar = d.userAvatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
                 
-                // تجهيز واجهة التصويت إن وجدت
                 let pollHtml = "";
                 if(d.isPoll && d.pollData) {
                     const total = d.pollData.totalVotes || 1; 
@@ -296,81 +373,52 @@
                     for(const [option, votes] of Object.entries(d.pollData)) {
                         if(option === 'totalVotes' || option === 'votedUsers') continue;
                         const percent = Math.round((votes / total) * 100);
-                        pollHtml += `
-                        <div class="poll-option" onclick="vote('${doc.id}', '${option}', '${d.pollData.votedUsers || []}')">
-                            <div class="poll-bar" style="width: ${percent}%"></div>
-                            <span class="poll-text">${option} <small>(${percent}%)</small></span>
-                        </div>`;
+                        pollHtml += `<div class="poll-option" onclick="vote('${doc.id}', '${option}', '${d.pollData.votedUsers || []}')"><div class="poll-bar" style="width: ${percent}%"></div><span class="poll-text">${option} <small>(${percent}%)</small></span></div>`;
                     }
                     pollHtml += `</div>`;
                 }
 
-                // تجهيز التعليقات
                 let commentsHtml = "";
                 (d.comments || []).forEach(c => { commentsHtml += `<div class="comment"><b>@${c.user}</b>: ${c.text}</div>`; });
 
                 container.innerHTML += `
                     <div class="post">
-                        <div class="post-header">
-                            <div style="display:flex; align-items:center;">
-                                <img src="${avatar}" class="post-avatar">
-                                <b>@${d.user}</b>
-                            </div>
-                            <span>${time}</span>
-                        </div>
+                        <div class="post-header"><div style="display:flex; align-items:center;"><img src="${avatar}" class="post-avatar"><b>@${d.user}</b></div><span>${time}</span></div>
                         <p style="margin: 5px 0 15px 0; font-size:16px;">${d.content}</p>
                         ${d.media ? `<img src="${d.media}" style="width:100%; border-radius:10px; margin-bottom:10px;">` : ""}
-                        
                         ${pollHtml}
-
                         <div style="border-top: 1px solid #eee; padding-top: 10px;">
                             <button class="btn-action" onclick="likePost('${doc.id}', ${d.likes || 0}, '${d.user}')">❤️ ${d.likes || 0}</button>
                             <button class="btn-action" style="background:#555;" onclick="toggleComments('${doc.id}')">💬 ${(d.comments || []).length}</button>
                             ${d.user === currentUser ? `<button class="btn-action" style="background:#d93025; float:left;" onclick="deletePost('${doc.id}')">حذف</button>` : ""}
                         </div>
-
                         <div id="comments-${doc.id}" class="comments-section">
                             ${commentsHtml}
-                            <div class="comment-input-area">
-                                <input type="text" id="comment-input-${doc.id}" placeholder="اكتب تعليقاً..." style="margin:0;">
-                                <button class="comment-btn" onclick="addComment('${doc.id}')">إرسال</button>
-                            </div>
+                            <div class="comment-input-area"><input type="text" id="comment-input-${doc.id}" placeholder="اكتب تعليقاً..." style="margin:0;"><button class="comment-btn" onclick="addComment('${doc.id}')">إرسال</button></div>
                         </div>
                     </div>`;
             });
         });
 
-        // --- 8. دوال التفاعل (الإعجاب، التعليق، التصويت، الحذف) ---
         window.likePost = (id, likes, postOwner) => {
             db.collection("posts").doc(id).update({ likes: likes + 1 });
-            if(postOwner !== currentUser) { 
-                db.collection("notifications").add({ toUser: postOwner, fromUser: currentUser, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-            }
+            if(postOwner !== currentUser) { db.collection("notifications").add({ toUser: postOwner, fromUser: currentUser, type: 'like', timestamp: firebase.firestore.FieldValue.serverTimestamp() }); }
         };
-
         window.addComment = (id) => {
             const input = document.getElementById(`comment-input-${id}`);
             if(!input.value.trim() || !currentUser) return;
-            const newComment = { user: currentUser, text: input.value };
-            db.collection("posts").doc(id).update({ comments: firebase.firestore.FieldValue.arrayUnion(newComment) });
+            db.collection("posts").doc(id).update({ comments: firebase.firestore.FieldValue.arrayUnion({ user: currentUser, text: input.value }) });
             input.value = "";
         };
-
         window.vote = (id, option, votedUsersStr) => {
             if(!currentUser) return alert("سجل دخولك أولاً!");
             if(votedUsersStr.includes(currentUser)) return alert("لقد قمت بالتصويت مسبقاً!");
-            
             const postRef = db.collection("posts").doc(id);
             postRef.get().then(doc => {
-                let pd = doc.data().pollData;
-                pd[option] += 1;
-                pd.totalVotes += 1;
-                if(!pd.votedUsers) pd.votedUsers = [];
-                pd.votedUsers.push(currentUser);
-                postRef.update({ pollData: pd });
+                let pd = doc.data().pollData; pd[option] += 1; pd.totalVotes += 1;
+                if(!pd.votedUsers) pd.votedUsers = []; pd.votedUsers.push(currentUser); postRef.update({ pollData: pd });
             });
         };
-
         window.deletePost = (id) => { if(confirm("هل أنت متأكد من حذف المنشور؟")) db.collection("posts").doc(id).delete(); };
     </script>
 </body>
