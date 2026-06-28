@@ -10,7 +10,7 @@
         textarea { width: 100%; border: 1px solid #ddd; border-radius: 10px; padding: 10px; resize: none; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; }
         .publish-btn { width: 100%; background-color: #6200ee; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .post { background: white; padding: 15px; margin: 10px 0; border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .btn-action { background: none; border: none; font-size: 18px; cursor: pointer; margin-left: 15px; }
+        .comment-section { margin-top: 10px; font-size: 13px; color: #555; background: #f9f9f9; padding: 8px; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -40,44 +40,55 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // النشر مع تهيئة الإعجابات بـ 0
+        // 1. النشر (بدون تعليقات في البداية)
         document.getElementById('publish-btn').onclick = function() {
             const text = document.getElementById('post-text').value;
             const media = document.getElementById('media-url').value;
             if(!text.trim()) return alert("اكتب شيئاً!");
-            db.collection("posts").add({ content: text, media: media, likes: 0, timestamp: new Date() });
+            db.collection("posts").add({ 
+                content: text, 
+                media: media, 
+                likes: 0, 
+                comments: [], 
+                timestamp: new Date() 
+            });
             document.getElementById('post-text').value = "";
-            document.getElementById('media-url').value = "";
         };
 
-        // عرض مع التفاعل
+        // 2. عرض المنشورات + التعليقات
         db.collection("posts").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
             const container = document.getElementById('posts-container');
             container.innerHTML = "";
             snapshot.forEach((doc) => {
                 const data = doc.data();
+                const commentsList = (data.comments || []).map(c => `<div>• ${c}</div>`).join('');
+                
                 container.innerHTML += `
                     <div class="post">
                         <p>${data.content}</p>
                         ${data.media ? `<img src="${data.media}" style="width:100%; border-radius:10px;" onerror="this.style.display='none'">` : ""}
                         <div style="margin-top:10px;">
-                            <button class="btn-action" onclick="likePost('${doc.id}', ${data.likes || 0})">❤️ ${data.likes || 0}</button>
-                            <button class="btn-action" onclick="alert('قريباً!')">💬</button>
-                            <button class="btn-action" onclick="deletePost('${doc.id}')" style="color:red; font-size:12px;">🗑️</button>
+                            <button onclick="likePost('${doc.id}', ${data.likes || 0})">❤️ ${data.likes || 0}</button>
+                            <input type="text" id="comm-${doc.id}" placeholder="اكتب تعليقاً...">
+                            <button onclick="addComment('${doc.id}')">إرسال</button>
                         </div>
+                        <div class="comment-section">${commentsList}</div>
+                        <button onclick="deletePost('${doc.id}')" style="color:red; font-size:10px; margin-top:5px;">حذف</button>
                     </div>`;
             });
         });
 
-        // زيادة الإعجابات
-        window.likePost = function(id, currentLikes) {
-            db.collection("posts").doc(id).update({ likes: currentLikes + 1 });
+        // 3. الدوال البرمجية
+        window.likePost = (id, likes) => db.collection("posts").doc(id).update({ likes: likes + 1 });
+        
+        window.addComment = (id) => {
+            const commText = document.getElementById(`comm-${id}`).value;
+            if(!commText) return;
+            const postRef = db.collection("posts").doc(id);
+            postRef.update({ comments: firebase.firestore.FieldValue.arrayUnion(commText) });
         };
 
-        // الحذف
-        window.deletePost = function(id) {
-            if(confirm("حذف المنشور؟")) db.collection("posts").doc(id).delete();
-        };
+        window.deletePost = (id) => { if(confirm("حذف؟")) db.collection("posts").doc(id).delete(); };
     </script>
 </body>
 </html>
