@@ -2,17 +2,16 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>أرابيكا - مجتمع باي</title>
     <style>
         body { font-family: sans-serif; background-color: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .container { max-width: 500px; width: 100%; }
         .card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        textarea { width: 100%; border: 1px solid #ddd; border-radius: 10px; padding: 10px; resize: none; font-size: 16px; outline: none; box-sizing: border-box; }
-        .publish-btn { width: 100%; background-color: #6200ee; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        textarea { width: 100%; border: 1px solid #ddd; border-radius: 10px; padding: 10px; resize: none; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; }
+        .publish-btn { width: 100%; background-color: #6200ee; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .media-input { margin-bottom: 10px; font-size: 14px; color: #555; }
         .post { background: white; padding: 15px; margin: 10px 0; border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .action-btns { margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; }
-        .btn-small { background: none; border: none; color: #65676b; cursor: pointer; font-size: 14px; margin-left: 15px; }
+        .btn-del { color: red; font-size: 12px; cursor: pointer; border: none; background: none; }
     </style>
 </head>
 <body>
@@ -20,7 +19,8 @@
     <div class="container">
         <h2>مجتمع أرابيكا</h2>
         <div class="card">
-            <textarea id="post-text" rows="3" placeholder="بم تفكر يا صديقي؟"></textarea>
+            <textarea id="post-text" rows="3" placeholder="بم تفكر؟"></textarea>
+            <input type="text" id="media-url" placeholder="رابط صورة أو فيديو (اختياري)" class="media-input" style="width: 100%; padding: 8px;">
             <button id="publish-btn" class="publish-btn">نشر الآن</button>
         </div>
         <div id="posts-container"></div>
@@ -38,16 +38,17 @@
             messagingSenderId: "244460272030",
             appId: "1:244460272030:web:c5aabfd0b396656721fe8f"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
         // النشر
         document.getElementById('publish-btn').onclick = function() {
             const text = document.getElementById('post-text').value;
+            const media = document.getElementById('media-url').value;
             if(!text.trim()) return alert("اكتب شيئاً!");
-            db.collection("posts").add({ content: text, timestamp: new Date() });
+            db.collection("posts").add({ content: text, media: media, timestamp: new Date() });
             document.getElementById('post-text').value = "";
+            document.getElementById('media-url').value = "";
         };
 
         // عرض المنشورات
@@ -58,14 +59,19 @@
                 const data = doc.data();
                 container.innerHTML += `
                     <div class="post">
-                        <p style="font-size:17px; margin:0;">${data.content}</p>
-                        <div class="action-btns">
-                            <button class="btn-small">❤️ إعجاب</button>
-                            <button class="btn-small">💬 تعليق</button>
-                        </div>
+                        <p>${data.content}</p>
+                        ${data.media ? `<img src="${data.media}" style="width:100%; border-radius:10px; margin-top:5px;">` : ""}
+                        <br><button class="btn-del" onclick="deletePost('${doc.id}')">حذف المنشور</button>
                     </div>`;
             });
         });
+
+        // الحذف
+        window.deletePost = function(id) {
+            if(confirm("هل أنت متأكد؟")) {
+                db.collection("posts").doc(id).delete();
+            }
+        };
     </script>
 </body>
 </html>
