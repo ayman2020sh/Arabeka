@@ -4,26 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مجتمع أرابيكا</title>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-    apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
-    authDomain: "arabeka-3336c.firebaseapp.com",
-    projectId: "arabeka-3336c",
-    storageBucket: "arabeka-3336c.firebasestorage.app",
-    messagingSenderId: "244460272030",
-    appId: "1:244460272030:web:c5aabfd0b396656721fe8f"
-  };
-        
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        window.db = db; // لكي نستخدمها لاحقاً في زر النشر
-        window.collection = collection;
-        window.addDoc = addDoc;
-        console.log("تم الاتصال بـ Firebase بنجاح!");
-    </script>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .container { max-width: 500px; width: 100%; }
@@ -43,20 +23,37 @@
         <div id="posts-area"></div>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        // إعدادات Firebase الخاصة بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
+            authDomain: "arabeka-3336c.firebaseapp.com",
+            projectId: "arabeka-3336c",
+            storageBucket: "arabeka-3336c.firebasestorage.app",
+            messagingSenderId: "244460272030",
+            appId: "1:244460272030:web:c5aabfd0b396656721fe8f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // وظيفة النشر
         document.getElementById('publish-btn').addEventListener('click', async () => {
             const text = document.getElementById('post-text').value;
-            if (text.trim() === "") return;
+            if (text.trim() === "") { alert("اكتب شيئاً أولاً!"); return; }
             
             try {
-                await window.addDoc(window.collection(window.db, "posts"), {
+                await addDoc(collection(db, "posts"), {
                     content: text,
                     timestamp: new Date()
                 });
                 document.getElementById('post-text').value = "";
                 alert("تم النشر في السحابة بنجاح!");
             } catch (e) {
-                alert("حدث خطأ، تأكد من إعدادات Firebase");
+                alert("خطأ! تأكد من تفعيل Firestore في Firebase Console.");
             }
         });
     </script>
