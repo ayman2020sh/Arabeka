@@ -9,9 +9,10 @@
         :root { --pi-purple: #3f1b62; --dark-gold: #c5a059; --card-bg: #ffffff; }
         body { font-family: sans-serif; background-color: var(--dark-gold); padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; }
         .container { max-width: 500px; width: 100%; }
-        h2 { color: var(--pi-purple); text-align: center; }
+        h2 { color: var(--pi-purple); text-align: center; font-size: 28px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
         
-        .login-btn { width: 100%; background-color: #28a745; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-bottom: 15px; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .login-btn { width: 100%; background-color: #28a745; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-bottom: 5px; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        #debug-log { color: #d93025; font-size: 12px; text-align: center; margin-bottom: 15px; font-weight: bold; min-height: 15px; }
         #user-info { color: var(--pi-purple); text-align: center; margin-bottom: 15px; font-weight: bold; background: rgba(255,255,255,0.9); padding: 10px; border-radius: 10px; display: none; }
         
         .card { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
@@ -27,6 +28,7 @@
         <h2>أرابيكا ☕</h2>
         
         <button id="login-btn" class="login-btn">تسجيل الدخول بحساب Pi</button>
+        <div id="debug-log"></div>
         <div id="user-info"></div>
 
         <div class="card" id="post-section" style="display: none;">
@@ -42,6 +44,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script>
+        // 1. إعداد Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
             authDomain: "arabeka-3336c.firebaseapp.com",
@@ -53,44 +56,50 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         let currentUser = null;
+        
+        const debugLog = document.getElementById('debug-log');
+        const btn = document.getElementById('login-btn');
 
+        // 2. تهيئة مكتبة Pi
         function initPiSDK() {
             if (typeof Pi !== 'undefined') {
                 Pi.init({ version: "2.0", sandbox: true });
+                debugLog.innerText = "جاهز للاتصال...";
             } else {
                 setTimeout(initPiSDK, 500);
             }
         }
         window.onload = initPiSDK;
 
-        document.getElementById('login-btn').onclick = function() {
-            const btn = document.getElementById('login-btn');
+        // 3. الاتصال باستخدام الطريقة الحديثة (Promises)
+        btn.onclick = function() {
             btn.innerText = "جاري الاتصال بـ Pi...";
+            debugLog.innerText = "جاري إرسال طلب المصادقة...";
             
-            try {
-                Pi.authenticate(['username'], {
-                    onSuccess: function(user) {
-                        currentUser = user.username;
-                        btn.style.display = 'none';
-                        const userInfo = document.getElementById('user-info');
-                        userInfo.style.display = 'block';
-                        userInfo.innerText = "مرحباً يا بطل: @" + currentUser;
-                        document.getElementById('post-section').style.display = 'block';
-                    },
-                    onIncompletePaymentFound: function(payment) {
-                        console.log("تم العثور على دفعة غير مكتملة", payment);
-                    },
-                    onFailure: function(error) {
-                        btn.innerText = "تسجيل الدخول بحساب Pi";
-                        alert("تم رفض المصادقة أو فشلها: " + (error.message || JSON.stringify(error)));
-                    }
+            // دالة الدفعات المعلقة المطلوبة في التحديث الجديد
+            const onIncompletePaymentFound = function(payment) {
+                console.log("دفعة غير مكتملة", payment);
+            };
+
+            // بدء الاتصال بنظام V2
+            Pi.authenticate(['username'], onIncompletePaymentFound)
+                .then(function(authResult) {
+                    debugLog.innerText = "";
+                    currentUser = authResult.user.username;
+                    
+                    btn.style.display = 'none';
+                    const userInfo = document.getElementById('user-info');
+                    userInfo.style.display = 'block';
+                    userInfo.innerText = "مرحباً يا بطل: @" + currentUser;
+                    document.getElementById('post-section').style.display = 'block';
+                })
+                .catch(function(error) {
+                    btn.innerText = "تسجيل الدخول بحساب Pi";
+                    debugLog.innerText = "خطأ: " + (error.message || "رفض المستخدم الطلب أو حدث عطل.");
                 });
-            } catch (err) {
-                btn.innerText = "تسجيل الدخول بحساب Pi";
-                alert("خطأ في بدء الاتصال: " + err.message);
-            }
         };
 
+        // 4. منطق النشر في قاعدة البيانات
         document.getElementById('publish-btn').onclick = function() {
             const text = document.getElementById('post-text').value;
             const media = document.getElementById('media-url').value;
@@ -110,6 +119,7 @@
             document.getElementById('media-url').value = "";
         };
 
+        // 5. جلب المنشورات وعرضها
         db.collection("posts").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
             const container = document.getElementById('posts-container');
             container.innerHTML = "";
@@ -128,6 +138,7 @@
             });
         });
 
+        // 6. دوال التفاعل (إعجاب وحذف)
         window.likePost = (id, likes) => db.collection("posts").doc(id).update({ likes: likes + 1 });
         window.deletePost = (id) => db.collection("posts").doc(id).delete();
     </script>
