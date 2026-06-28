@@ -6,93 +6,318 @@
     <title>أرابيكا - مجتمع باي</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
-        :root { --bg: #c5a059; --card: #ffffff; --text: #3f1b62; }
-        .dark-mode { --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; }
+        /* الألوان والهوية والوضع الليلي */
+        :root { --bg: #c5a059; --card: #ffffff; --text: #3f1b62; --accent: #3f1b62; --light-bg: #f9f9f9; }
+        .dark-mode { --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --accent: #bb86fc; --light-bg: #2c2c2c; }
         
-        body { font-family: sans-serif; background-color: var(--bg); color: var(--text); padding: 20px; transition: 0.3s; margin: 0; display: flex; flex-direction: column; align-items: center; }
-        .container { max-width: 500px; width: 100%; }
-        .theme-btn { float: left; cursor: pointer; font-size: 24px; padding: 10px; }
-        .rank-badge { font-size: 10px; background: #c5a059; color: white; padding: 2px 6px; border-radius: 5px; margin-right: 5px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); padding: 10px; transition: background-color 0.3s; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        .container { max-width: 600px; width: 100%; position: relative; }
         
-        .login-btn { width: 100%; background-color: #28a745; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
-        #user-info { color: var(--text); text-align: center; margin-bottom: 15px; font-weight: bold; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 10px; display: none; }
+        /* الشريط العلوي */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--card); padding: 10px 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .top-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text); }
+        h2 { margin: 0; color: var(--accent); font-size: 24px; text-align: center; flex-grow: 1; }
         
-        .card { background: var(--card); padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .post { background: var(--card); padding: 20px; margin-bottom: 15px; border-radius: 15px; border-right: 5px solid #3f1b62; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .publish-btn { width: 100%; background-color: #3f1b62; color: #c5a059; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .btn-action { background: #3f1b62; color: #fff; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; margin-left: 5px; }
+        /* الإشعارات */
+        .notification-badge { background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; font-weight: bold; position: absolute; top: 15px; right: 45px; display: none; }
+        .notifications-panel { display: none; background: var(--card); border: 1px solid var(--accent); padding: 10px; border-radius: 10px; margin-bottom: 15px; max-height: 150px; overflow-y: auto; font-size: 14px; }
+        .notif-item { border-bottom: 1px solid #ddd; padding: 5px 0; }
+        
+        /* الملف الشخصي */
+        .profile-panel { display: none; background: var(--card); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid var(--accent); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .profile-stat { font-weight: bold; color: var(--accent); }
+        .bio-input { width: 100%; padding: 8px; margin-top: 10px; border-radius: 8px; border: 1px solid #ccc; background: var(--light-bg); color: var(--text); }
+        
+        /* المنشورات والتصويت */
+        .card { background: var(--card); padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .post { background: var(--card); padding: 15px; margin-bottom: 15px; border-radius: 15px; border-right: 5px solid var(--accent); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .post-header { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 10px; }
+        
+        textarea, input[type="text"] { width: 100%; border: 1px solid #ddd; border-radius: 10px; padding: 10px; font-size: 15px; margin-bottom: 10px; box-sizing: border-box; background: var(--card); color: var(--text); }
+        .publish-btn { width: 100%; background-color: var(--accent); color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-action { background: var(--accent); color: #fff; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-left: 5px; margin-top: 5px; }
+        
+        /* أشرطة التصويت */
+        .poll-option { display: flex; align-items: center; margin-bottom: 5px; cursor: pointer; background: var(--light-bg); border-radius: 5px; overflow: hidden; position: relative; padding: 8px; }
+        .poll-bar { position: absolute; left: 0; top: 0; height: 100%; background: rgba(63, 27, 98, 0.2); z-index: 1; transition: width 0.3s; }
+        .poll-text { z-index: 2; position: relative; font-size: 14px; flex-grow: 1; font-weight: bold; }
+        
+        /* التعليقات */
+        .comments-section { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display: none; }
+        .comment { background: var(--light-bg); padding: 8px; border-radius: 8px; margin-bottom: 5px; font-size: 13px; }
+        .comment-input-area { display: flex; gap: 5px; margin-top: 10px; }
+        .comment-btn { background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <span class="theme-btn" onclick="toggleTheme()">🌙</span>
-        <h2 style="text-align: center;">أرابيكا ☕</h2>
-        
-        <button id="login-btn" class="login-btn">تسجيل الدخول بحساب Pi</button>
-        <div id="user-info"></div>
+        <!-- الشريط العلوي -->
+        <div class="top-bar">
+            <button class="top-btn" onclick="toggleTheme()" title="تغيير المظهر">🌙</button>
+            <h2>أرابيكا ☕</h2>
+            <div style="position: relative;">
+                <button class="top-btn" id="bell-btn" style="display:none;" onclick="toggleNotifications()">🔔</button>
+                <span id="notif-badge" class="notification-badge">0</span>
+            </div>
+            <button class="top-btn" id="profile-btn" style="display:none;" onclick="toggleProfile()">👤</button>
+        </div>
 
+        <!-- زر الدخول -->
+        <button id="login-btn" class="publish-btn" style="background:#28a745; margin-bottom:20px;">تسجيل الدخول بحساب Pi</button>
+        <div id="debug-log" style="color:red; text-align:center; font-size:12px;"></div>
+
+        <!-- لوحة الإشعارات -->
+        <div id="notifications-panel" class="notifications-panel">
+            <h4 style="margin:0 0 10px 0;">الإشعارات</h4>
+            <div id="notif-list">لا توجد إشعارات جديدة.</div>
+        </div>
+
+        <!-- لوحة الملف الشخصي -->
+        <div id="profile-panel" class="profile-panel">
+            <h3 style="margin-top:0;">الملف الشخصي: <span id="prof-name" class="profile-stat"></span></h3>
+            <p>تاريخ الانضمام: <span id="prof-date" class="profile-stat">-</span></p>
+            <p>عدد المنشورات: <span id="prof-posts" class="profile-stat">0</span></p>
+            <p>نبذة عني:</p>
+            <textarea id="prof-bio" class="bio-input" rows="2" placeholder="اكتب شيئاً عن نفسك..."></textarea>
+            <button class="btn-action" onclick="saveProfile()" style="width:100%; margin-top:10px;">حفظ التغييرات</button>
+        </div>
+
+        <!-- قسم النشر -->
         <div class="card" id="post-section" style="display: none;">
-            <textarea id="post-text" style="width:100%; border:none; background:transparent; font-size:16px; color:var(--text);" rows="3" placeholder="بم تفكر يا قهوة؟"></textarea>
+            <textarea id="post-text" rows="3" placeholder="بم تفكر يا بطل أرابيكا؟"></textarea>
+            <input type="text" id="media-url" placeholder="رابط صورة (اختياري)">
+            
+            <div style="margin-bottom: 10px;">
+                <label style="font-size: 14px; cursor: pointer; font-weight:bold;">
+                    <input type="checkbox" id="is-poll" onchange="togglePollInputs()"> إضافة تصويت 📊
+                </label>
+            </div>
+            <div id="poll-inputs" style="display:none; background: var(--light-bg); padding:10px; border-radius:10px; margin-bottom:10px;">
+                <input type="text" id="poll-opt-1" placeholder="الخيار الأول (مثال: ممتاز)">
+                <input type="text" id="poll-opt-2" placeholder="الخيار الثاني (مثال: يحتاج تحسين)">
+            </div>
+            
             <button id="publish-btn" class="publish-btn">نشر</button>
         </div>
         
+        <!-- حاوية المنشورات -->
         <div id="posts-container"></div>
     </div>
 
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo", authDomain: "arabeka-3336c.firebaseapp.com", projectId: "arabeka-3336c", storageBucket: "arabeka-3336c.firebasestorage.app", messagingSenderId: "244460272030", appId: "1:244460272030:web:c5aabfd0b396656721fe8f" };
+        // --- 1. إعدادات قواعد البيانات ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
+            authDomain: "arabeka-3336c.firebaseapp.com",
+            projectId: "arabeka-3336c",
+            storageBucket: "arabeka-3336c.firebasestorage.app",
+            messagingSenderId: "244460272030",
+            appId: "1:244460272030:web:c5aabfd0b396656721fe8f"
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         let currentUser = null;
+        let unreadNotifs = 0;
 
+        // --- 2. دوال الواجهة الأساسية ---
         function toggleTheme() { document.body.classList.toggle('dark-mode'); }
-        
-        // حساب الرتبة
-        function getRank(likes) {
-            if (likes > 20) return "مؤثر أرابيكا ⭐";
-            if (likes > 5) return "صانع محتوى ✍️";
-            return "مبتدئ ☕";
+        function toggleProfile() { 
+            const p = document.getElementById('profile-panel'); 
+            p.style.display = p.style.display === 'block' ? 'none' : 'block'; 
+        }
+        function toggleNotifications() { 
+            const n = document.getElementById('notifications-panel'); 
+            n.style.display = n.style.display === 'block' ? 'none' : 'block';
+            unreadNotifs = 0; document.getElementById('notif-badge').style.display = 'none';
+        }
+        function togglePollInputs() {
+            const isPoll = document.getElementById('is-poll').checked;
+            document.getElementById('poll-inputs').style.display = isPoll ? 'block' : 'none';
+        }
+        function toggleComments(postId) {
+            const sec = document.getElementById('comments-' + postId);
+            sec.style.display = sec.style.display === 'block' ? 'none' : 'block';
         }
 
-        // تهيئة الاتصال
+        // --- 3. تهيئة Pi SDK وتسجيل الدخول ---
         window.onload = () => { if (typeof Pi !== 'undefined') Pi.init({ version: "2.0", sandbox: true }); };
 
         document.getElementById('login-btn').onclick = () => {
+            const btn = document.getElementById('login-btn');
+            btn.innerText = "جاري الاتصال...";
             Pi.authenticate(['username'], () => {}).then(auth => {
                 currentUser = auth.user.username;
-                document.getElementById('login-btn').style.display = 'none';
-                document.getElementById('user-info').style.display = 'block';
-                document.getElementById('user-info').innerText = "مرحباً: @" + currentUser;
+                btn.style.display = 'none';
                 document.getElementById('post-section').style.display = 'block';
-            });
+                document.getElementById('profile-btn').style.display = 'inline-block';
+                document.getElementById('bell-btn').style.display = 'inline-block';
+                
+                initUserProfile();
+                listenToNotifications();
+            }).catch(err => { document.getElementById('debug-log').innerText = "خطأ الاتصال: " + err.message; });
         };
 
+        // --- 4. الملف الشخصي ---
+        function initUserProfile() {
+            document.getElementById('prof-name').innerText = "@" + currentUser;
+            const userRef = db.collection("users").doc(currentUser);
+            userRef.get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('prof-bio').value = data.bio || "";
+                    document.getElementById('prof-date').innerText = data.joinDate || new Date().toLocaleDateString('ar-EG');
+                } else {
+                    userRef.set({ bio: "", joinDate: new Date().toLocaleDateString('ar-EG') });
+                    document.getElementById('prof-date').innerText = new Date().toLocaleDateString('ar-EG');
+                }
+            });
+            // حساب عدد المنشورات
+            db.collection("posts").where("user", "==", currentUser).onSnapshot(snap => {
+                document.getElementById('prof-posts').innerText = snap.size;
+            });
+        }
+
+        window.saveProfile = () => {
+            const bio = document.getElementById('prof-bio').value;
+            db.collection("users").doc(currentUser).update({ bio: bio }).then(() => alert("تم حفظ النبذة بنجاح!"));
+        };
+
+        // --- 5. الإشعارات ---
+        function listenToNotifications() {
+            db.collection("notifications").where("toUser", "==", currentUser).orderBy("timestamp", "desc").limit(10).onSnapshot(snap => {
+                const list = document.getElementById('notif-list');
+                list.innerHTML = "";
+                let newCount = 0;
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    list.innerHTML += `<div class="notif-item">👍 قام <b>@${data.fromUser}</b> بالإعجاب بمنشورك.</div>`;
+                    newCount++;
+                });
+                if(newCount > 0) {
+                    document.getElementById('notif-badge').style.display = 'block';
+                    document.getElementById('notif-badge').innerText = newCount;
+                }
+            });
+        }
+
+        // --- 6. النشر (نصوص + تصويت) ---
         document.getElementById('publish-btn').onclick = () => {
             const text = document.getElementById('post-text').value;
-            if(!text.trim()) return;
-            db.collection("posts").add({ content: text, user: currentUser, likes: 0, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            const media = document.getElementById('media-url').value;
+            const isPoll = document.getElementById('is-poll').checked;
+            const opt1 = document.getElementById('poll-opt-1').value;
+            const opt2 = document.getElementById('poll-opt-2').value;
+
+            if(!text.trim()) return alert("اكتب شيئاً!");
+            
+            let postData = {
+                content: text, user: currentUser, likes: 0, media: media, comments: [], timestamp: firebase.firestore.FieldValue.serverTimestamp(), isPoll: isPoll
+            };
+
+            if(isPoll && opt1 && opt2) {
+                postData.pollData = { [opt1]: 0, [opt2]: 0, totalVotes: 0, votedUsers: [] };
+            }
+
+            db.collection("posts").add(postData);
+            
             document.getElementById('post-text').value = "";
+            document.getElementById('media-url').value = "";
+            document.getElementById('is-poll').checked = false;
+            togglePollInputs();
         };
 
+        // --- 7. جلب وعرض المنشورات ---
         db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot => {
             const container = document.getElementById('posts-container');
             container.innerHTML = "";
             snapshot.forEach(doc => {
                 const d = doc.data();
+                const time = d.timestamp ? d.timestamp.toDate().toLocaleDateString('ar-EG') : "";
+                
+                // تجهيز واجهة التصويت إن وجدت
+                let pollHtml = "";
+                if(d.isPoll && d.pollData) {
+                    const total = d.pollData.totalVotes || 1; // لتجنب القسمة على صفر
+                    pollHtml = `<div style="margin: 15px 0;">`;
+                    for(const [option, votes] of Object.entries(d.pollData)) {
+                        if(option === 'totalVotes' || option === 'votedUsers') continue;
+                        const percent = Math.round((votes / total) * 100);
+                        pollHtml += `
+                        <div class="poll-option" onclick="vote('${doc.id}', '${option}', '${d.pollData.votedUsers || []}')">
+                            <div class="poll-bar" style="width: ${percent}%"></div>
+                            <span class="poll-text">${option} <small>(${percent}%)</small></span>
+                        </div>`;
+                    }
+                    pollHtml += `</div>`;
+                }
+
+                // تجهيز التعليقات
+                let commentsHtml = "";
+                (d.comments || []).forEach(c => { commentsHtml += `<div class="comment"><b>@${c.user}</b>: ${c.text}</div>`; });
+
                 container.innerHTML += `
                     <div class="post">
-                        <b>@${d.user}</b> <span class="rank-badge">${getRank(d.likes)}</span>
-                        <p style="margin: 10px 0;">${d.content}</p>
-                        <button class="btn-action" onclick="likePost('${doc.id}', ${d.likes || 0})">❤️ ${d.likes || 0}</button>
+                        <div class="post-header"><span><b>@${d.user}</b></span> <span>${time}</span></div>
+                        <p style="margin: 5px 0 15px 0; font-size:16px;">${d.content}</p>
+                        ${d.media ? `<img src="${d.media}" style="width:100%; border-radius:10px; margin-bottom:10px;">` : ""}
+                        
+                        ${pollHtml}
+
+                        <div style="border-top: 1px solid #eee; padding-top: 10px;">
+                            <button class="btn-action" onclick="likePost('${doc.id}', ${d.likes || 0}, '${d.user}')">❤️ ${d.likes || 0}</button>
+                            <button class="btn-action" style="background:#555;" onclick="toggleComments('${doc.id}')">💬 ${(d.comments || []).length}</button>
+                            ${d.user === currentUser ? `<button class="btn-action" style="background:#d93025; float:left;" onclick="deletePost('${doc.id}')">حذف</button>` : ""}
+                        </div>
+
+                        <!-- قسم التعليقات -->
+                        <div id="comments-${doc.id}" class="comments-section">
+                            ${commentsHtml}
+                            <div class="comment-input-area">
+                                <input type="text" id="comment-input-${doc.id}" placeholder="اكتب تعليقاً..." style="margin:0;">
+                                <button class="comment-btn" onclick="addComment('${doc.id}')">إرسال</button>
+                            </div>
+                        </div>
                     </div>`;
             });
         });
 
-        window.likePost = (id, likes) => db.collection("posts").doc(id).update({ likes: likes + 1 });
+        // --- 8. دوال التفاعل (الإعجاب، التعليق، التصويت، الحذف) ---
+        window.likePost = (id, likes, postOwner) => {
+            db.collection("posts").doc(id).update({ likes: likes + 1 });
+            if(postOwner !== currentUser) { // إرسال إشعار لصاحب المنشور
+                db.collection("notifications").add({ toUser: postOwner, fromUser: currentUser, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            }
+        };
+
+        window.addComment = (id) => {
+            const input = document.getElementById(`comment-input-${id}`);
+            if(!input.value.trim() || !currentUser) return;
+            const newComment = { user: currentUser, text: input.value };
+            db.collection("posts").doc(id).update({ comments: firebase.firestore.FieldValue.arrayUnion(newComment) });
+            input.value = "";
+        };
+
+        window.vote = (id, option, votedUsersStr) => {
+            if(!currentUser) return alert("سجل دخولك أولاً!");
+            if(votedUsersStr.includes(currentUser)) return alert("لقد قمت بالتصويت مسبقاً!");
+            
+            const postRef = db.collection("posts").doc(id);
+            postRef.get().then(doc => {
+                let pd = doc.data().pollData;
+                pd[option] += 1;
+                pd.totalVotes += 1;
+                if(!pd.votedUsers) pd.votedUsers = [];
+                pd.votedUsers.push(currentUser);
+                postRef.update({ pollData: pd });
+            });
+        };
+
+        window.deletePost = (id) => { if(confirm("هل أنت متأكد من حذف المنشور؟")) db.collection("posts").doc(id).delete(); };
     </script>
 </body>
 </html>
