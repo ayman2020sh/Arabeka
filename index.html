@@ -3,189 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة دفع تطبيق Arabeka</title>
+    <title>أرابيكا - مجتمع باي</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #f7f9fa;
-            padding: 20px 0;
-        }
-        .container {
-            text-align: center;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            max-width: 400px;
-            width: 90%;
-        }
-        button {
-            background-color: #6200ee;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 20px;
-            width: 100%;
-        }
-        button:hover {
-            background-color: #4b00b5;
-        }
+        :root { --pi-purple: #3f1b62; --dark-gold: #c5a059; --card-bg: #ffffff; }
+        body { font-family: sans-serif; background-color: var(--dark-gold); padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; }
+        .container { max-width: 500px; width: 100%; }
+        h2 { color: var(--pi-purple); text-align: center; }
+        #user-info { color: var(--pi-purple); text-align: center; margin-bottom: 15px; font-weight: bold; background: rgba(255,255,255,0.7); padding: 8px; border-radius: 10px; }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        textarea { width: 100%; border: 1px solid #ddd; border-radius: 12px; padding: 12px; resize: none; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; }
+        .publish-btn { width: 100%; background-color: var(--pi-purple); color: var(--dark-gold); border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        .post { background: var(--card-bg); padding: 20px; margin: 15px 0; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .btn-action { background-color: var(--pi-purple); border: none; cursor: pointer; color: var(--dark-gold); padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 14px; margin-left: 5px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>بوابة دفع تطبيق Arabeka</h2>
-        <p>اضغط على الزر بالأسفل لإتمام عملية الشراء بقيمة Pi 1.25</p>
-        <button id="pay-button">ادفع باستخدام Pi</button>
-
-        <div style="background-color: #ffffff; border-radius: 12px; padding: 15px; margin-top: 25px; border: 1px solid #eaeaea; text-align: right;">
-            
-            <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #f3f3f3; padding-bottom: 10px; margin-bottom: 15px;">
-                <div>
-                    <span style="color: #666; font-size: 13px;">👤 الحساب:</span>
-                    <strong id="username-display" style="color: #111; font-size: 14px;">جاري التحميل...</strong>
-                </div>
-                <div>
-                    <span style="color: #666; font-size: 13px;">💰 الرصيد:</span>
-                    <strong id="balance-display" style="color: #6200ee; font-size: 14px;">0 Pi</strong>
-                </div>
-            </div>
-
-            <h3 style="color: #6200ee; font-size: 15px; margin-top: 0; margin-bottom: 12px;">⏱️ سجل المعاملات الأخيرة</h3>
-            
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 12px;">
-                    <thead>
-                        <tr style="background-color: #f8f9fa; border-bottom: 1px solid #ddd;">
-                            <th style="padding: 8px; color: #555;">الخدمة</th>
-                            <th style="padding: 8px; color: #555;">المبلغ</th>
-                            <th style="padding: 8px; color: #555;">الحالة</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transactions-body">
-                        <tr id="no-transactions">
-                            <td colspan="3" style="padding: 15px; color: #999; font-style: italic;">لا توجد معاملات مسجلة بعد</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <h2>أرابيكا ☕</h2>
+        <div id="user-info">جاري تجهيز الاتصال بـ Pi...</div>
+        <div class="card">
+            <textarea id="post-text" rows="3" placeholder="بم تفكر؟"></textarea>
+            <input type="text" id="media-url" placeholder="رابط صورة (اختياري)" style="width:100%; padding:10px; border:1px solid #eee; border-radius:10px; margin-bottom:10px; box-sizing:border-box;">
+            <button id="publish-btn" class="publish-btn">نشر في أرابيكا</button>
         </div>
+        <div id="posts-container"></div>
+    </div>
 
-        <div style="margin-top: 30px; text-align: center;">
-            <p style="color: #666; font-size: 14px; margin-bottom: 10px;">استكشف ميزات المجتمع:</p>
-            <a href="feed.html" style="background-color: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; width: 100%; box-sizing: border-box;">🌍 الدخول إلى مجتمع أرابيكا</a>
-        </div>
-        </div>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const BASE_URL = "https://arabeka.vercel.app";
+        const firebaseConfig = {
+            apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
+            authDomain: "arabeka-3336c.firebaseapp.com",
+            projectId: "arabeka-3336c",
+            storageBucket: "arabeka-3336c.firebasestorage.app",
+            messagingSenderId: "244460272030",
+            appId: "1:244460272030:web:c5aabfd0b396656721fe8f"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        let currentUser = null;
 
-        try {
-            Pi.init({ version: "2.0", sandbox: true });
-        } catch(e) {
-            console.error("فشل تهيئة SDK: " + e.message);
-        }
-
-        function updateDashboard(username) {
-            if (username) {
-                document.getElementById('username-display').innerText = username;
-            }
-            const savedTx = localStorage.getItem('arabeka_tx');
-            if (savedTx) {
-                const txData = JSON.parse(savedTx);
-                document.getElementById('balance-display').innerText = txData.amount + " Pi";
+        // دالة ذكية للانتظار حتى تحميل مكتبة Pi
+        function initPi() {
+            if (typeof Pi !== 'undefined') {
+                console.log("مكتبة Pi جاهزة!");
+                Pi.init({ version: "2.0", sandbox: true });
                 
-                const tableBody = document.getElementById('transactions-body');
-                tableBody.innerHTML = `
-                    <tr>
-                        <td style="padding: 8px; border-bottom: 1px solid #eee;">شحن رصيد أرابيكا</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; color: #6200ee;">${txData.amount} Pi</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #eee; color: green; font-weight: bold;">🟢 مكتملة</td>
-                    </tr>
-                `;
-            }
-        }
-
-        Pi.authenticate(['username'], onIncompletePaymentFound)
-        .then(function(auth) {
-            updateDashboard(auth.user.username);
-        }).catch(function(err) {
-            document.getElementById('username-display').innerText = "زائر مجهول";
-        });
-
-        document.getElementById('pay-button').addEventListener('click', function() {
-            Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
-            .then(function(auth) {
-                updateDashboard(auth.user.username);
-                
-                return Pi.createPayment({
-                  amount: 1.25,
-                  memo: "شراء من تطبيق أرابيكا",
-                  metadata: { auth: "arabeka" },
-                }, {
-                  onReadyForServerApproval: function(paymentId) {
-                    fetch(`${BASE_URL}/api/approve`, {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ paymentId: paymentId })
-                    });
-                  },
-                  onReadyForServerCompletion: function(paymentId, txid) {
-                    fetch(`${BASE_URL}/api/complete`, {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ paymentId: paymentId, txid: txid })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        localStorage.setItem('arabeka_tx', JSON.stringify({ amount: 1.25, id: paymentId }));
-                        updateDashboard(auth.user.username);
-                        alert("تم الدفع بنجاح كامل!");
-                    });
-                  },
-                  onCancel: function(paymentId) {},
-                  onError: function(error, paymentId) {
-                    alert("خطأ الشبكة: " + error.message);
-                  }
+                Pi.authenticate(['username'], {
+                    onSuccess: (user) => {
+                        currentUser = user.username;
+                        document.getElementById('user-info').innerText = "مرحباً بك، @" + currentUser;
+                    },
+                    onFailure: (error) => {
+                        document.getElementById('user-info').innerText = "خطأ في الاتصال";
+                        console.error(error);
+                    }
+                }).catch((err) => {
+                    document.getElementById('user-info').innerText = "حدث خطأ أثناء المصادقة";
                 });
-            })
-            .catch(function(error) {
-                alert("فشل التوثيق: " + error.message);
+            } else {
+                console.log("الانتظار لتحميل Pi...");
+                setTimeout(initPi, 500); // محاولة ثانية بعد نصف ثانية
+            }
+        }
+
+        // تشغيل الدالة عند تحميل الصفحة
+        window.addEventListener('load', initPi);
+
+        // منطق النشر والعرض (كما هو سابقاً)
+        document.getElementById('publish-btn').onclick = function() {
+            const text = document.getElementById('post-text').value;
+            if(!text.trim()) return alert("اكتب شيئاً!");
+            if(!currentUser) return alert("يرجى الانتظار، جاري التحقق من هويتك...");
+            
+            db.collection("posts").add({ 
+                content: text, 
+                user: currentUser, 
+                likes: 0, 
+                timestamp: new Date() 
+            });
+            document.getElementById('post-text').value = "";
+        };
+
+        db.collection("posts").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = "";
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                container.innerHTML += `
+                    <div class="post">
+                        <small>بواسطة: @${data.user || "مجهول"}</small>
+                        <p>${data.content}</p>
+                    </div>`;
             });
         });
-
-        function onIncompletePaymentFound(payment) {
-          const actualPaymentId = payment.id || payment.identifier;
-          const actualTxid = payment.txid || (payment.transaction ? payment.transaction.txid : null);
-
-          if (!actualPaymentId) return;
-          
-          fetch(`${BASE_URL}/api/complete`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ paymentId: actualPaymentId, txid: actualTxid })
-          })
-          .then(async response => {
-             if (response.ok) {
-                 localStorage.setItem('arabeka_tx', JSON.stringify({ amount: 1.25, id: actualPaymentId }));
-                 alert("تم تسوية المعاملة المعلقة!");
-                 location.reload(); 
-             }
-          })
-          .catch(err => console.error(err));
-        }
     </script>
 </body>
 </html>
