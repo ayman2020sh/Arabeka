@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -13,14 +12,13 @@
         body { font-family: sans-serif; background-color: var(--bg); color: var(--text); padding: 20px; transition: 0.3s; margin: 0; display: flex; flex-direction: column; align-items: center; }
         .container { max-width: 500px; width: 100%; }
         .theme-btn { float: left; cursor: pointer; font-size: 24px; padding: 10px; }
+        .rank-badge { font-size: 10px; background: #c5a059; color: white; padding: 2px 6px; border-radius: 5px; margin-right: 5px; }
         
         .login-btn { width: 100%; background-color: #28a745; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
-        #debug-log { color: #d93025; font-size: 12px; text-align: center; margin-bottom: 10px; font-weight: bold; }
         #user-info { color: var(--text); text-align: center; margin-bottom: 15px; font-weight: bold; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 10px; display: none; }
         
         .card { background: var(--card); padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .post { background: var(--card); padding: 20px; margin-bottom: 15px; border-radius: 15px; border-right: 5px solid #3f1b62; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .post-time { font-size: 11px; color: #888; margin-right: 5px; }
         .publish-btn { width: 100%; background-color: #3f1b62; color: #c5a059; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-action { background: #3f1b62; color: #fff; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; margin-left: 5px; }
     </style>
@@ -32,12 +30,10 @@
         <h2 style="text-align: center;">أرابيكا ☕</h2>
         
         <button id="login-btn" class="login-btn">تسجيل الدخول بحساب Pi</button>
-        <div id="debug-log"></div>
         <div id="user-info"></div>
 
         <div class="card" id="post-section" style="display: none;">
             <textarea id="post-text" style="width:100%; border:none; background:transparent; font-size:16px; color:var(--text);" rows="3" placeholder="بم تفكر يا قهوة؟"></textarea>
-            <input type="text" id="media-url" placeholder="رابط صورة (اختياري)" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; margin:10px 0; box-sizing:border-box;">
             <button id="publish-btn" class="publish-btn">نشر</button>
         </div>
         
@@ -48,51 +44,38 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
-            authDomain: "arabeka-3336c.firebaseapp.com",
-            projectId: "arabeka-3336c",
-            storageBucket: "arabeka-3336c.firebasestorage.app",
-            messagingSenderId: "244460272030",
-            appId: "1:244460272030:web:c5aabfd0b396656721fe8f"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo", authDomain: "arabeka-3336c.firebaseapp.com", projectId: "arabeka-3336c", storageBucket: "arabeka-3336c.firebasestorage.app", messagingSenderId: "244460272030", appId: "1:244460272030:web:c5aabfd0b396656721fe8f" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         let currentUser = null;
 
         function toggleTheme() { document.body.classList.toggle('dark-mode'); }
-
-        function initPiSDK() {
-            if (typeof Pi !== 'undefined') {
-                Pi.init({ version: "2.0", sandbox: true });
-            } else {
-                setTimeout(initPiSDK, 500);
-            }
+        
+        // حساب الرتبة
+        function getRank(likes) {
+            if (likes > 20) return "مؤثر أرابيكا ⭐";
+            if (likes > 5) return "صانع محتوى ✍️";
+            return "مبتدئ ☕";
         }
-        window.onload = initPiSDK;
 
-        document.getElementById('login-btn').onclick = function() {
-            Pi.authenticate(['username'], () => {})
-                .then(authResult => {
-                    currentUser = authResult.user.username;
-                    document.getElementById('login-btn').style.display = 'none';
-                    document.getElementById('user-info').style.display = 'block';
-                    document.getElementById('user-info').innerText = "مرحباً: @" + currentUser;
-                    document.getElementById('post-section').style.display = 'block';
-                })
-                .catch(err => { document.getElementById('debug-log').innerText = "خطأ: " + err.message; });
+        // تهيئة الاتصال
+        window.onload = () => { if (typeof Pi !== 'undefined') Pi.init({ version: "2.0", sandbox: true }); };
+
+        document.getElementById('login-btn').onclick = () => {
+            Pi.authenticate(['username'], () => {}).then(auth => {
+                currentUser = auth.user.username;
+                document.getElementById('login-btn').style.display = 'none';
+                document.getElementById('user-info').style.display = 'block';
+                document.getElementById('user-info').innerText = "مرحباً: @" + currentUser;
+                document.getElementById('post-section').style.display = 'block';
+            });
         };
 
-        document.getElementById('publish-btn').onclick = function() {
+        document.getElementById('publish-btn').onclick = () => {
             const text = document.getElementById('post-text').value;
-            const media = document.getElementById('media-url').value;
             if(!text.trim()) return;
-            db.collection("posts").add({ 
-                content: text, media: media, user: currentUser, likes: 0, 
-                timestamp: firebase.firestore.FieldValue.serverTimestamp() 
-            });
+            db.collection("posts").add({ content: text, user: currentUser, likes: 0, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
             document.getElementById('post-text').value = "";
-            document.getElementById('media-url').value = "";
         };
 
         db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot => {
@@ -100,22 +83,16 @@
             container.innerHTML = "";
             snapshot.forEach(doc => {
                 const d = doc.data();
-                const time = d.timestamp ? d.timestamp.toDate().toLocaleDateString('ar-EG') : "";
                 container.innerHTML += `
                     <div class="post">
-                        <b>@${d.user}</b> <span class="post-time">${time}</span>
+                        <b>@${d.user}</b> <span class="rank-badge">${getRank(d.likes)}</span>
                         <p style="margin: 10px 0;">${d.content}</p>
-                        ${d.media ? `<img src="${d.media}" style="width:100%; border-radius:10px;">` : ""}
-                        <div style="margin-top:10px;">
-                            <button class="btn-action" onclick="likePost('${doc.id}', ${d.likes || 0})">❤️ ${d.likes || 0}</button>
-                            ${d.user === currentUser ? `<button class="btn-action" style="background:#d93025;" onclick="deletePost('${doc.id}')">حذف</button>` : ""}
-                        </div>
+                        <button class="btn-action" onclick="likePost('${doc.id}', ${d.likes || 0})">❤️ ${d.likes || 0}</button>
                     </div>`;
             });
         });
 
         window.likePost = (id, likes) => db.collection("posts").doc(id).update({ likes: likes + 1 });
-        window.deletePost = (id) => db.collection("posts").doc(id).delete();
     </script>
 </body>
 </html>
