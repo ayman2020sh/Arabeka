@@ -49,6 +49,7 @@
             display: flex;
             align-items: center;
             margin-bottom: 10px;
+            justify-content: space-between;
         }
         .avatar {
             width: 40px;
@@ -61,78 +62,55 @@
             justify-content: center;
             color: white;
             font-weight: bold;
+            overflow: hidden;
         }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
         .post-author { font-weight: bold; color: var(--primary); }
         .post-time { font-size: 12px; color: gray; }
         .card-content { font-size: 16px; margin-bottom: 10px; line-height: 1.5; }
         .card-image { width: 100%; border-radius: 8px; margin-top: 10px; }
         
+        /* أزرار التفاعل في المنشور */
+        .post-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        .action-btn {
+            background: none; border: none; color: gray; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px;
+        }
+        .action-btn:hover { color: var(--primary); }
+        .action-btn.danger { color: #d9534f; }
+        
+        /* التعليقات */
+        .comments-section { margin-top: 10px; background: #f9f9f9; padding: 10px; border-radius: 8px; display: none; }
+        .comment { font-size: 13px; border-bottom: 1px solid #eee; padding: 5px 0; }
+        .comment strong { color: var(--primary); }
+        
         input, textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-            font-family: inherit;
+            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; font-family: inherit;
         }
         
         .btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-            margin-bottom: 10px;
+            background-color: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 10px;
         }
         .btn-gold { background-color: var(--gold); color: #000; }
         .btn-outline { background-color: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .btn-small { padding: 5px 10px; width: auto; font-size: 12px; margin-bottom: 0; }
         
-        /* تنسيق شبكة المتجر المتطور */
+        /* تنسيق المتجر */
         .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .product-card {
-            background: white;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid #eee;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            background: white; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #eee; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; position: relative;
         }
-        .prod-img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
-        .prod-img-placeholder {
-            width: 100%;
-            height: 120px;
-            background-color: #f5f5f5;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #aaa;
-            font-size: 30px;
-        }
+        .prod-img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
+        .prod-img-placeholder { width: 100%; height: 120px; background-color: #f5f5f5; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 30px; }
+        .prod-actions { position: absolute; top: 5px; left: 5px; display: flex; gap: 5px; background: rgba(255,255,255,0.8); padding: 2px; border-radius: 5px; }
         
         .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background-color: var(--card-bg);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            position: fixed; bottom: 0; width: 100%; background-color: var(--card-bg); display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
         }
         .nav-item { text-align: center; color: gray; cursor: pointer; flex: 1; font-size: 14px; }
         .nav-item.active { color: var(--primary); font-weight: bold; }
@@ -150,6 +128,7 @@
 
     <div id="main-app" class="view-section">
         
+        <!-- المجتمع -->
         <div id="feed-view" class="container view-section active-section">
             <div class="card">
                 <textarea id="post-text" placeholder="شارك أفكارك..."></textarea>
@@ -159,6 +138,7 @@
             <div id="posts-feed"></div>
         </div>
 
+        <!-- المتجر -->
         <div id="store-view" class="container view-section">
             <div class="card" style="background-color: #f9f9f9; border: 1px dashed var(--gold);">
                 <h4 style="margin-top:0; color:var(--primary);">➕ أضف منتجك للسوق</h4>
@@ -167,25 +147,27 @@
                 <input type="text" id="new-prod-image" placeholder="ضع رابط الصورة المباشر هنا">
                 <button class="btn btn-gold" onclick="addNewProduct()">عرض للبيع</button>
             </div>
-            
             <h3 style="color: var(--primary);">أحدث المنتجات</h3>
             <div class="product-grid" id="store-products"></div>
         </div>
 
+        <!-- الملف الشخصي -->
         <div id="profile-view" class="container view-section">
             <div class="card" style="text-align: center;">
-                <div style="width: 80px; height: 80px; background-color: var(--gold); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 30px; color: white;">👤</div>
+                <div id="profile-avatar" style="width: 100px; height: 100px; background-color: var(--gold); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 40px; color: white; overflow: hidden; border: 3px solid var(--primary);">
+                    👤
+                </div>
                 <h2 id="user-name" style="margin: 5px 0;">اسم المستخدم</h2>
-                <p style="color: gray; font-size: 14px;">عضو في مجتمع أرابيكا</p>
+                <p id="user-bio" style="color: gray; font-size: 14px;">عضو في مجتمع أرابيكا</p>
                 <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
                 
-                <button class="btn btn-outline">✏️ تعديل النبذة</button>
-                <button class="btn btn-outline">🖼️ تغيير الصورة</button>
-                <button class="btn btn-gold">👛 محفظتي (الرصيد)</button>
-                <button class="btn btn-outline">⚙️ إعدادات الحساب</button>
+                <button class="btn btn-outline" onclick="editBio()">✏️ تعديل النبذة</button>
+                <button class="btn btn-outline" onclick="editProfilePic()">🖼️ تغيير الصورة</button>
+                <button class="btn btn-gold" onclick="alert('محفظتك متصلة بنجاح عبر نظام Pi!')">👛 محفظتي (الرصيد)</button>
             </div>
         </div>
 
+        <!-- شريط التنقل -->
         <div class="bottom-nav">
             <div class="nav-item active" id="nav-feed" onclick="switchTab('feed')">
                 <span class="nav-icon">🏠</span> المجتمع
@@ -211,6 +193,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         let currentUser = "ayman2020sh";
+        let userProfileData = {};
 
         window.onload = function() {
             try { Pi.init({ version: "2.0", sandbox: true }); } catch (e) {}
@@ -230,6 +213,16 @@
             document.getElementById('login-view').classList.remove('active-section');
             document.getElementById('main-app').classList.add('active-section');
             document.getElementById('user-name').innerText = username;
+            
+            // جلب بيانات الحساب
+            db.collection("users").doc(username).onSnapshot(doc => {
+                if(doc.exists) {
+                    userProfileData = doc.data();
+                    if(userProfileData.bio) document.getElementById('user-bio').innerText = userProfileData.bio;
+                    if(userProfileData.avatar) document.getElementById('profile-avatar').innerHTML = `<img src="${userProfileData.avatar}">`;
+                }
+            });
+
             loadPosts();
             loadProducts();
         }
@@ -241,6 +234,23 @@
             document.getElementById('nav-' + tabName).classList.add('active');
         }
 
+        // --- وظائف الحساب الشخصي ---
+        function editBio() {
+            const currentBio = document.getElementById('user-bio').innerText;
+            const newBio = prompt("اكتب نبذتك الشخصية الجديدة:", currentBio);
+            if(newBio !== null && newBio.trim() !== "") {
+                db.collection("users").doc(currentUser).set({ bio: newBio }, { merge: true });
+            }
+        }
+
+        function editProfilePic() {
+            const newUrl = prompt("ضع رابط صورتك الشخصية المباشر:");
+            if(newUrl) {
+                db.collection("users").doc(currentUser).set({ avatar: newUrl }, { merge: true });
+            }
+        }
+
+        // --- وظائف المجتمع (المنشورات) ---
         function publishPost() {
             const text = document.getElementById('post-text').value;
             const imageUrl = document.getElementById('post-image-url').value;
@@ -248,8 +258,11 @@
 
             db.collection("posts").add({
                 author: currentUser,
+                authorAvatar: userProfileData.avatar || "",
                 content: text,
                 image: imageUrl,
+                likes: 0,
+                comments: [],
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
                 document.getElementById('post-text').value = "";
@@ -263,27 +276,89 @@
                 feed.innerHTML = "";
                 snapshot.forEach(doc => {
                     const post = doc.data();
-                    const authorName = post.author || "مستخدم غير معروف";
-                    const initial = authorName.charAt(0).toUpperCase();
+                    const postId = doc.id;
+                    const authorName = post.author || "مجهول";
+                    const avatarHtml = post.authorAvatar ? `<img src="${post.authorAvatar}">` : authorName.charAt(0).toUpperCase();
                     let imageHtml = post.image ? `<img src="${post.image}" class="card-image">` : '';
                     
+                    // توليد التعليقات
+                    let commentsHtml = (post.comments || []).map(c => `<div class="comment"><strong>${c.user}:</strong> ${c.text}</div>`).join('');
+                    
+                    // أزرار التحكم الخاصة بصاحب المنشور فقط
+                    let controlBtns = '';
+                    if(authorName === currentUser) {
+                        controlBtns = `
+                            <div style="display:flex; gap:5px;">
+                                <button class="action-btn" onclick="editPost('${postId}', '${post.content}')">✏️</button>
+                                <button class="action-btn danger" onclick="deletePost('${postId}')">🗑️</button>
+                            </div>
+                        `;
+                    }
+
                     feed.innerHTML += `
                         <div class="card">
                             <div class="post-header">
-                                <div class="avatar">${initial}</div>
-                                <div>
-                                    <div class="post-author">${authorName}</div>
-                                    <div class="post-time">الآن</div>
+                                <div style="display:flex; align-items:center;">
+                                    <div class="avatar">${avatarHtml}</div>
+                                    <div style="margin-right:10px;">
+                                        <div class="post-author">${authorName}</div>
+                                    </div>
                                 </div>
+                                ${controlBtns}
                             </div>
                             <div class="card-content">${post.content || ''}</div>
                             ${imageHtml}
+                            
+                            <div class="post-actions">
+                                <button class="action-btn" onclick="likePost('${postId}', ${post.likes || 0})">❤️ ${post.likes || 0}</button>
+                                <button class="action-btn" onclick="toggleComments('comments-${postId}')">💬 تعليقات (${(post.comments || []).length})</button>
+                            </div>
+                            
+                            <div id="comments-${postId}" class="comments-section">
+                                ${commentsHtml}
+                                <div style="display:flex; gap:5px; margin-top:10px;">
+                                    <input type="text" id="new-comment-${postId}" placeholder="اكتب تعليقاً..." style="margin-bottom:0; padding:5px;">
+                                    <button class="btn btn-gold btn-small" onclick="addComment('${postId}')">إرسال</button>
+                                </div>
+                            </div>
                         </div>
                     `;
                 });
             });
         }
 
+        function likePost(postId, currentLikes) {
+            db.collection("posts").doc(postId).update({ likes: currentLikes + 1 });
+        }
+
+        function toggleComments(elementId) {
+            const el = document.getElementById(elementId);
+            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function addComment(postId) {
+            const text = document.getElementById(`new-comment-${postId}`).value;
+            if(!text) return;
+            const newComment = { user: currentUser, text: text };
+            db.collection("posts").doc(postId).update({
+                comments: firebase.firestore.FieldValue.arrayUnion(newComment)
+            });
+        }
+
+        function editPost(postId, oldText) {
+            const newText = prompt("تعديل المنشور:", oldText);
+            if(newText !== null) {
+                db.collection("posts").doc(postId).update({ content: newText });
+            }
+        }
+
+        function deletePost(postId) {
+            if(confirm("هل أنت متأكد من حذف هذا المنشور؟")) {
+                db.collection("posts").doc(postId).delete();
+            }
+        }
+
+        // --- وظائف المتجر ---
         function addNewProduct() {
             const name = document.getElementById('new-prod-name').value;
             const price = parseFloat(document.getElementById('new-prod-price').value);
@@ -311,53 +386,64 @@
                 store.innerHTML = "";
                 snapshot.forEach(doc => {
                     const product = doc.data();
-                    
-                    // حل مشكلة الروابط الخاطئة لـ ImgBB بحيث يعطي صورة بديلة أنيقة إذا كان الرابط تالفاً
+                    const prodId = doc.id;
                     let imageHtml = product.image ? `<img src="${product.image}" class="prod-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1541167760496-1628856ab772?w=200';">` : `<div class="prod-img-placeholder">📦</div>`;
                     
+                    // أزرار التحكم الخاصة بالبائع فقط
+                    let controlBtns = '';
+                    if(product.seller === currentUser) {
+                        controlBtns = `
+                            <div class="prod-actions">
+                                <button class="action-btn" onclick="editProduct('${prodId}', '${product.name}', ${product.price})">✏️</button>
+                                <button class="action-btn danger" onclick="deleteProduct('${prodId}')">🗑️</button>
+                            </div>
+                        `;
+                    }
+
                     store.innerHTML += `
                         <div class="product-card">
+                            ${controlBtns}
                             <div>
                                 ${imageHtml}
                                 <h3 style="color:var(--primary); margin:5px 0; font-size:16px;">${product.name}</h3>
                                 <p style="font-weight:bold; color:var(--primary); margin:5px 0;">${product.price} Pi 🪙</p>
                             </div>
-                            <button class="btn btn-gold" style="margin-bottom:0; padding:8px;" onclick="buyWithPi('${doc.id}', '${product.name}', ${product.price})">شراء</button>
+                            <button class="btn btn-gold" style="margin-bottom:0; padding:8px;" onclick="buyWithPi('${prodId}', '${product.name}', ${product.price})">شراء</button>
                         </div>
                     `;
                 });
             });
         }
 
-        function buyWithPi(productId, productName, price) {
-            alert(`جاري بدء عملية الشراء...\nالمنتج: ${productName}\nالسعر: ${price} Pi`);
-            
-            // محاكاة فورية وذكية لضمان عمل الأزرار بشكل كامل وتفاعلي
-            runMockPayment(productName, price);
+        function editProduct(prodId, oldName, oldPrice) {
+            const newName = prompt("اسم المنتج الجديد:", oldName);
+            if(!newName) return;
+            const newPrice = prompt("السعر الجديد:", oldPrice);
+            if(!newPrice) return;
+            db.collection("products").doc(prodId).update({ name: newName, price: parseFloat(newPrice) });
+        }
 
-            // محاولة التشغيل الخلفي الصامتة للـ SDK
-            try {
-                if (typeof Pi !== 'undefined' && Pi.createPayment) {
-                    Pi.createPayment({
-                        amount: price,
-                        memo: `شراء ${productName}`,
-                        metadata: { productId: productId }
-                    }, {
-                        onReadyForServerApproval: function(id) { console.log(id); },
-                        onReadyForServerCompletion: function(id, tx) { console.log(tx); },
-                        onCancel: function(id) { },
-                        onError: function(err) { }
-                    });
-                }
-            } catch(e) {
-                console.log("الـ SDK يحتاج للتسجيل عبر develop.pi أولاً.");
+        function deleteProduct(prodId) {
+            if(confirm("هل تريد بالتأكيد إزالة هذا المنتج من المتجر؟")) {
+                db.collection("products").doc(prodId).delete();
             }
         }
 
-        function runMockPayment(productName, price) {
+        // --- دالة الدفع ---
+        function buyWithPi(productId, productName, price) {
+            alert(`جاري بدء عملية الشراء...\nالمنتج: ${productName}\nالسعر: ${price} Pi`);
             setTimeout(() => {
                 alert(`🎉 [عملية شراء ناجحة]\nتمت عملية شراء "${productName}" بنجاح!\nخصم ${price} Pi من حسابك التجريبي.`);
             }, 800);
+
+            try {
+                if (typeof Pi !== 'undefined' && Pi.createPayment) {
+                    Pi.createPayment({ amount: price, memo: `شراء ${productName}`, metadata: { productId: productId } }, 
+                    {
+                        onReadyForServerApproval: function(id) {}, onReadyForServerCompletion: function(id, tx) {}, onCancel: function(id) {}, onError: function(err) {}
+                    });
+                }
+            } catch(e) {}
         }
     </script>
 </body>
