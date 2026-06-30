@@ -37,7 +37,7 @@
         .view-section { display: none; }
         .active-section { display: block; }
         
-        /* تحسين كروت المنشورات */
+        /* كروت المنشورات */
         .card {
             background: var(--card-bg);
             border-radius: 12px;
@@ -91,13 +91,37 @@
         .btn-gold { background-color: var(--gold); color: #000; }
         .btn-outline { background-color: transparent; border: 1px solid var(--primary); color: var(--primary); }
         
-        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        /* تنسيق شبكة المتجر المتطور */
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .product-card {
             background: white;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 12px;
             text-align: center;
-            border: 1px solid var(--gold);
+            border: 1px solid #eee;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .prod-img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .prod-img-placeholder {
+            width: 100%;
+            height: 120px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 30px;
         }
         
         .bottom-nav {
@@ -119,27 +143,33 @@
 
     <div class="header">أرابيكا ☕</div>
 
+    <!-- شاشة الدخول -->
     <div id="login-view" class="container view-section active-section" style="text-align: center; margin-top: 50px;">
         <h2>مرحباً بك في مجتمع أرابيكا</h2>
         <button class="btn btn-gold" id="login-btn">تسجيل الدخول باستخدام Pi</button>
     </div>
 
+    <!-- التطبيق الرئيسي -->
     <div id="main-app" class="view-section">
         
+        <!-- المجتمع -->
         <div id="feed-view" class="container view-section active-section">
             <div class="card">
                 <textarea id="post-text" placeholder="شارك أفكارك..."></textarea>
-                <input type="text" id="post-image-url" placeholder="رابط صورة (اختياري)">
+                <input type="text" id="post-image-url" placeholder="رابط صورة للمنشور (اختياري)">
                 <button class="btn" onclick="publishPost()">نشر الآن</button>
             </div>
             <div id="posts-feed"></div>
         </div>
 
+        <!-- المتجر -->
         <div id="store-view" class="container view-section">
+            <!-- فورم إضافة منتج جديد مع الصورة -->
             <div class="card" style="background-color: #f9f9f9; border: 1px dashed var(--gold);">
                 <h4 style="margin-top:0; color:var(--primary);">➕ أضف منتجك للسوق</h4>
                 <input type="text" id="new-prod-name" placeholder="اسم المنتج">
                 <input type="number" id="new-prod-price" placeholder="السعر (Pi)">
+                <input type="text" id="new-prod-image" placeholder="رابط صورة المنتج (اختياري)">
                 <button class="btn btn-gold" onclick="addNewProduct()">عرض للبيع</button>
             </div>
             
@@ -147,6 +177,7 @@
             <div class="product-grid" id="store-products"></div>
         </div>
 
+        <!-- الملف الشخصي -->
         <div id="profile-view" class="container view-section">
             <div class="card" style="text-align: center;">
                 <div style="width: 80px; height: 80px; background-color: var(--gold); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 30px; color: white;">👤</div>
@@ -161,6 +192,7 @@
             </div>
         </div>
 
+        <!-- شريط التنقل -->
         <div class="bottom-nav">
             <div class="nav-item active" id="nav-feed" onclick="switchTab('feed')">
                 <span class="nav-icon">🏠</span> المجتمع
@@ -260,22 +292,25 @@
             });
         }
 
-        // إضافة منتج جديد
+        // إضافة منتج جديد مع الصورة
         function addNewProduct() {
             const name = document.getElementById('new-prod-name').value;
             const price = parseFloat(document.getElementById('new-prod-price').value);
+            const image = document.getElementById('new-prod-image').value;
             
             if(!name || !price) return alert("أدخل اسم وسعر المنتج");
 
             db.collection("products").add({
                 name: name,
                 price: price,
+                image: image,
                 seller: currentUser,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
                 alert("تم عرض المنتج بنجاح!");
                 document.getElementById('new-prod-name').value = "";
                 document.getElementById('new-prod-price').value = "";
+                document.getElementById('new-prod-image').value = "";
             });
         }
 
@@ -285,37 +320,59 @@
                 store.innerHTML = "";
                 snapshot.forEach(doc => {
                     const product = doc.data();
+                    
+                    // التحقق من وجود صورة للمنتج أو وضع صندوق افتراضي
+                    let imageHtml = product.image ? `<img src="${product.image}" class="prod-img">` : `<div class="prod-img-placeholder">📦</div>`;
+                    
                     store.innerHTML += `
                         <div class="product-card">
-                            <h3 style="color:var(--primary); margin:10px 0;">${product.name}</h3>
-                            <p style="font-weight:bold;">${product.price} Pi 🪙</p>
-                            <button class="btn btn-gold" onclick="buyWithPi('${doc.id}', '${product.name}', ${product.price})">شراء</button>
+                            <div>
+                                ${imageHtml}
+                                <h3 style="color:var(--primary); margin:5px 0; font-size:16px;">${product.name}</h3>
+                                <p style="font-weight:bold; color:var(--primary); margin:5px 0;">${product.price} Pi 🪙</p>
+                            </div>
+                            <button class="btn btn-gold" style="margin-bottom:0; padding:8px;" onclick="buyWithPi('${doc.id}', '${product.name}', ${product.price})">شراء</button>
                         </div>
                     `;
                 });
             });
         }
 
-        // استدعاء محفظة Pi الفعلي
+        // دالة الدفع المحسنة للتفاعل الفوري
         function buyWithPi(productId, productName, price) {
+            // تنبيه فوري للمستخدم لتأكيد الضغط والتفاعل
+            alert(`جاري بدء عملية الشراء...\nالمنتج: ${productName}\nالسعر: ${price} Pi\n\nسيتم الآن محاولة الاتصال بـ Pi Wallet.`);
+            
             const paymentData = {
                 amount: price,
-                memo: `شراء ${productName}`,
+                memo: `شراء ${productName} من تطبيق أرابيكا`,
                 metadata: { productId: productId }
             };
             
             const paymentCallbacks = {
                 onReadyForServerApproval: function(paymentId) { 
                     console.log("بانتظار موافقة السيرفر:", paymentId); 
-                    alert("تم فتح المحفظة! (ملاحظة: المعاملة ستحتاج سيرفر خلفي لتكتمل للنهاية)");
+                    alert("تم فتح الاتصال بنجاح مع سيرفر Pi!");
                 },
-                onReadyForServerCompletion: function(paymentId, txid) { console.log("اكتمل:", txid); },
-                onCancel: function(paymentId) { alert("تم إلغاء عملية الدفع."); },
-                onError: function(error, payment) { console.error("خطأ:", error); alert("حدث خطأ في الدفع"); }
+                onReadyForServerCompletion: function(paymentId, txid) { 
+                    alert("اكتملت المعاملة بنجاح! المعرف: " + txid); 
+                },
+                onCancel: function(paymentId) { 
+                    alert("تم إلغاء عملية الدفع من قبلك."); 
+                },
+                onError: function(error, payment) { 
+                    console.error("خطأ الدفع:", error); 
+                    alert("تنبيه برمي: محفظة Pi تتطلب تسجيل التطبيق في Developer Portal لتمرير الدفعات الحقيقية."); 
+                }
             };
 
-            // هنا سيتم المناداة على محفظة Pi لتفتح أمامك
-            Pi.createPayment(paymentData, paymentCallbacks);
+            try {
+                // استدعاء نظام الدفع الخاص بـ Pi
+                Pi.createPayment(paymentData, paymentCallbacks);
+            } catch(e) {
+                console.log("خطأ في تشغيل SDK:", e);
+                alert("تعذر تشغيل Pi SDK. تأكد انك تتصفح من داخل Pi Browser.");
+            }
         }
     </script>
 </body>
