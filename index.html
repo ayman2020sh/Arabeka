@@ -2,47 +2,47 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أرابيكا - تطبيق المجتمع والمتجر</title>
+    <title>أرابيكا - تطبيق متكامل</title>
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        :root { --bg: #c5a059; --accent: #3f1b62; --card: #ffffff; }
-        body { font-family: sans-serif; background-color: var(--bg); color: var(--accent); margin: 0; padding-bottom: 70px; }
-        .top-bar { background: var(--accent); color: white; padding: 15px; text-align: center; font-weight: bold; }
-        .content { padding: 15px; }
-        .card { background: var(--card); padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--accent); display: flex; justify-content: space-around; padding: 10px 0; color: white; }
-        .nav-item { cursor: pointer; text-align: center; font-size: 12px; }
-        .hidden { display: none; }
-        .btn { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 5px; }
+        body { font-family: sans-serif; background-color: #c5a059; margin: 0; padding-bottom: 80px; }
+        .nav-bar { background: #3f1b62; color: white; padding: 15px; text-align: center; }
+        .section { padding: 15px; display: none; }
+        .active { display: block; }
+        .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #3f1b62; display: flex; justify-content: space-around; padding: 10px 0; color: white; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="top-bar">أرابيكا ☕</div>
+<div class="nav-bar">أرابيكا ☕</div>
 
-<div class="content">
-    <div id="view-feed" class="view">
+<div id="login-section" class="section active" style="text-align:center; padding-top:50px;">
+    <button id="pi-login-btn" style="padding:15px; font-size:18px;">تسجيل الدخول بـ Pi</button>
+</div>
+
+<div id="app-content" class="hidden">
+    <div id="feed-section" class="section">
         <h3>المجتمع</h3>
-        <textarea id="post-input" style="width:100%;" placeholder="ماذا يدور في ذهنك؟"></textarea>
-        <button class="btn" onclick="addPost()">نشر في المجتمع</button>
-        <div id="feed-container"></div>
+        <textarea id="post-text"></textarea>
+        <button onclick="addPost()">نشر</button>
+        <div id="posts-container"></div>
     </div>
-    
-    <div id="view-store" class="view hidden">
+    <div id="store-section" class="section">
         <h3>المتجر</h3>
         <div id="store-container"></div>
     </div>
 </div>
 
 <div class="bottom-nav">
-    <div class="nav-item" onclick="switchView('feed')">🏠<br>المجتمع</div>
-    <div class="nav-item" onclick="switchView('store')">🛒<br>المتجر</div>
+    <div onclick="showSection('feed-section')">🏠 المجتمع</div>
+    <div onclick="showSection('store-section')">🛒 المتجر</div>
 </div>
 
 <script>
-    // بياناتك الخاصة
+    // 1. التهيئة
     const firebaseConfig = {
         apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
         authDomain: "arabeka-3336c.firebaseapp.com",
@@ -54,25 +54,41 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    function switchView(view) {
-        document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-        document.getElementById('view-' + view).classList.remove('hidden');
+    // 2. تسجيل الدخول بـ Pi
+    window.onload = () => { Pi.init({ version: "2.0", sandbox: true }); };
+    document.getElementById('pi-login-btn').onclick = () => {
+        Pi.authenticate(['username'], () => {}).then(auth => {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('app-content').classList.remove('hidden');
+            showSection('feed-section');
+        });
+    };
+
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
     }
 
-    function addPost() {
-        const text = document.getElementById('post-input').value;
-        db.collection("posts").add({ content: text, timestamp: new Date() });
-        document.getElementById('post-input').value = "";
-    }
-
-    // عرض المنشورات لحظياً
-    db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snap => {
-        const container = document.getElementById('feed-container');
-        container.innerHTML = "";
-        snap.forEach(doc => {
-            container.innerHTML += `<div class="card">${doc.data().content}</div>`;
+    // 3. جلب البيانات
+    db.collection("posts").onSnapshot(snap => {
+        const cont = document.getElementById('posts-container');
+        cont.innerHTML = "";
+        snap.forEach(doc => { cont.innerHTML += `<div class="card">${doc.data().content}</div>`; });
+    });
+    
+    db.collection("products").onSnapshot(snap => {
+        const cont = document.getElementById('store-container');
+        cont.innerHTML = "";
+        snap.forEach(doc => { 
+            const p = doc.data();
+            cont.innerHTML += `<div class="card"><b>${p.name}</b><br>السعر: ${p.price} Pi</div>`; 
         });
     });
+
+    function addPost() {
+        const text = document.getElementById('post-text').value;
+        if(text) db.collection("posts").add({ content: text });
+    }
 </script>
 </body>
 </html>
