@@ -2,93 +2,315 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>أرابيكا - تطبيق متكامل</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أرابيكا - الشبكة والمتجر</title>
+    
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
     <style>
-        body { font-family: sans-serif; background-color: #c5a059; margin: 0; padding-bottom: 80px; }
-        .nav-bar { background: #3f1b62; color: white; padding: 15px; text-align: center; }
-        .section { padding: 15px; display: none; }
-        .active { display: block; }
-        .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #3f1b62; display: flex; justify-content: space-around; padding: 10px 0; color: white; cursor: pointer; }
+        /* التنسيقات والألوان الخاصة بأرابيكا */
+        :root {
+            --primary: #3f1b62; /* البنفسجي */
+            --gold: #c5a059;   /* الذهبي */
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding-bottom: 70px;
+        }
+        .header {
+            background-color: var(--primary);
+            color: var(--gold);
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .container { padding: 15px; }
+        
+        /* شاشات التطبيق */
+        .view-section { display: none; }
+        .active-section { display: block; }
+        
+        /* تصميم كروت فيسبوك للمجتمع */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .card-header { font-weight: bold; color: var(--primary); margin-bottom: 10px; }
+        .card-content { font-size: 16px; margin-bottom: 10px; line-height: 1.5; }
+        .card-image { width: 100%; border-radius: 8px; margin-top: 10px; }
+        
+        /* حقول الإدخال */
+        textarea {
+            width: 100%;
+            height: 80px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: none;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        
+        /* الأزرار */
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        .btn:hover { background-color: #2a1042; }
+        .btn-gold { background-color: var(--gold); color: #000; }
+        
+        /* المتجر */
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .product-card {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--gold);
+        }
+        
+        /* شريط التنقل السفلي */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: var(--card-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            border-top: 2px solid var(--gold);
+        }
+        .nav-item {
+            text-align: center;
+            color: gray;
+            cursor: pointer;
+            flex: 1;
+            font-size: 14px;
+        }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-icon { font-size: 24px; display: block; margin-bottom: 2px; }
     </style>
 </head>
 <body>
 
-<div class="nav-bar">أرابيكا ☕</div>
+    <div class="header">أرابيكا ☕</div>
 
-<div id="login-section" class="section active" style="text-align:center; padding-top:50px;">
-    <button id="pi-login-btn" style="padding:15px; font-size:18px;">تسجيل الدخول بـ Pi</button>
-</div>
-
-<div id="app-content" class="hidden">
-    <div id="feed-section" class="section">
-        <h3>المجتمع</h3>
-        <textarea id="post-text"></textarea>
-        <button onclick="addPost()">نشر</button>
-        <div id="posts-container"></div>
+    <div id="login-view" class="container view-section active-section" style="text-align: center; margin-top: 50px;">
+        <h2>مرحباً بك في مجتمع أرابيكا</h2>
+        <p>يرجى تسجيل الدخول باستخدام حساب Pi الخاص بك للمتابعة.</p>
+        <button class="btn btn-gold" id="login-btn" style="margin-top: 20px;">تسجيل الدخول باستخدام Pi</button>
     </div>
-    <div id="store-section" class="section">
-        <h3>المتجر</h3>
-        <div id="store-container"></div>
+
+    <div id="main-app" class="view-section">
+        
+        <div id="feed-view" class="container view-section active-section">
+            <div class="card">
+                <textarea id="post-text" placeholder="شارك أفكارك مع مجتمع أرابيكا..."></textarea>
+                <input type="text" id="post-image-url" placeholder="رابط صورة مباشرة (اختياري)">
+                <button class="btn" onclick="publishPost()">نشر الآن</button>
+            </div>
+            
+            <div id="posts-feed">
+                </div>
+        </div>
+
+        <div id="store-view" class="container view-section">
+            <h2 style="color: var(--primary);">متجر أرابيكا</h2>
+            <div class="product-grid" id="store-products">
+                </div>
+        </div>
+
+        <div id="profile-view" class="container view-section">
+            <div class="card" style="text-align: center;">
+                <h2 id="user-name">اسم المستخدم</h2>
+                <p>عضو في مجتمع أرابيكا</p>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active" id="nav-feed" onclick="switchTab('feed')">
+                <span class="nav-icon">🏠</span> المجتمع
+            </div>
+            <div class="nav-item" id="nav-store" onclick="switchTab('store')">
+                <span class="nav-icon">🛒</span> المتجر
+            </div>
+            <div class="nav-item" id="nav-profile" onclick="switchTab('profile')">
+                <span class="nav-icon">👤</span> حسابي
+            </div>
+        </div>
     </div>
-</div>
 
-<div class="bottom-nav">
-    <div onclick="showSection('feed-section')">🏠 المجتمع</div>
-    <div onclick="showSection('store-section')">🛒 المتجر</div>
-</div>
+    <script>
+        // 1. إعدادات Firebase الخاصة بمشروعك
+        const firebaseConfig = {
+            apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
+            authDomain: "arabeka-3336c.firebaseapp.com",
+            projectId: "arabeka-3336c",
+            storageBucket: "arabeka-3336c.firebasestorage.app",
+            messagingSenderId: "244460272030",
+            appId: "1:244460272030:web:c5aabfd0b396656721fe8f"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-<script>
-    // 1. التهيئة
-    const firebaseConfig = {
-        apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
-        authDomain: "arabeka-3336c.firebaseapp.com",
-        projectId: "arabeka-3336c",
-        storageBucket: "arabeka-3336c.firebasestorage.app",
-        messagingSenderId: "244460272030",
-        appId: "1:244460272030:web:c5aabfd0b396656721fe8f"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+        let currentUser = null;
 
-    // 2. تسجيل الدخول بـ Pi
-    window.onload = () => { Pi.init({ version: "2.0", sandbox: true }); };
-    document.getElementById('pi-login-btn').onclick = () => {
-        Pi.authenticate(['username'], () => {}).then(auth => {
-            document.getElementById('login-section').style.display = 'none';
-            document.getElementById('app-content').classList.remove('hidden');
-            showSection('feed-section');
+        // 2. تهيئة Pi SDK وتسجيل الدخول
+        window.onload = function() {
+            try {
+                Pi.init({ version: "2.0", sandbox: true });
+            } catch (e) {
+                console.log("Pi SDK ليس متاحاً خارج متصفح Pi.");
+            }
+        };
+
+        document.getElementById('login-btn').addEventListener('click', function() {
+            Pi.authenticate(['username'], function(onIncompletePaymentFound) {
+                console.log("Incomplete payment", onIncompletePaymentFound);
+            }).then(function(auth) {
+                currentUser = auth.user.username;
+                loginSuccess(currentUser);
+            }).catch(function(error) {
+                console.error(error);
+                currentUser = "مستخدم_تجريبي";
+                loginSuccess(currentUser);
+            });
         });
-    };
 
-    function showSection(id) {
-        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-        document.getElementById(id).style.display = 'block';
-    }
+        function loginSuccess(username) {
+            document.getElementById('login-view').classList.remove('active-section');
+            document.getElementById('main-app').classList.add('active-section');
+            document.getElementById('user-name').innerText = username;
+            loadPosts();
+            loadProducts();
+        }
 
-    // 3. جلب البيانات
-    db.collection("posts").onSnapshot(snap => {
-        const cont = document.getElementById('posts-container');
-        cont.innerHTML = "";
-        snap.forEach(doc => { cont.innerHTML += `<div class="card">${doc.data().content}</div>`; });
-    });
-    
-    db.collection("products").onSnapshot(snap => {
-        const cont = document.getElementById('store-container');
-        cont.innerHTML = "";
-        snap.forEach(doc => { 
-            const p = doc.data();
-            cont.innerHTML += `<div class="card"><b>${p.name}</b><br>السعر: ${p.price} Pi</div>`; 
-        });
-    });
+        // 3. التنقل بين التبويبات
+        function switchTab(tabName) {
+            document.querySelectorAll('#main-app .view-section').forEach(el => el.classList.remove('active-section'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabName + '-view').classList.add('active-section');
+            document.getElementById('nav-' + tabName).classList.add('active');
+        }
 
-    function addPost() {
-        const text = document.getElementById('post-text').value;
-        if(text) db.collection("posts").add({ content: text });
-    }
-</script>
+        // 4. نشر المنشورات
+        function publishPost() {
+            const text = document.getElementById('post-text').value;
+            const imageUrl = document.getElementById('post-image-url').value;
+            
+            if (!text && !imageUrl) {
+                alert("يرجى كتابة شيء أو إضافة صورة.");
+                return;
+            }
+
+            db.collection("posts").add({
+                author: currentUser,
+                content: text,
+                image: imageUrl,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                document.getElementById('post-text').value = "";
+                document.getElementById('post-image-url').value = "";
+            }).catch(error => {
+                console.error("خطأ في النشر: ", error);
+            });
+        }
+
+        // 5. استدعاء المنشورات (Real-time Feed)
+        function loadPosts() {
+            db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+                const feed = document.getElementById('posts-feed');
+                feed.innerHTML = "";
+                snapshot.forEach(doc => {
+                    const post = doc.data();
+                    let imageHtml = post.image ? `<img src="${post.image}" class="card-image" alt="صورة المنشور">` : '';
+                    
+                    feed.innerHTML += `
+                        <div class="card">
+                            <div class="card-header">👤 ${post.author}</div>
+                            <div class="card-content">${post.content}</div>
+                            ${imageHtml}
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // 6. استدعاء المنتجات ونظام الدفع بـ Pi
+        function loadProducts() {
+            db.collection("products").onSnapshot(snapshot => {
+                const store = document.getElementById('store-products');
+                store.innerHTML = "";
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    store.innerHTML += `
+                        <div class="product-card">
+                            <h3 style="color:var(--primary); margin:10px 0;">${product.name}</h3>
+                            <p style="font-weight:bold;">${product.price} Pi 🪙</p>
+                            <button class="btn btn-gold" onclick="buyWithPi('${doc.id}', '${product.name}', ${product.price})">شراء</button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function buyWithPi(productId, productName, price) {
+            const paymentData = {
+                amount: price,
+                memo: `شراء ${productName} من أرابيكا`,
+                metadata: { productId: productId }
+            };
+            
+            const paymentCallbacks = {
+                onReadyForServerApproval: function(paymentId) { console.log("جاهز للموافقة:", paymentId); },
+                onReadyForServerCompletion: function(paymentId, txid) { console.log("جاهز للاكتمال:", txid); },
+                onCancel: function(paymentId) { alert("تم إلغاء الدفع."); },
+                onError: function(error, payment) { console.error("خطأ:", error); }
+            };
+
+            try {
+                Pi.createPayment(paymentData, paymentCallbacks);
+            } catch(e) {
+                alert(`هذه محاكاة لعملية شراء ${productName} بسعر ${price} Pi.`);
+            }
+        }
+    </script>
 </body>
 </html>
