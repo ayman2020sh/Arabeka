@@ -3,101 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أرابيكا - النسخة المستقرة والآمنة</title>
+    <title>أرابيكا - التحديث  ل</title>
     
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
-        :root {
-            --primary: #3f1b62; 
-            --gold: #c5a059;   
-            --bg-color: #f0f2f5;
-            --card-bg: #ffffff;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding-bottom: 70px;
-        }
-        .header {
-            background-color: var(--primary);
-            color: var(--gold);
-            padding: 15px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .container { padding: 15px; }
-        .view-section { display: none; }
-        .active-section { display: block; }
-        
-        .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .post-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            justify-content: space-between;
-        }
+        :root { --primary: #3f1b62; --gold: #c5a059; --bg-color: #f0f2f5; --card-bg: #ffffff; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); margin: 0; padding-bottom: 70px; }
+        .header { background-color: var(--primary); color: var(--gold); padding: 15px; text-align: center; font-size: 24px; font-weight: bold; position: sticky; top: 0; z-index: 100; }
+        .container { padding: 15px; } .view-section { display: none; } .active-section { display: block; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .post-header { display: flex; align-items: center; margin-bottom: 10px; justify-content: space-between; }
         .post-author { font-weight: bold; color: var(--primary); }
         .card-content { font-size: 16px; margin-bottom: 10px; line-height: 1.5; }
-        
-        /* أزرار التفاعل */
-        .post-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 15px;
-            border-top: 1px solid #eee;
-            padding-top: 10px;
-        }
-        .action-btn {
-            background: none; border: none; color: gray; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px;
-        }
-        .action-btn:hover { color: var(--primary); }
-        .action-btn.danger { color: #d9534f; }
-        
-        /* التعليقات */
+        .post-image { max-width: 100%; border-radius: 8px; margin-bottom: 10px; display: block; }
+        .post-actions { display: flex; gap: 15px; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
+        .action-btn { background: none; border: none; color: gray; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .action-btn:hover { color: var(--primary); } .action-btn.danger { color: #d9534f; }
         .comments-section { margin-top: 10px; background: #f9f9f9; padding: 10px; border-radius: 8px; display: none; }
-        .comment { font-size: 13px; border-bottom: 1px solid #eee; padding: 5px 0; }
-        .comment strong { color: var(--primary); }
-        
-        input, textarea {
-            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; font-family: inherit;
-        }
-        
-        .btn {
-            background-color: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 10px;
-        }
-        .btn-gold { background-color: var(--gold); color: #000; }
-        .btn-outline { background-color: transparent; border: 1px solid var(--primary); color: var(--primary); }
-        
-        /* المتجر */
+        .comment { font-size: 13px; border-bottom: 1px solid #eee; padding: 5px 0; } .comment strong { color: var(--primary); }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; font-family: inherit; }
+        .btn { background-color: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 10px; }
+        .btn-gold { background-color: var(--gold); color: #000; } .btn-outline { background-color: transparent; border: 1px solid var(--primary); color: var(--primary); }
         .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .product-card {
-            background: white; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #eee; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: relative;
-        }
+        .product-card { background: white; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #eee; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: relative; }
+        .prod-image { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
         .prod-actions { position: absolute; top: 5px; left: 5px; display: flex; gap: 5px; background: rgba(255,255,255,0.8); padding: 2px; border-radius: 5px; }
-        
-        /* نظام النافذة المنبثقة البديلة لـ prompt */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 20px; border-radius: 12px; width: 85%; text-align: center; }
-        
-        .bottom-nav {
-            position: fixed; bottom: 0; width: 100%; background-color: var(--card-bg); display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-        }
-        .nav-item { text-align: center; color: gray; cursor: pointer; flex: 1; font-size: 14px; }
-        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background-color: var(--card-bg); display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); z-index: 100; }
+        .nav-item { text-align: center; color: gray; cursor: pointer; flex: 1; font-size: 14px; } .nav-item.active { color: var(--primary); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -124,6 +61,8 @@
         <div id="feed-view" class="container view-section active-section">
             <div class="card">
                 <textarea id="post-text" placeholder="شارك أفكارك مع مجتمع أرابيكا..."></textarea>
+                <!-- حقل إضافة رابط الصورة للمنشور -->
+                <input type="url" id="post-image-url" placeholder="🔗 رابط صورة للمنشور (اختياري)">
                 <button class="btn" onclick="publishPost()">نشر الآن</button>
             </div>
             <div id="posts-feed"></div>
@@ -134,6 +73,8 @@
                 <h4 style="margin-top:0; color:var(--primary);">➕ أضف منتجك للسوق</h4>
                 <input type="text" id="new-prod-name" placeholder="اسم المنتج">
                 <input type="number" id="new-prod-price" placeholder="السعر (Pi)">
+                <!-- حقل إضافة رابط الصورة للمنتج -->
+                <input type="url" id="new-prod-image" placeholder="🔗 رابط صورة المنتج (اختياري)">
                 <button class="btn btn-gold" onclick="addNewProduct()">عرض للبيع</button>
             </div>
             <h3 style="color: var(--primary);">أحدث المنتجات</h3>
@@ -146,12 +87,11 @@
                 <p id="user-bio" style="color: gray; font-size: 14px;">عضو مجتمع أرابيكا</p>
                 <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
                 <button class="btn btn-outline" onclick="editBio()">🫆 تعديل النبذة</button>
-    
-             <!-- روابط الصفحات القانونية المضافة حديثاً -->
+                
                 <a href="privacy.html" style="display: block; margin-top: 15px; color: var(--gold); text-decoration: underline; font-size: 14px;">📄 سياسة الخصوصية</a>
                 <a href="contact.html" style="display: block; margin-top: 10px; color: var(--gold); text-decoration: underline; font-size: 14px;">🛠️ الدعم الفني وتواصل المطور</a>
+                <a href="terms.html" style="display: block; margin-top: 10px; color: var(--gold); text-decoration: underline; font-size: 14px;">📜 شروط الاستخدام</a>
             </div>
-<a href="terms.html" style="display: block; margin-top: 10px; color: var(--gold); text-decoration: underline; font-size: 14px;">📜 شروط الاستخدام</a>
         </div>
 
         <div class="bottom-nav">
@@ -162,7 +102,6 @@
     </div>
 
     <script>
-        // إعدادات Firebase الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
             authDomain: "arabeka-3336c.firebaseapp.com",
@@ -175,14 +114,11 @@
         const db = firebase.firestore();
         let currentUser = "ayman2020sh";
 
-        // تشغيل نظام Pi SDK
         window.onload = function() {
             try { Pi.init({ version: "2.0", sandbox: true }); } catch (e) {}
         };
 
-        document.getElementById('login-btn').addEventListener('click', function() {
-            loginSuccess(currentUser); // لتسجيل الدخول الفوري أثناء التطوير
-        });
+        document.getElementById('login-btn').addEventListener('click', function() { loginSuccess(currentUser); });
 
         function loginSuccess(username) {
             currentUser = username;
@@ -199,18 +135,13 @@
             loadProducts();
         }
 
-        // تحكم النافذة المنبثقة الشامل المخصص للهواتف
         let activeCallback = null;
         function openCustomModal(title, val1, val2, showSecond, cb) {
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-input-1').value = val1;
             const input2 = document.getElementById('modal-input-2');
-            if(showSecond) {
-                input2.style.display = 'block';
-                input2.value = val2;
-            } else {
-                input2.style.display = 'none';
-            }
+            if(showSecond) { input2.style.display = 'block'; input2.value = val2; } 
+            else { input2.style.display = 'none'; }
             document.getElementById('custom-modal').style.display = 'flex';
             activeCallback = cb;
         }
@@ -222,23 +153,34 @@
             closeModal();
         }
 
+        // تم تحديث دالة تعديل النبذة لتعمل بشكل فوري ولتظهر الأخطاء إن وجدت
         function editBio() {
             openCustomModal("تعديل النبذة الشخصية", document.getElementById('user-bio').innerText, "", false, (newBio) => {
-                db.collection("users").doc(currentUser).set({ bio: newBio }, { merge: true });
+                document.getElementById('user-bio').innerText = newBio; // التحديث الفوري للواجهة
+                db.collection("users").doc(currentUser).set({ bio: newBio }, { merge: true })
+                .catch(error => {
+                    alert("عذراً، لا يمكن الحفظ حالياً. تأكد من صلاحيات قاعدة البيانات.");
+                    console.error("خطأ في حفظ النبذة:", error);
+                });
             });
         }
 
-        // وظائف المجتمع
         function publishPost() {
             const text = document.getElementById('post-text').value;
-            if (!text) return;
+            const imageUrl = document.getElementById('post-image-url').value; // التقاط رابط الصورة
+            if (!text && !imageUrl) return;
+            
             db.collection("posts").add({
                 author: currentUser,
                 content: text,
+                imageUrl: imageUrl || null, // حفظ رابط الصورة
                 likes: 0,
                 comments: [],
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => { document.getElementById('post-text').value = ""; });
+            }).then(() => { 
+                document.getElementById('post-text').value = ""; 
+                document.getElementById('post-image-url').value = ""; 
+            });
         }
 
         function loadPosts() {
@@ -249,13 +191,16 @@
                     const post = doc.data();
                     const postId = doc.id;
                     const authorName = post.author || currentUser;
+                    
+                    // تجهيز الصورة إذا كانت موجودة
+                    const imageHtml = post.imageUrl ? `<img src="${post.imageUrl}" class="post-image" alt="صورة المنشور">` : '';
+                    
                     let commentsHtml = (post.comments || []).map(c => `<div class="comment"><strong>${c.user}:</strong> ${c.text}</div>`).join('');
                     
                     let controlBtns = '';
                     if(authorName === currentUser) {
                         controlBtns = `
                             <div>
-                                <button class="action-btn" onclick="editPost('${postId}', '${post.content}')">✏️</button>
                                 <button class="action-btn danger" onclick="deletePost('${postId}')">🗑️</button>
                             </div>
                         `;
@@ -268,6 +213,7 @@
                                 ${controlBtns}
                             </div>
                             <div class="card-content">${post.content}</div>
+                            ${imageHtml} <!-- إظهار الصورة هنا -->
                             <div class="post-actions">
                                 <button class="action-btn" onclick="likePost('${postId}', ${post.likes || 0})">❤️ ${post.likes || 0}</button>
                                 <button class="action-btn" onclick="toggleComments('comments-${postId}')">💬 تعليقات (${(post.comments || []).length})</button>
@@ -285,11 +231,6 @@
             });
         }
 
-        function editPost(id, oldText) {
-            openCustomModal("تعديل المنشور", oldText, "", false, (newText) => {
-                db.collection("posts").doc(id).update({ content: newText });
-            });
-        }
         function deletePost(id) { if(confirm("حذف المنشور؟")) db.collection("posts").doc(id).delete(); }
         function likePost(id, currentLikes) { db.collection("posts").doc(id).update({ likes: currentLikes + 1 }); }
         function toggleComments(id) {
@@ -301,19 +242,26 @@
             if(!input.value) return;
             db.collection("posts").doc(postId).update({
                 comments: firebase.firestore.FieldValue.arrayUnion({ user: currentUser, text: input.value })
-            });
+            }).then(() => input.value = "");
         }
 
-        // وظائف المتجر
         function addNewProduct() {
             const name = document.getElementById('new-prod-name').value;
             const price = parseFloat(document.getElementById('new-prod-price').value);
+            const imageUrl = document.getElementById('new-prod-image').value; // التقاط الصورة
+            
             if(!name || !price) return;
+            
             db.collection("products").add({
-                name: name, price: price, owner: currentUser, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                name: name, 
+                price: price, 
+                imageUrl: imageUrl || null, // حفظ الصورة
+                owner: currentUser, 
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
                 document.getElementById('new-prod-name').value = "";
                 document.getElementById('new-prod-price').value = "";
+                document.getElementById('new-prod-image').value = "";
             });
         }
 
@@ -324,34 +272,49 @@
                 snapshot.forEach(doc => {
                     const prod = doc.data();
                     const prodId = doc.id;
+                    
+                    // عرض الصورة إذا كانت موجودة، أو مساحة فارغة إذا لم تكن
+                    const imgHtml = prod.imageUrl ? `<img src="${prod.imageUrl}" class="prod-image" alt="صورة المنتج">` : '';
+                    
                     let controlBtns = '';
                     if(prod.owner === currentUser) {
                         controlBtns = `
                             <div class="prod-actions">
-                                <button class="action-btn" onclick="editProduct('${prodId}', '${prod.name}', ${prod.price})">✏️</button>
                                 <button class="action-btn danger" onclick="deleteProduct('${prodId}')">🗑️</button>
                             </div>
                         `;
                     }
                     store.innerHTML += `
-                        <div class="product-card" style="margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #eee;">
+                        <div class="product-card">
                             ${controlBtns}
-                            <h4>${prod.name}</h4>
-                            <p>${prod.price} Pi</p>
-                            <button class="btn btn-gold" onclick="buyProduct('${prod.name}', ${prod.price})">شراء</button>
+                            ${imgHtml} <!-- إظهار صورة المنتج -->
+                            <h4 style="margin: 5px 0;">${prod.name}</h4>
+                            <p style="color: gray; margin: 5px 0;">${prod.price} Pi</p>
+                            <button class="btn btn-gold" style="margin-top: 10px;" onclick="buyProduct('${prod.name}', ${prod.price})">شراء</button>
                         </div>
                     `;
                 });
             });
         }
 
-        function editProduct(id, oldName, oldPrice) {
-            openCustomModal("تعديل المنتج", oldName, oldPrice, true, (newName, newPrice) => {
-                db.collection("products").doc(id).update({ name: newName, price: parseFloat(newPrice) });
+        function deleteProduct(id) { if(confirm("إزالة المنتج؟")) db.collection("products").doc(id).delete(); }
+        
+        function buyProduct(name, price) {
+            if (typeof Pi === 'undefined') { alert("نظام Pi SDK غير متاح حالياً."); return; }
+            Pi.createPayment({
+                amount: parseFloat(price),
+                memo: `شراء ${name} من أرابيكا`,
+                metadata: { productName: name }
+            }, {
+                onReadyForServerApproval: function(paymentId) { console.log("جاهز للموافقة: ", paymentId); },
+                onReadyForServerCompletion: function(paymentId, txid) {
+                    console.log("اكتمل الدفع: ", txid);
+                    alert(`تم إرسال طلب شراء ${name} بنجاح!`);
+                },
+                onCancel: function(paymentId) { alert("تم إلغاء عملية الشراء."); },
+                onError: function(error, payment) { alert("حدث خطأ أثناء الشراء: " + error.message); }
             });
         }
-        function deleteProduct(id) { if(confirm("إزالة المنتج؟")) db.collection("products").doc(id).delete(); }
-        function buyProduct(name, price) { alert(`طلب شراء ${name} بسعر ${price} Pi قيد المعالجة التجريبية.`); }
 
         function switchTab(tab) {
             document.querySelectorAll('#main-app .view-section').forEach(el => el.classList.remove('active-section'));
@@ -361,4 +324,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
