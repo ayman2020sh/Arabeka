@@ -3,49 +3,306 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أرابيكا - التحديث  ل</title>
+    <title>أرابيكا - مجتمع التجارة الرقمية</title>
     
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
-        :root { --primary: #3f1b62; --gold: #c5a059; --bg-color: #f0f2f5; --card-bg: #ffffff; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); margin: 0; padding-bottom: 70px; }
-        .header { background-color: var(--primary); color: var(--gold); padding: 15px; text-align: center; font-size: 24px; font-weight: bold; position: sticky; top: 0; z-index: 100; }
-        .container { padding: 15px; } .view-section { display: none; } .active-section { display: block; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .post-header { display: flex; align-items: center; margin-bottom: 10px; justify-content: space-between; }
-        .post-author { font-weight: bold; color: var(--primary); }
-        .card-content { font-size: 16px; margin-bottom: 10px; line-height: 1.5; }
-        .post-image { max-width: 100%; border-radius: 8px; margin-bottom: 10px; display: block; }
-        .post-actions { display: flex; gap: 15px; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
-        .action-btn { background: none; border: none; color: gray; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        .action-btn:hover { color: var(--primary); } .action-btn.danger { color: #d9534f; }
-        .comments-section { margin-top: 10px; background: #f9f9f9; padding: 10px; border-radius: 8px; display: none; }
-        .comment { font-size: 13px; border-bottom: 1px solid #eee; padding: 5px 0; } .comment strong { color: var(--primary); }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; font-family: inherit; }
-        .btn { background-color: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 10px; }
-        .btn-gold { background-color: var(--gold); color: #000; } .btn-outline { background-color: transparent; border: 1px solid var(--primary); color: var(--primary); }
-        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .product-card { background: white; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #eee; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: relative; }
-        .prod-image { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
-        .prod-actions { position: absolute; top: 5px; left: 5px; display: flex; gap: 5px; background: rgba(255,255,255,0.8); padding: 2px; border-radius: 5px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 12px; width: 85%; text-align: center; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background-color: var(--card-bg); display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); z-index: 100; }
-        .nav-item { text-align: center; color: gray; cursor: pointer; flex: 1; font-size: 14px; } .nav-item.active { color: var(--primary); font-weight: bold; }
+        :root { 
+            --primary: #3f1b62; 
+            --gold: #c5a059; 
+            --bg-color: #f0f2f5; 
+            --card-bg: #ffffff;
+            --danger: #d9534f;
+            --success: #5cb85c;
+            --border: #eee;
+        }
+
+        * { box-sizing: border-box; }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-color); 
+            margin: 0; 
+            padding-bottom: 70px;
+        }
+
+        .header { 
+            background-color: var(--primary); 
+            color: var(--gold); 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 24px; 
+            font-weight: bold; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+        }
+
+        .container { padding: 15px; }
+
+        .view-section { display: none; }
+        .active-section { display: block; }
+
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 12px; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+        }
+
+        .post-header { 
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 10px; 
+            justify-content: space-between; 
+        }
+
+        .post-author { 
+            font-weight: bold; 
+            color: var(--primary); 
+        }
+
+        .card-content { 
+            font-size: 16px; 
+            margin-bottom: 10px; 
+            line-height: 1.5;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .post-image { 
+            max-width: 100%; 
+            border-radius: 8px; 
+            margin-bottom: 10px; 
+            display: block;
+            max-height: 300px;
+            object-fit: cover;
+        }
+
+        .post-actions { 
+            display: flex; 
+            gap: 15px; 
+            margin-top: 15px; 
+            border-top: 1px solid var(--border); 
+            padding-top: 10px; 
+        }
+
+        .action-btn { 
+            background: none; 
+            border: none; 
+            color: gray; 
+            font-size: 14px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 5px;
+            transition: color 0.2s;
+        }
+
+        .action-btn:hover { color: var(--primary); }
+        .action-btn.danger { color: var(--danger); }
+
+        .comments-section { 
+            margin-top: 10px; 
+            background: #f9f9f9; 
+            padding: 10px; 
+            border-radius: 8px; 
+            display: none; 
+        }
+
+        .comment { 
+            font-size: 13px; 
+            border-bottom: 1px solid var(--border); 
+            padding: 5px 0; 
+        }
+
+        .comment strong { 
+            color: var(--primary); 
+        }
+
+        input, textarea { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            margin-bottom: 10px; 
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 3px rgba(63, 27, 98, 0.2);
+        }
+
+        .btn { 
+            background-color: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            width: 100%; 
+            margin-bottom: 10px;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .btn-gold { 
+            background-color: var(--gold); 
+            color: #000; 
+        }
+
+        .btn-outline { 
+            background-color: transparent; 
+            border: 1px solid var(--primary); 
+            color: var(--primary); 
+        }
+
+        .product-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+        }
+
+        .product-card { 
+            background: white; 
+            padding: 12px; 
+            border-radius: 12px; 
+            text-align: center; 
+            border: 1px solid var(--border); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+            position: relative; 
+        }
+
+        .prod-image { 
+            width: 100%; 
+            height: 120px; 
+            object-fit: cover; 
+            border-radius: 8px; 
+            margin-bottom: 8px;
+            background-color: var(--bg-color);
+        }
+
+        .prod-actions { 
+            position: absolute; 
+            top: 5px; 
+            left: 5px; 
+            display: flex; 
+            gap: 5px; 
+            background: rgba(255,255,255,0.8); 
+            padding: 2px; 
+            border-radius: 5px; 
+        }
+
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.6); 
+            z-index: 1000; 
+            justify-content: center; 
+            align-items: center; 
+        }
+
+        .modal-content { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            width: 85%; 
+            text-align: center;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .bottom-nav { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0;
+            right: 0;
+            width: 100%; 
+            background-color: var(--card-bg); 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 10px 0; 
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-item { 
+            text-align: center; 
+            color: gray; 
+            cursor: pointer; 
+            flex: 1; 
+            font-size: 14px;
+            padding: 5px;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active { 
+            color: var(--primary); 
+            font-weight: bold; 
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(0,0,0,0.1);
+            border-top: 2px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="header">أرابيكا ☕</div>
+    <div class="header" role="banner">أرابيكا ☕</div>
 
-    <div id="custom-modal" class="modal">
+    <div id="custom-modal" class="modal" role="dialog" aria-hidden="true">
         <div class="modal-content">
             <h4 id="modal-title">تعديل البيانات</h4>
-            <input type="text" id="modal-input-1" placeholder="الحقل الأول">
-            <input type="text" id="modal-input-2" placeholder="الحقل الثاني (اختياري)" style="display:none;">
+            <input type="text" id="modal-input-1" placeholder="الحقل الأول" aria-label="حقل إدخال أول">
+            <input type="text" id="modal-input-2" placeholder="الحقل الثاني (اختياري)" style="display:none;" aria-label="حقل إدخال ثاني">
             <button class="btn" onclick="saveModal()">حفظ التغييرات</button>
             <button class="btn" style="background-color:#666;" onclick="closeModal()">إلغاء</button>
         </div>
@@ -53,17 +310,18 @@
 
     <div id="login-view" class="container view-section active-section" style="text-align: center; margin-top: 50px;">
         <h2>مرحباً بك في مجتمع أرابيكا</h2>
+        <p>انضم إلى مجتمعنا وابدأ التجارة الآن</p>
         <button class="btn btn-gold" id="login-btn">تسجيل الدخول باستخدام Pi</button>
+        <div id="login-error" style="display:none;" class="error-message"></div>
     </div>
 
     <div id="main-app" class="view-section">
         
         <div id="feed-view" class="container view-section active-section">
             <div class="card">
-                <textarea id="post-text" placeholder="شارك أفكارك مع مجتمع أرابيكا..."></textarea>
-                <!-- حقل إضافة رابط الصورة للمنشور -->
-                <input type="url" id="post-image-url" placeholder="🔗 رابط صورة للمنشور (اختياري)">
-                <button class="btn" onclick="publishPost()">نشر الآن</button>
+                <textarea id="post-text" placeholder="شارك أفكارك مع مجتمع أرابيكا..." aria-label="نص المنشور"></textarea>
+                <input type="url" id="post-image-url" placeholder="🔗 رابط صورة للمنشور (اختياري)" aria-label="رابط صورة المنشور">
+                <button class="btn" id="publish-btn" onclick="publishPost()">نشر الآن</button>
             </div>
             <div id="posts-feed"></div>
         </div>
@@ -71,11 +329,10 @@
         <div id="store-view" class="container view-section">
             <div class="card" style="border: 1px dashed var(--gold);">
                 <h4 style="margin-top:0; color:var(--primary);">➕ أضف منتجك للسوق</h4>
-                <input type="text" id="new-prod-name" placeholder="اسم المنتج">
-                <input type="number" id="new-prod-price" placeholder="السعر (Pi)">
-                <!-- حقل إضافة رابط الصورة للمنتج -->
-                <input type="url" id="new-prod-image" placeholder="🔗 رابط صورة المنتج (اختياري)">
-                <button class="btn btn-gold" onclick="addNewProduct()">عرض للبيع</button>
+                <input type="text" id="new-prod-name" placeholder="اسم المنتج" aria-label="اسم المنتج" maxlength="100">
+                <input type="number" id="new-prod-price" placeholder="السعر (Pi)" aria-label="سعر المنتج" min="0" step="0.01">
+                <input type="url" id="new-prod-image" placeholder="🔗 رابط صورة المنتج (اختياري)" aria-label="رابط صورة المنتج">
+                <button class="btn btn-gold" id="add-prod-btn" onclick="addNewProduct()">عرض للبيع</button>
             </div>
             <h3 style="color: var(--primary);">أحدث المنتجات</h3>
             <div class="product-grid" id="store-products"></div>
@@ -83,25 +340,27 @@
 
         <div id="profile-view" class="container view-section">
             <div class="card" style="text-align: center;">
-                <h2 id="user-name" style="margin: 5px 0;">ayman2020sh</h2>
+                <h2 id="user-name" style="margin: 5px 0;">أرابيكا</h2>
                 <p id="user-bio" style="color: gray; font-size: 14px;">عضو مجتمع أرابيكا</p>
-                <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                <hr style="border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
                 <button class="btn btn-outline" onclick="editBio()">🫆 تعديل النبذة</button>
                 
-                <a href="privacy.html" style="display: block; margin-top: 15px; color: var(--gold); text-decoration: underline; font-size: 14px;">📄 سياسة الخصوصية</a>
-                <a href="contact.html" style="display: block; margin-top: 10px; color: var(--gold); text-decoration: underline; font-size: 14px;">🛠️ الدعم الفني وتواصل المطور</a>
-                <a href="terms.html" style="display: block; margin-top: 10px; color: var(--gold); text-decoration: underline; font-size: 14px;">📜 شروط الاستخدام</a>
+                <a href="privacy.html" rel="noopener noreferrer" style="display: block; margin-top: 15px; color: var(--gold); text-decoration: underline; font-size: 14px;">📄 سياسة الخصوصية</a>
+                <a href="contact.html" rel="noopener noreferrer" style="display: block; margin-top: 10px; color: var(--gold); text-decoration: underline; font-size: 14px;">🛠️ الدعم الفني والتواصل</a>
+                <a href="terms.html" rel="noopener noreferrer" style="display: block; margin-top: 10px; color: var(--gold); text-decoration: underline; font-size: 14px;">📜 شروط الاستخدام</a>
             </div>
         </div>
 
-        <div class="bottom-nav">
-            <div class="nav-item active" id="nav-feed" onclick="switchTab('feed')">المجتمع</div>
-            <div class="nav-item" id="nav-store" onclick="switchTab('store')">المتجر</div>
-            <div class="nav-item" id="nav-profile" onclick="switchTab('profile')">حسابي</div>
+        <div class="bottom-nav" role="navigation" aria-label="التنقل الرئيسي">
+            <div class="nav-item active" id="nav-feed" onclick="switchTab('feed')" role="button" tabindex="0">المجتمع</div>
+            <div class="nav-item" id="nav-store" onclick="switchTab('store')" role="button" tabindex="0">المتجر</div>
+            <div class="nav-item" id="nav-profile" onclick="switchTab('profile')" role="button" tabindex="0">حسابي</div>
         </div>
     </div>
 
     <script>
+        // ========== Firebase Configuration ==========
+        // Load from environment or config file in production
         const firebaseConfig = {
             apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
             authDomain: "arabeka-3336c.firebaseapp.com",
@@ -110,218 +369,451 @@
             messagingSenderId: "244460272030",
             appId: "1:244460272030:web:c5aabfd0b396656721fe8f"
         };
-        firebase.initializeApp(firebaseConfig);
+
+        try {
+            firebase.initializeApp(firebaseConfig);
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+            showError("خطأ في تهيئة النظام. يرجى تحديث الصفحة.");
+        }
+
         const db = firebase.firestore();
-        let currentUser = "ayman2020sh";
+        let currentUser = null;
+        let unsubscribeFunctions = [];
 
-        window.onload = function() {
-            try { Pi.init({ version: "2.0", sandbox: true }); } catch (e) {}
-        };
+        // ========== Initialization ==========
+        window.addEventListener('load', function() {
+            initializePiSDK();
+        });
 
-        document.getElementById('login-btn').addEventListener('click', function() { loginSuccess(currentUser); });
+        function initializePiSDK() {
+            try {
+                if (typeof Pi !== 'undefined') {
+                    Pi.init({ version: "2.0", sandbox: true });
+                    console.log("Pi SDK initialized successfully");
+                } else {
+                    console.warn("Pi SDK not available");
+                }
+            } catch (error) {
+                console.error("Pi SDK initialization failed:", error);
+            }
+        }
+
+        document.getElementById('login-btn').addEventListener('click', handleLogin);
+
+        // ========== Utility Functions ==========
+        function sanitizeHTML(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function showError(message) {
+            console.error("Error:", message);
+            // Show error to user if needed
+            const errorEl = document.getElementById('login-error');
+            if (errorEl) {
+                errorEl.innerHTML = sanitizeHTML(message);
+                errorEl.style.display = 'block';
+                setTimeout(() => { errorEl.style.display = 'none'; }, 5000);
+            }
+        }
+
+        function showSuccess(message) {
+            console.log("Success:", message);
+        }
+
+        function cleanupListeners() {
+            unsubscribeFunctions.forEach(unsubscribe => {
+                try { unsubscribe(); } catch (e) { console.error("Error unsubscribing:", e); }
+            });
+            unsubscribeFunctions = [];
+        }
+
+        // ========== Authentication ==========
+        function handleLogin() {
+            // TODO: Integrate with actual Pi authentication
+            const testUsername = "ayman2020sh";
+            loginSuccess(testUsername);
+        }
 
         function loginSuccess(username) {
+            if (!username || typeof username !== 'string') {
+                showError("اسم مستخدم غير صحيح");
+                return;
+            }
+
             currentUser = username;
             document.getElementById('login-view').classList.remove('active-section');
             document.getElementById('main-app').classList.add('active-section');
-            document.getElementById('user-name').innerText = username;
+            document.getElementById('user-name').innerText = sanitizeHTML(username);
             
-            db.collection("users").doc(username).onSnapshot(doc => {
-                if(doc.exists && doc.data().bio) {
-                    document.getElementById('user-bio').innerText = doc.data().bio;
-                }
-            });
+            cleanupListeners();
+            loadUserBio();
             loadPosts();
             loadProducts();
         }
 
+        function loadUserBio() {
+            const unsubscribe = db.collection("users").doc(currentUser).onSnapshot(
+                doc => {
+                    if (doc.exists && doc.data().bio) {
+                        document.getElementById('user-bio').innerText = sanitizeHTML(doc.data().bio);
+                    }
+                },
+                error => {
+                    console.error("Error loading user bio:", error);
+                }
+            );
+            unsubscribeFunctions.push(unsubscribe);
+        }
+
+        // ========== Modal Management ==========
         let activeCallback = null;
+
         function openCustomModal(title, val1, val2, showSecond, cb) {
-            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-title').innerText = sanitizeHTML(title);
             document.getElementById('modal-input-1').value = val1;
             const input2 = document.getElementById('modal-input-2');
-            if(showSecond) { input2.style.display = 'block'; input2.value = val2; } 
-            else { input2.style.display = 'none'; }
+            if (showSecond) { 
+                input2.style.display = 'block'; 
+                input2.value = val2; 
+            } else { 
+                input2.style.display = 'none'; 
+            }
             document.getElementById('custom-modal').style.display = 'flex';
+            document.getElementById('custom-modal').setAttribute('aria-hidden', 'false');
             activeCallback = cb;
         }
-        function closeModal() { document.getElementById('custom-modal').style.display = 'none'; }
+
+        function closeModal() { 
+            document.getElementById('custom-modal').style.display = 'none';
+            document.getElementById('custom-modal').setAttribute('aria-hidden', 'true');
+            activeCallback = null;
+        }
+
         function saveModal() {
-            const v1 = document.getElementById('modal-input-1').value;
-            const v2 = document.getElementById('modal-input-2').value;
-            if(activeCallback) activeCallback(v1, v2);
+            const v1 = document.getElementById('modal-input-1').value.trim();
+            const v2 = document.getElementById('modal-input-2').value.trim();
+            
+            if (!v1) {
+                showError("الحقل الأول مطلوب");
+                return;
+            }
+            
+            if (activeCallback) activeCallback(v1, v2);
             closeModal();
         }
 
-        // تم تحديث دالة تعديل النبذة لتعمل بشكل فوري ولتظهر الأخطاء إن وجدت
+        // Close modal on backdrop click
+        document.getElementById('custom-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'custom-modal') closeModal();
+        });
+
+        // ========== Profile Functions ==========
         function editBio() {
-            openCustomModal("تعديل النبذة الشخصية", document.getElementById('user-bio').innerText, "", false, (newBio) => {
-                document.getElementById('user-bio').innerText = newBio; // التحديث الفوري للواجهة
+            const currentBio = document.getElementById('user-bio').innerText;
+            openCustomModal("تعديل النبذة الشخصية", currentBio, "", false, (newBio) => {
+                document.getElementById('user-bio').innerText = sanitizeHTML(newBio);
+                
                 db.collection("users").doc(currentUser).set({ bio: newBio }, { merge: true })
-                .catch(error => {
-                    alert("عذراً، لا يمكن الحفظ حالياً. تأكد من صلاحيات قاعدة البيانات.");
-                    console.error("خطأ في حفظ النبذة:", error);
-                });
+                    .catch(error => {
+                        showError("خطأ: لا يمكن حفظ النبذة. " + error.message);
+                        document.getElementById('user-bio').innerText = currentBio;
+                    });
             });
         }
 
+        // ========== Posts Management ==========
         function publishPost() {
-            const text = document.getElementById('post-text').value;
-            const imageUrl = document.getElementById('post-image-url').value; // التقاط رابط الصورة
-            if (!text && !imageUrl) return;
+            const text = document.getElementById('post-text').value.trim();
+            const imageUrl = document.getElementById('post-image-url').value.trim();
+            
+            if (!text && !imageUrl) {
+                showError("يرجى إضافة نص أو صورة");
+                return;
+            }
+
+            if (imageUrl && !isValidUrl(imageUrl)) {
+                showError("رابط الصورة غير صحيح");
+                return;
+            }
+
+            const publishBtn = document.getElementById('publish-btn');
+            publishBtn.disabled = true;
             
             db.collection("posts").add({
                 author: currentUser,
                 content: text,
-                imageUrl: imageUrl || null, // حفظ رابط الصورة
+                imageUrl: imageUrl || null,
                 likes: 0,
                 comments: [],
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => { 
                 document.getElementById('post-text').value = ""; 
-                document.getElementById('post-image-url').value = ""; 
+                document.getElementById('post-image-url').value = "";
+                showSuccess("تم نشر المنشور بنجاح");
+            }).catch(error => {
+                showError("خطأ في نشر المنشور: " + error.message);
+            }).finally(() => {
+                publishBtn.disabled = false;
             });
         }
 
         function loadPosts() {
-            db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot => {
-                const feed = document.getElementById('posts-feed');
-                feed.innerHTML = "";
-                snapshot.forEach(doc => {
-                    const post = doc.data();
-                    const postId = doc.id;
-                    const authorName = post.author || currentUser;
-                    
-                    // تجهيز الصورة إذا كانت موجودة
-                    const imageHtml = post.imageUrl ? `<img src="${post.imageUrl}" class="post-image" alt="صورة المنشور">` : '';
-                    
-                    let commentsHtml = (post.comments || []).map(c => `<div class="comment"><strong>${c.user}:</strong> ${c.text}</div>`).join('');
-                    
-                    let controlBtns = '';
-                    if(authorName === currentUser) {
-                        controlBtns = `
-                            <div>
-                                <button class="action-btn danger" onclick="deletePost('${postId}')">🗑️</button>
-                            </div>
-                        `;
-                    }
+            const unsubscribe = db.collection("posts")
+                .orderBy("timestamp", "desc")
+                .limit(50)
+                .onSnapshot(
+                    snapshot => {
+                        const feed = document.getElementById('posts-feed');
+                        const fragments = [];
+                        
+                        snapshot.forEach(doc => {
+                            const post = doc.data();
+                            const postId = doc.id;
+                            const authorName = sanitizeHTML(post.author || 'مجهول');
+                            
+                            const imageHtml = post.imageUrl && isValidUrl(post.imageUrl) 
+                                ? `<img src="${post.imageUrl}" class="post-image" alt="صورة المنشور" onerror="this.style.display='none'">` 
+                                : '';
+                            
+                            const commentsHtml = (post.comments || [])
+                                .map(c => `<div class="comment"><strong>${sanitizeHTML(c.user)}:</strong> ${sanitizeHTML(c.text)}</div>`)
+                                .join('');
+                            
+                            let controlBtns = '';
+                            if (authorName === currentUser) {
+                                controlBtns = `<div><button class="action-btn danger" onclick="deletePost('${postId}')" aria-label="حذف المنشور">🗑️</button></div>`;
+                            }
 
-                    feed.innerHTML += `
-                        <div class="card">
-                            <div class="post-header">
-                                <span class="post-author">${authorName}</span>
-                                ${controlBtns}
-                            </div>
-                            <div class="card-content">${post.content}</div>
-                            ${imageHtml} <!-- إظهار الصورة هنا -->
-                            <div class="post-actions">
-                                <button class="action-btn" onclick="likePost('${postId}', ${post.likes || 0})">❤️ ${post.likes || 0}</button>
-                                <button class="action-btn" onclick="toggleComments('comments-${postId}')">💬 تعليقات (${(post.comments || []).length})</button>
-                            </div>
-                            <div id="comments-${postId}" class="comments-section">
-                                ${commentsHtml}
-                                <div style="display:flex; gap:5px; margin-top:10px;">
-                                    <input type="text" id="new-comment-${postId}" placeholder="اكتب تعليقاً..." style="margin-bottom:0;">
-                                    <button class="btn btn-gold" style="width:auto; margin:0; padding:5px 10px;" onclick="addComment('${postId}')">إرسال</button>
+                            fragments.push(`
+                                <div class="card">
+                                    <div class="post-header">
+                                        <span class="post-author">${authorName}</span>
+                                        ${controlBtns}
+                                    </div>
+                                    <div class="card-content">${sanitizeHTML(post.content)}</div>
+                                    ${imageHtml}
+                                    <div class="post-actions">
+                                        <button class="action-btn" onclick="likePost('${postId}', ${post.likes || 0})" aria-label="إعجاب">❤️ ${post.likes || 0}</button>
+                                        <button class="action-btn" onclick="toggleComments('comments-${postId}')" aria-label="التعليقات">💬 تعليقات (${(post.comments || []).length})</button>
+                                    </div>
+                                    <div id="comments-${postId}" class="comments-section" style="display:none;">
+                                        ${commentsHtml}
+                                        <div style="display:flex; gap:5px; margin-top:10px;">
+                                            <input type="text" id="new-comment-${postId}" placeholder="اكتب تعليقاً..." style="margin-bottom:0;" aria-label="كتابة تعليق">
+                                            <button class="btn btn-gold" style="width:auto; margin:0; padding:5px 10px;" onclick="addComment('${postId}')">إرسال</button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    `;
-                });
-            });
+                            `);
+                        });
+                        
+                        feed.innerHTML = fragments.join('');
+                    },
+                    error => {
+                        console.error("Error loading posts:", error);
+                        showError("خطأ في تحميل المنشورات");
+                    }
+                );
+            
+            unsubscribeFunctions.push(unsubscribe);
         }
 
-        function deletePost(id) { if(confirm("حذف المنشور؟")) db.collection("posts").doc(id).delete(); }
-        function likePost(id, currentLikes) { db.collection("posts").doc(id).update({ likes: currentLikes + 1 }); }
+        function deletePost(id) { 
+            if (confirm("هل تريد حذف المنشور؟")) {
+                db.collection("posts").doc(id).delete()
+                    .catch(error => showError("خطأ في حذف المنشور: " + error.message));
+            }
+        }
+
+        function likePost(id, currentLikes) { 
+            db.collection("posts").doc(id).update({ likes: currentLikes + 1 })
+                .catch(error => showError("خطأ في الإعجاب: " + error.message));
+        }
+
         function toggleComments(id) {
             const el = document.getElementById(id);
             el.style.display = (el.style.display === 'block') ? 'none' : 'block';
         }
+
         function addComment(postId) {
             const input = document.getElementById(`new-comment-${postId}`);
-            if(!input.value) return;
+            const text = input.value.trim();
+            
+            if (!text) {
+                showError("التعليق لا يمكن أن يكون فارغاً");
+                return;
+            }
+
             db.collection("posts").doc(postId).update({
-                comments: firebase.firestore.FieldValue.arrayUnion({ user: currentUser, text: input.value })
-            }).then(() => input.value = "");
+                comments: firebase.firestore.FieldValue.arrayUnion({ 
+                    user: currentUser, 
+                    text: text 
+                })
+            }).then(() => {
+                input.value = "";
+            }).catch(error => {
+                showError("خطأ في إضافة التعليق: " + error.message);
+            });
         }
 
+        // ========== Products Management ==========
         function addNewProduct() {
-            const name = document.getElementById('new-prod-name').value;
+            const name = document.getElementById('new-prod-name').value.trim();
             const price = parseFloat(document.getElementById('new-prod-price').value);
-            const imageUrl = document.getElementById('new-prod-image').value; // التقاط الصورة
+            const imageUrl = document.getElementById('new-prod-image').value.trim();
             
-            if(!name || !price) return;
+            if (!name) {
+                showError("اسم المنتج مطلوب");
+                return;
+            }
+
+            if (!price || price < 0) {
+                showError("السعر يجب أن يكون موجب");
+                return;
+            }
+
+            if (imageUrl && !isValidUrl(imageUrl)) {
+                showError("رابط الصورة غير صحيح");
+                return;
+            }
+
+            const addBtn = document.getElementById('add-prod-btn');
+            addBtn.disabled = true;
             
             db.collection("products").add({
                 name: name, 
                 price: price, 
-                imageUrl: imageUrl || null, // حفظ الصورة
+                imageUrl: imageUrl || null,
                 owner: currentUser, 
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
                 document.getElementById('new-prod-name').value = "";
                 document.getElementById('new-prod-price').value = "";
                 document.getElementById('new-prod-image').value = "";
+                showSuccess("تم إضافة المنتج بنجاح");
+            }).catch(error => {
+                showError("خطأ في إضافة المنتج: " + error.message);
+            }).finally(() => {
+                addBtn.disabled = false;
             });
         }
 
         function loadProducts() {
-            db.collection("products").orderBy("timestamp", "desc").onSnapshot(snapshot => {
-                const store = document.getElementById('store-products');
-                store.innerHTML = "";
-                snapshot.forEach(doc => {
-                    const prod = doc.data();
-                    const prodId = doc.id;
-                    
-                    // عرض الصورة إذا كانت موجودة، أو مساحة فارغة إذا لم تكن
-                    const imgHtml = prod.imageUrl ? `<img src="${prod.imageUrl}" class="prod-image" alt="صورة المنتج">` : '';
-                    
-                    let controlBtns = '';
-                    if(prod.owner === currentUser) {
-                        controlBtns = `
-                            <div class="prod-actions">
-                                <button class="action-btn danger" onclick="deleteProduct('${prodId}')">🗑️</button>
-                            </div>
-                        `;
+            const unsubscribe = db.collection("products")
+                .orderBy("timestamp", "desc")
+                .limit(50)
+                .onSnapshot(
+                    snapshot => {
+                        const store = document.getElementById('store-products');
+                        const fragments = [];
+                        
+                        snapshot.forEach(doc => {
+                            const prod = doc.data();
+                            const prodId = doc.id;
+                            
+                            const imgHtml = prod.imageUrl && isValidUrl(prod.imageUrl)
+                                ? `<img src="${prod.imageUrl}" class="prod-image" alt="صورة المنتج" onerror="this.style.display='none'">` 
+                                : '';
+                            
+                            let controlBtns = '';
+                            if (prod.owner === currentUser) {
+                                controlBtns = `
+                                    <div class="prod-actions">
+                                        <button class="action-btn danger" onclick="deleteProduct('${prodId}')" aria-label="حذف المنتج">🗑️</button>
+                                    </div>
+                                `;
+                            }
+
+                            fragments.push(`
+                                <div class="product-card">
+                                    ${controlBtns}
+                                    ${imgHtml}
+                                    <h4 style="margin: 5px 0;">${sanitizeHTML(prod.name)}</h4>
+                                    <p style="color: gray; margin: 5px 0;">${prod.price} Pi</p>
+                                    <button class="btn btn-gold" style="margin-top: 10px;" onclick="buyProduct('${sanitizeHTML(prod.name)}', ${prod.price})">شراء</button>
+                                </div>
+                            `);
+                        });
+                        
+                        store.innerHTML = fragments.join('');
+                    },
+                    error => {
+                        console.error("Error loading products:", error);
+                        showError("خطأ في تحميل المنتجات");
                     }
-                    store.innerHTML += `
-                        <div class="product-card">
-                            ${controlBtns}
-                            ${imgHtml} <!-- إظهار صورة المنتج -->
-                            <h4 style="margin: 5px 0;">${prod.name}</h4>
-                            <p style="color: gray; margin: 5px 0;">${prod.price} Pi</p>
-                            <button class="btn btn-gold" style="margin-top: 10px;" onclick="buyProduct('${prod.name}', ${prod.price})">شراء</button>
-                        </div>
-                    `;
-                });
-            });
+                );
+            
+            unsubscribeFunctions.push(unsubscribe);
         }
 
-        function deleteProduct(id) { if(confirm("إزالة المنتج؟")) db.collection("products").doc(id).delete(); }
+        function deleteProduct(id) { 
+            if (confirm("هل تريد حذف المنتج؟")) {
+                db.collection("products").doc(id).delete()
+                    .catch(error => showError("خطأ في حذف المنتج: " + error.message));
+            }
+        }
         
         function buyProduct(name, price) {
-            if (typeof Pi === 'undefined') { alert("نظام Pi SDK غير متاح حالياً."); return; }
+            if (typeof Pi === 'undefined') { 
+                showError("نظام Pi SDK غير متاح حالياً");
+                return; 
+            }
+
+            if (typeof price !== 'number' || price <= 0) {
+                showError("السعر غير صحيح");
+                return;
+            }
+
             Pi.createPayment({
-                amount: parseFloat(price),
+                amount: price,
                 memo: `شراء ${name} من أرابيكا`,
                 metadata: { productName: name }
             }, {
-                onReadyForServerApproval: function(paymentId) { console.log("جاهز للموافقة: ", paymentId); },
+                onReadyForServerApproval: function(paymentId) { 
+                    console.log("جاهز للموافقة: ", paymentId); 
+                },
                 onReadyForServerCompletion: function(paymentId, txid) {
                     console.log("اكتمل الدفع: ", txid);
-                    alert(`تم إرسال طلب شراء ${name} بنجاح!`);
+                    showSuccess(`تم شراء ${name} بنجاح!`);
                 },
-                onCancel: function(paymentId) { alert("تم إلغاء عملية الشراء."); },
-                onError: function(error, payment) { alert("حدث خطأ أثناء الشراء: " + error.message); }
+                onCancel: function(paymentId) { 
+                    console.log("تم إلغاء الشراء: ", paymentId);
+                },
+                onError: function(error, payment) { 
+                    showError("خطأ في الشراء: " + (error?.message || "خطأ غير معروف"));
+                }
             });
         }
 
+        // ========== Navigation ==========
         function switchTab(tab) {
             document.querySelectorAll('#main-app .view-section').forEach(el => el.classList.remove('active-section'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             document.getElementById(tab + '-view').classList.add('active-section');
             document.getElementById('nav-' + tab).classList.add('active');
         }
+
+        // Keyboard navigation support
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') item.click();
+            });
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', cleanupListeners);
     </script>
 </body>
     </html>
