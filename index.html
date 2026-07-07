@@ -441,19 +441,31 @@
             unsubscribeFunctions = [];
         }
 
-        // ========== نظام تسجيل الدخول ==========
+                // ========== نظام تسجيل الدخول ==========
         
-        // وظيفة للتعامل مع زر تسجيل الدخول
-        function handleLogin() {
-            const testUsername = "ayman2020sh";
-            loginSuccess(testUsername);
+        // وظيفة إجبارية يطلبها نظام Pi للتعامل مع الدفعات المعلقة
+        function onIncompletePaymentFound(payment) {
+            console.log("تم العثور على دفعة غير مكتملة:", payment);
         }
 
-        // وظيفة تنفذ عند نجاح تسجيل الدخول لفتح الواجهة الرئيسية وتحميل البيانات
-        function loginSuccess(username) {
-            if (!username || typeof username !== 'string') {
-                showError("اسم مستخدم غير صحيح");
+        // وظيفة للتعامل مع زر تسجيل الدخول بطلب صلاحيات الدفع الحقيقية
+        function handleLogin() {
+            if (typeof Pi === 'undefined') {
+                showError("نظام Pi SDK غير متاح حالياً");
                 return;
+            }
+
+            // هنا نطلب صلاحية اسم المستخدم وصلاحية الدفع (payments scope)
+            Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
+                .then(function(auth) {
+                    // تمرير اسم المستخدم الحقيقي من شبكة Pi لتسجيل الدخول
+                    loginSuccess(auth.user.username);
+                })
+                .catch(function(error) {
+                    showError("حدث خطأ أثناء تسجيل الدخول: " + error.message);
+                });
+        }
+
             }
 
             currentUser = username;
