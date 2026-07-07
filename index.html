@@ -376,7 +376,8 @@
         function initializePiSDK() {
             try {
                 if (typeof Pi !== 'undefined') {
-                    Pi.init({ version: "2.0", sandbox: true });
+                    // تم تغيير sandbox إلى false للسماح بالتشغيل الفعلي داخل متصفح Pi حقيقياً
+                    Pi.init({ version: "2.0", sandbox: false });
                     console.log("Pi SDK initialized successfully");
                 } else {
                     console.warn("Pi SDK not available");
@@ -421,7 +422,7 @@
         // وظيفة لطباعة رسائل النجاح في النظام الخلفي (الكونسول)
         function showSuccess(message) {
             console.log("Success:", message);
-            alert(message); // أضفت لك تنبيه بسيط يظهر للمستخدم عند النجاح
+            alert(message);
         }
 
         // وظيفة لتنظيف الاتصالات بقاعدة البيانات عند الخروج لتقليل استهلاك الموارد
@@ -647,7 +648,7 @@
                 .catch(error => showError("خطأ في الإعجاب: " + error.message));
         }
 
-        // وظيفة لإظهار أو إخفاء قسم التعليقات عند الضغط على الزر
+        // وظيفة لإظهار أو إخفاء قسم التعليقات عند الضقف على الزر
         function toggleComments(id) {
             const el = document.getElementById(id);
             el.style.display = (el.style.display === 'block') ? 'none' : 'block';
@@ -778,6 +779,9 @@
         
         // وظيفة لشراء منتج باستخدام عملة Pi والاتصال بالخادم (Vercel) لإتمام العملية
         function buyProduct(name, price) {
+            // تنبيه فوري للتأكد من استجابة الزر قبل أي خطوة أخرى
+            alert("تم الضغط على زر الشراء لمنتج: " + name);
+
             if (typeof Pi === 'undefined') { 
                 showError("نظام Pi SDK غير متاح حالياً");
                 return; 
@@ -795,7 +799,6 @@
             }, {
                 onReadyForServerApproval: function(paymentId) { 
                     console.log("جاري طلب الموافقة من الخادم..."); 
-                    // هنا نوقظ الخادم (approve.js) ليعطي الموافقة لمحفظة Pi
                     fetch('/api/approve', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -805,7 +808,6 @@
                 },
                 onReadyForServerCompletion: function(paymentId, txid) {
                     console.log("جاري تأكيد الدفع في الخادم...");
-                    // هنا نوقظ الخادم (complete.js) ليختم الفاتورة بعد الدفع
                     fetch('/api/complete', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -830,8 +832,6 @@
         }
 
         // ========== نظام التنقل بين الصفحات ==========
-        
-        // وظيفة للتنقل بين أقسام التطبيق (المجتمع، المتجر، حسابي)
         function switchTab(tab) {
             document.querySelectorAll('#main-app .view-section').forEach(el => el.classList.remove('active-section'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
