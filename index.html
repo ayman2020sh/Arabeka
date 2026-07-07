@@ -10,7 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
-        /* (كل الأنماط كما هي، لم تتغير) */
+        /* إعدادات الألوان والتصميم الأساسي */
         :root { 
             --primary: #3f1b62; 
             --gold: #c5a059; 
@@ -256,20 +256,6 @@
             font-weight: bold; 
         }
 
-        .loading-spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(0,0,0,0.1);
-            border-top: 2px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
         .error-message {
             background-color: #f8d7da;
             border: 1px solid #f5c6cb;
@@ -360,7 +346,7 @@
     </div>
 
     <script>
-        // ========== Firebase Configuration ==========
+        // ========== إعدادات قاعدة بيانات Firebase للواجهة الأمامية ==========
         const firebaseConfig = {
             apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
             authDomain: "arabeka-3336c.firebaseapp.com",
@@ -381,11 +367,12 @@
         let currentUser = null;
         let unsubscribeFunctions = [];
 
-        // ========== Initialization ==========
+        // ========== التشغيل المبدئي للتطبيق ==========
         window.addEventListener('load', function() {
             initializePiSDK();
         });
 
+        // وظيفة لتهيئة وتجهيز نظام Pi للعمل عند فتح الصفحة
         function initializePiSDK() {
             try {
                 if (typeof Pi !== 'undefined') {
@@ -401,13 +388,16 @@
 
         document.getElementById('login-btn').addEventListener('click', handleLogin);
 
-        // ========== Utility Functions ==========
+        // ========== دوال مساعدة (Utility Functions) ==========
+        
+        // وظيفة لتنظيف النصوص ومنع الأكواد الخبيثة للحماية
         function sanitizeHTML(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
+        // وظيفة للتحقق من أن الرابط المدخل للصور هو رابط صحيح
         function isValidUrl(string) {
             try {
                 new URL(string);
@@ -417,6 +407,7 @@
             }
         }
 
+        // وظيفة لعرض رسائل الخطأ للمستخدم على الشاشة
         function showError(message) {
             console.error("Error:", message);
             const errorEl = document.getElementById('login-error');
@@ -427,11 +418,13 @@
             }
         }
 
+        // وظيفة لطباعة رسائل النجاح في النظام الخلفي (الكونسول)
         function showSuccess(message) {
-            // يمكنك عرض رسالة نجاح في عنصر مخصص، هنا نستخدم تنبيه مؤقت أو نضيف عنصر نجاح
-            alert(message); // مؤقتاً، لكن يمكن تحسينها
+            console.log("Success:", message);
+            alert(message); // أضفت لك تنبيه بسيط يظهر للمستخدم عند النجاح
         }
 
+        // وظيفة لتنظيف الاتصالات بقاعدة البيانات عند الخروج لتقليل استهلاك الموارد
         function cleanupListeners() {
             unsubscribeFunctions.forEach(unsubscribe => {
                 try { unsubscribe(); } catch (e) { console.error("Error unsubscribing:", e); }
@@ -439,14 +432,15 @@
             unsubscribeFunctions = [];
         }
 
-        // ========== Authentication ==========
+        // ========== نظام تسجيل الدخول ==========
+        
+        // وظيفة للتعامل مع زر تسجيل الدخول (حالياً تستخدم اسم تجريبي للتبسيط)
         function handleLogin() {
-            // TODO: استخدم Pi.authenticate() بدلاً من ذلك للحصول على اسم المستخدم الحقيقي
-            // لكن حالياً نستخدم اسم ثابت للاختبار
             const testUsername = "ayman2020sh";
             loginSuccess(testUsername);
         }
 
+        // وظيفة تنفذ عند نجاح تسجيل الدخول لفتح الواجهة الرئيسية وتحميل البيانات
         function loginSuccess(username) {
             if (!username || typeof username !== 'string') {
                 showError("اسم مستخدم غير صحيح");
@@ -464,6 +458,7 @@
             loadProducts();
         }
 
+        // وظيفة لجلب النبذة الشخصية للمستخدم من قاعدة البيانات
         function loadUserBio() {
             const unsubscribe = db.collection("users").doc(currentUser).onSnapshot(
                 doc => {
@@ -478,9 +473,10 @@
             unsubscribeFunctions.push(unsubscribe);
         }
 
-        // ========== Modal Management ==========
+        // ========== إدارة النوافذ المنبثقة (Modals) ==========
         let activeCallback = null;
 
+        // وظيفة لفتح نافذة منبثقة لتعديل البيانات
         function openCustomModal(title, val1, val2, showSecond, cb) {
             document.getElementById('modal-title').innerText = sanitizeHTML(title);
             document.getElementById('modal-input-1').value = val1;
@@ -496,12 +492,14 @@
             activeCallback = cb;
         }
 
+        // وظيفة لإغلاق النافذة المنبثقة
         function closeModal() { 
             document.getElementById('custom-modal').style.display = 'none';
             document.getElementById('custom-modal').setAttribute('aria-hidden', 'true');
             activeCallback = null;
         }
 
+        // وظيفة لحفظ البيانات المدخلة في النافذة المنبثقة
         function saveModal() {
             const v1 = document.getElementById('modal-input-1').value.trim();
             const v2 = document.getElementById('modal-input-2').value.trim();
@@ -515,12 +513,13 @@
             closeModal();
         }
 
-        // Close modal on backdrop click
         document.getElementById('custom-modal').addEventListener('click', (e) => {
             if (e.target.id === 'custom-modal') closeModal();
         });
 
-        // ========== Profile Functions ==========
+        // ========== وظائف الملف الشخصي ==========
+        
+        // وظيفة لفتح نافذة تعديل النبذة الشخصية وحفظها في قاعدة البيانات
         function editBio() {
             const currentBio = document.getElementById('user-bio').innerText;
             openCustomModal("تعديل النبذة الشخصية", currentBio, "", false, (newBio) => {
@@ -534,7 +533,9 @@
             });
         }
 
-        // ========== Posts Management ==========
+        // ========== إدارة المنشورات (المجتمع) ==========
+        
+        // وظيفة لنشر منشور جديد (نص أو صورة) في المجتمع
         function publishPost() {
             const text = document.getElementById('post-text').value.trim();
             const imageUrl = document.getElementById('post-image-url').value.trim();
@@ -570,6 +571,7 @@
             });
         }
 
+        // وظيفة لجلب وعرض المنشورات من قاعدة البيانات باستمرار
         function loadPosts() {
             const unsubscribe = db.collection("posts")
                 .orderBy("timestamp", "desc")
@@ -631,6 +633,7 @@
             unsubscribeFunctions.push(unsubscribe);
         }
 
+        // وظيفة لحذف منشور معين (يظهر زر الحذف لصاحب المنشور فقط)
         function deletePost(id) { 
             if (confirm("هل تريد حذف المنشور؟")) {
                 db.collection("posts").doc(id).delete()
@@ -638,16 +641,19 @@
             }
         }
 
+        // وظيفة لزيادة عدد الإعجابات لمنشور معين
         function likePost(id, currentLikes) { 
             db.collection("posts").doc(id).update({ likes: currentLikes + 1 })
                 .catch(error => showError("خطأ في الإعجاب: " + error.message));
         }
 
+        // وظيفة لإظهار أو إخفاء قسم التعليقات عند الضغط على الزر
         function toggleComments(id) {
             const el = document.getElementById(id);
             el.style.display = (el.style.display === 'block') ? 'none' : 'block';
         }
 
+        // وظيفة لإضافة تعليق جديد على منشور وحفظه
         function addComment(postId) {
             const input = document.getElementById(`new-comment-${postId}`);
             const text = input.value.trim();
@@ -669,7 +675,9 @@
             });
         }
 
-        // ========== Products Management ==========
+        // ========== إدارة المنتجات (المتجر) ==========
+        
+        // وظيفة لإضافة منتج جديد للبيع في المتجر
         function addNewProduct() {
             const name = document.getElementById('new-prod-name').value.trim();
             const price = parseFloat(document.getElementById('new-prod-price').value);
@@ -711,6 +719,7 @@
             });
         }
 
+        // وظيفة لجلب وعرض المنتجات في المتجر باستمرار
         function loadProducts() {
             const unsubscribe = db.collection("products")
                 .orderBy("timestamp", "desc")
@@ -743,7 +752,7 @@
                                     ${imgHtml}
                                     <h4 style="margin: 5px 0;">${sanitizeHTML(prod.name)}</h4>
                                     <p style="color: gray; margin: 5px 0;">${prod.price} Pi</p>
-                                    <button class="btn btn-gold" style="margin-top: 10px;" onclick="buyProduct('${sanitizeHTML(prod.name)}', ${prod.price}, '${prodId}')">شراء</button>
+                                    <button class="btn btn-gold" style="margin-top: 10px;" onclick="buyProduct('${sanitizeHTML(prod.name)}', ${prod.price})">شراء</button>
                                 </div>
                             `);
                         });
@@ -759,63 +768,16 @@
             unsubscribeFunctions.push(unsubscribe);
         }
 
+        // وظيفة لحذف منتج من المتجر (يظهر زر الحذف لصاحب المنتج فقط)
         function deleteProduct(id) { 
             if (confirm("هل تريد حذف المنتج؟")) {
                 db.collection("products").doc(id).delete()
                     .catch(error => showError("خطأ في حذف المنتج: " + error.message));
             }
         }
-
-        // ============================================================
-        // ========== دالتان جديدتان للتواصل مع الخادم ==========
-        // ============================================================
-
-        // دالة لإرسال طلب الموافقة إلى الخادم (approve)
-        async function approvePayment(paymentId) {
-            try {
-                // تأكد من أن مسار الخادم صحيح. 
-    
-                const response = await fetch('https://arabeka.vercel.app/api/approve', {   
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ paymentId })
-                });
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.error || 'فشلت الموافقة');
-                }
-                console.log('تمت الموافقة على الدفع:', data);
-                return data;
-            } catch (error) {
-                console.error('خطأ في approvePayment:', error);
-                showError('فشلت الموافقة على الدفع: ' + error.message);
-                throw error;
-            }
-        }
-
-        // دالة لإرسال طلب الإكمال إلى الخادم (complete)
-        async function completePayment(paymentId, txid) {
-            try {
-                const response = await fetch('https://arabeka.vercel.app/api/complete', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ paymentId, txid })
-                });
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.error || 'فشل إكمال الدفع');
-                }
-                console.log('تم إكمال الدفع:', data);
-                return data;
-            } catch (error) {
-                console.error('خطأ في completePayment:', error);
-                showError('فشل إكمال الدفع: ' + error.message);
-                throw error;
-            }
-        }
-
-        // ========== دالة الشراء المعدلة ==========
-        function buyProduct(name, price, productId) {
+        
+        // وظيفة لشراء منتج باستخدام عملة Pi والاتصال بالخادم (Vercel) لإتمام العملية
+        function buyProduct(name, price) {
             if (typeof Pi === 'undefined') { 
                 showError("نظام Pi SDK غير متاح حالياً");
                 return; 
@@ -826,51 +788,50 @@
                 return;
             }
 
-            // نستخدم Pi.createPayment مع دوال الاستدعاء الجديدة
             Pi.createPayment({
                 amount: price,
                 memo: `شراء ${name} من أرابيكا`,
-                metadata: { productName: name, productId: productId }
+                metadata: { productName: name }
             }, {
-                // عند طلب الموافقة من الخادم
-                onReadyForServerApproval: function(paymentId) {
-                    console.log('جاهز للموافقة، paymentId:', paymentId);
-                    // نستدعي دالة الموافقة التي ترسل الطلب إلى الخادم
-                    approvePayment(paymentId)
-                        .then(() => {
-                            console.log('تمت الموافقة من الخادم');
-                        })
-                        .catch(err => {
-                            console.error('فشلت الموافقة:', err);
-                        });
+                onReadyForServerApproval: function(paymentId) { 
+                    console.log("جاري طلب الموافقة من الخادم..."); 
+                    // هنا نوقظ الخادم (approve.js) ليعطي الموافقة لمحفظة Pi
+                    fetch('/api/approve', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ paymentId: paymentId })
+                    })
+                    .catch(error => showError("فشل الاتصال بخادم الموافقة"));
                 },
-                // عند اكتمال الدفع على البلوكشين وجاهز للإكمال
                 onReadyForServerCompletion: function(paymentId, txid) {
-                    console.log('جاهز للإكمال، paymentId:', paymentId, 'txid:', txid);
-                    // نستدعي دالة الإكمال التي ترسل الطلب إلى الخادم
-                    completePayment(paymentId, txid)
-                        .then(() => {
-                            showSuccess(`تم شراء ${name} بنجاح! 🎉`);
-                            // يمكنك تحديث قائمة المنتجات أو إضافة منطق إضافي
-                        })
-                        .catch(err => {
-                            console.error('فشل الإكمال:', err);
-                        });
+                    console.log("جاري تأكيد الدفع في الخادم...");
+                    // هنا نوقظ الخادم (complete.js) ليختم الفاتورة بعد الدفع
+                    fetch('/api/complete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ paymentId: paymentId, txid: txid })
+                    })
+                    .then(response => {
+                        if(response.ok) {
+                            showSuccess(`تم شراء ${name} بنجاح!`);
+                        } else {
+                            showError("تم الدفع لكن فشل تأكيد الخادم.");
+                        }
+                    })
+                    .catch(error => showError("فشل الاتصال بخادم الإكمال"));
                 },
-                // عند إلغاء المستخدم للدفع
                 onCancel: function(paymentId) { 
-                    console.log('تم إلغاء الدفع:', paymentId);
-                    showError('تم إلغاء عملية الشراء');
+                    console.log("تم إلغاء الشراء: ", paymentId);
                 },
-                // عند حدوث خطأ ما
                 onError: function(error, payment) { 
-                    console.error('خطأ في Pi.createPayment:', error, payment);
-                    showError('خطأ في الدفع: ' + (error?.message || 'خطأ غير معروف'));
+                    showError("خطأ في الشراء: " + (error?.message || "خطأ غير معروف"));
                 }
             });
         }
 
-        // ========== Navigation ==========
+        // ========== نظام التنقل بين الصفحات ==========
+        
+        // وظيفة للتنقل بين أقسام التطبيق (المجتمع، المتجر، حسابي)
         function switchTab(tab) {
             document.querySelectorAll('#main-app .view-section').forEach(el => el.classList.remove('active-section'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -878,15 +839,13 @@
             document.getElementById('nav-' + tab).classList.add('active');
         }
 
-        // Keyboard navigation support
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') item.click();
             });
         });
 
-        // Cleanup on page unload
         window.addEventListener('beforeunload', cleanupListeners);
     </script>
 </body>
-    </html>
+</html>
