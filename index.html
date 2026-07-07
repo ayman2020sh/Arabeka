@@ -263,6 +263,11 @@
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 10px;
+            position: fixed;
+            top: 60px;
+            left: 15px;
+            right: 15px;
+            z-index: 1000;
         }
 
         .success-message {
@@ -284,6 +289,9 @@
 <body>
 
     <div class="header" role="banner">أرابيكا ☕</div>
+    
+    <!-- مكان مخصص لعرض أي خطأ يظهر من شبكة البي مباشرة على الشاشة للهاتف -->
+    <div id="login-error" style="display:none;" class="error-message"></div>
 
     <div id="custom-modal" class="modal" role="dialog" aria-hidden="true">
         <div class="modal-content">
@@ -299,7 +307,6 @@
         <h2>مرحباً بك في مجتمع أرابيكا</h2>
         <p>انضم إلى مجتمعنا وابدأ التجارة الآن</p>
         <button class="btn btn-gold" id="login-btn">تسجيل الدخول باستخدام Pi</button>
-        <div id="login-error" style="display:none;" class="error-message"></div>
     </div>
 
     <div id="main-app" class="view-section">
@@ -376,8 +383,8 @@
         function initializePiSDK() {
             try {
                 if (typeof Pi !== 'undefined') {
-                    // تم تغيير sandbox إلى false للسماح بالتشغيل الفعلي داخل متصفح Pi حقيقياً
-                    Pi.init({ version: "2.0", sandbox: false });
+                    // جعلناها true كوضع افتراضي ومستقر لحين الانتهاء من مراجعة التطبيق رسمياً
+                    Pi.init({ version: "2.0", sandbox: true });
                     console.log("Pi SDK initialized successfully");
                 } else {
                     console.warn("Pi SDK not available");
@@ -408,18 +415,19 @@
             }
         }
 
-        // وظيفة لعرض رسائل الخطأ للمستخدم على الشاشة
+        // وظيفة لعرض رسائل الخطأ للمخدم على الشاشة بوضوح مرتفع
         function showError(message) {
             console.error("Error:", message);
             const errorEl = document.getElementById('login-error');
             if (errorEl) {
                 errorEl.innerHTML = sanitizeHTML(message);
                 errorEl.style.display = 'block';
-                setTimeout(() => { errorEl.style.display = 'none'; }, 5000);
+                // تمديد الوقت لـ 10 ثوانٍ لتتمكن من قراءة الخطأ من الهاتف بالكامل
+                setTimeout(() => { errorEl.style.display = 'none'; }, 10000);
             }
         }
 
-        // وظيفة لطباعة رسائل النجاح في النظام الخلفي (الكونسول)
+        // وظيفة لطباعة رسائل النجاح
         function showSuccess(message) {
             console.log("Success:", message);
             alert(message);
@@ -435,7 +443,7 @@
 
         // ========== نظام تسجيل الدخول ==========
         
-        // وظيفة للتعامل مع زر تسجيل الدخول (حالياً تستخدم اسم تجريبي للتبسيط)
+        // وظيفة للتعامل مع زر تسجيل الدخول
         function handleLogin() {
             const testUsername = "ayman2020sh";
             loginSuccess(testUsername);
@@ -634,7 +642,7 @@
             unsubscribeFunctions.push(unsubscribe);
         }
 
-        // وظيفة لحذف منشور معين (يظهر زر الحذف لصاحب المنشور فقط)
+        // وظيفة لحذف منشور معين
         function deletePost(id) { 
             if (confirm("هل تريد حذف المنشور؟")) {
                 db.collection("posts").doc(id).delete()
@@ -648,7 +656,7 @@
                 .catch(error => showError("خطأ في الإعجاب: " + error.message));
         }
 
-        // وظيفة لإظهار أو إخفاء قسم التعليقات عند الضقف على الزر
+        // وظيفة لإظهار أو إخفاء قسم التعليقات عند الضغط على الزر
         function toggleComments(id) {
             const el = document.getElementById(id);
             el.style.display = (el.style.display === 'block') ? 'none' : 'block';
@@ -769,7 +777,7 @@
             unsubscribeFunctions.push(unsubscribe);
         }
 
-        // وظيفة لحذف منتج من المتجر (يظهر زر الحذف لصاحب المنتج فقط)
+        // وظيفة لحذف منتج من المتجر
         function deleteProduct(id) { 
             if (confirm("هل تريد حذف المنتج؟")) {
                 db.collection("products").doc(id).delete()
@@ -777,58 +785,61 @@
             }
         }
         
-        // وظيفة لشراء منتج باستخدام عملة Pi والاتصال بالخادم (Vercel) لإتمام العملية
+        // وظيفة لشراء منتج واستدعاء محفظة Pi مباشرة مع التقاط الأخطاء إن وجدت
         function buyProduct(name, price) {
-            // تنبيه فوري للتأكد من استجابة الزر قبل أي خطوة أخرى
-            alert("تم الضغط على زر الشراء لمنتج: " + name);
-
+            // حذفنا الـ alert القديم لتسريع تجربة المستخدم بمجرد ضغط الزر
             if (typeof Pi === 'undefined') { 
-                showError("نظام Pi SDK غير متاح حالياً");
+                showError("نظام Pi SDK غير متاح داخل هذا المتصفح حالياً");
                 return; 
             }
 
             if (typeof price !== 'number' || price <= 0) {
-                showError("السعر غير صحيح");
+                showError("سعر المنتج المدخل غير صحيح");
                 return;
             }
 
-            Pi.createPayment({
-                amount: price,
-                memo: `شراء ${name} من أرابيكا`,
-                metadata: { productName: name }
-            }, {
-                onReadyForServerApproval: function(paymentId) { 
-                    console.log("جاري طلب الموافقة من الخادم..."); 
-                    fetch('/api/approve', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ paymentId: paymentId })
-                    })
-                    .catch(error => showError("فشل الاتصال بخادم الموافقة"));
-                },
-                onReadyForServerCompletion: function(paymentId, txid) {
-                    console.log("جاري تأكيد الدفع في الخادم...");
-                    fetch('/api/complete', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ paymentId: paymentId, txid: txid })
-                    })
-                    .then(response => {
-                        if(response.ok) {
-                            showSuccess(`تم شراء ${name} بنجاح!`);
-                        } else {
-                            showError("تم الدفع لكن فشل تأكيد الخادم.");
-                        }
-                    })
-                    .catch(error => showError("فشل الاتصال بخادم الإكمال"));
-                },
-                onCancel: function(paymentId) { 
-                    console.log("تم إلغاء الشراء: ", paymentId);
-                },
-                onError: function(error, payment) { 
-                    showError("خطأ في الشراء: " + (error?.message || "خطأ غير معروف"));
-                }
-            });
+            try {
+                Pi.createPayment({
+                    amount: price,
+                    memo: `شراء ${name} من أرابيكا`,
+                    metadata: { productName: name }
+                }, {
+                    onReadyForServerApproval: function(paymentId) { 
+                        console.log("جاري طلب الموافقة من الخادم..."); 
+                        fetch('/api/approve', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ paymentId: paymentId })
+                        })
+                        .catch(error => showError("فشل الاتصال بخادم الموافقة الداخلي Vercel"));
+                    },
+                    onReadyForServerCompletion: function(paymentId, txid) {
+                        console.log("جاري تأكيد الدفع في الخادم...");
+                        fetch('/api/complete', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ paymentId: paymentId, txid: txid })
+                        })
+                        .then(response => {
+                            if(response.ok) {
+                                showSuccess(`تم شراء ${name} بنجاح ومصادقته!`);
+                            } else {
+                                showError("تم خصم الرصيد لكن فشل خادم الـ API في التأكيد.");
+                            }
+                        })
+                        .catch(error => showError("فشل الاتصال بخادم الإكمال النهائي"));
+                    },
+                    onCancel: function(paymentId) { 
+                        console.log("تم إلغاء عملية الشراء بواسطة المستخدم.");
+                    },
+                    onError: function(error, payment) { 
+                        // في حال رفض متصفح Pi استدعاء المحفظة بسبب إعدادات الدومين سيظهر الخطأ هنا مباشرة في أعلى الصفحة
+                        showError("خطأ من شبكة Pi: " + (error?.message || "يرجى مراجعة إعدادات الرابط في الـ Developer Portal الخاص بـ Pi"));
+                    }
+                });
+            } catch (globalError) {
+                showError("خطأ داخلي غير متوقع: " + globalError.message);
+            }
         }
 
         // ========== نظام التنقل بين الصفحات ==========
