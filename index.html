@@ -290,7 +290,6 @@
 
     <div class="header" role="banner">أرابيكا ☕</div>
     
-    <!-- مكان مخصص لعرض أي خطأ يظهر من شبكة البي مباشرة على الشاشة للهاتف -->
     <div id="login-error" style="display:none;" class="error-message"></div>
 
     <div id="custom-modal" class="modal" role="dialog" aria-hidden="true">
@@ -379,11 +378,11 @@
             initializePiSDK();
         });
 
+
         // وظيفة لتهيئة وتجهيز نظام Pi للعمل عند فتح الصفحة
         function initializePiSDK() {
             try {
                 if (typeof Pi !== 'undefined') {
-                    // جعلناها true كوضع افتراضي ومستقر لحين الانتهاء من مراجعة التطبيق رسمياً
                     Pi.init({ version: "2.0", sandbox: true });
                     console.log("Pi SDK initialized successfully");
                 } else {
@@ -396,16 +395,16 @@
 
         document.getElementById('login-btn').addEventListener('click', handleLogin);
 
+
         // ========== دوال مساعدة (Utility Functions) ==========
         
-        // وظيفة لتنظيف النصوص ومنع الأكواد الخبيثة للحماية
         function sanitizeHTML(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
-        // وظيفة للتحقق من أن الرابط المدخل للصور هو رابط صحيح
+
         function isValidUrl(string) {
             try {
                 new URL(string);
@@ -415,25 +414,24 @@
             }
         }
 
-        // وظيفة لعرض رسائل الخطأ للمخدم على الشاشة بوضوح مرتفع
+
         function showError(message) {
             console.error("Error:", message);
             const errorEl = document.getElementById('login-error');
             if (errorEl) {
                 errorEl.innerHTML = sanitizeHTML(message);
                 errorEl.style.display = 'block';
-                // تمديد الوقت لـ 10 ثوانٍ لتتمكن من قراءة الخطأ من الهاتف بالكامل
                 setTimeout(() => { errorEl.style.display = 'none'; }, 10000);
             }
         }
 
-        // وظيفة لطباعة رسائل النجاح
+
         function showSuccess(message) {
             console.log("Success:", message);
             alert(message);
         }
 
-        // وظيفة لتنظيف الاتصالات بقاعدة البيانات عند الخروج لتقليل استهلاك الموارد
+
         function cleanupListeners() {
             unsubscribeFunctions.forEach(unsubscribe => {
                 try { unsubscribe(); } catch (e) { console.error("Error unsubscribing:", e); }
@@ -441,24 +439,25 @@
             unsubscribeFunctions = [];
         }
 
-                // ========== نظام تسجيل الدخول ==========
-        
+
+        // ========== نظام تسجيل الدخول ==========
+
         // وظيفة إجبارية يطلبها نظام Pi للتعامل مع الدفعات المعلقة
         function onIncompletePaymentFound(payment) {
             console.log("تم العثور على دفعة غير مكتملة:", payment);
         }
 
+
         // وظيفة للتعامل مع زر تسجيل الدخول بطلب صلاحيات الدفع الحقيقية
         function handleLogin() {
             if (typeof Pi === 'undefined') {
-                showError("نظام Pi SDK غير متاح حالياً");
+                showError("نظام Pi SDK غير متاح حالياً. يرجى فتح التطبيق من متصفح Pi.");
                 return;
             }
 
-            // هنا نطلب صلاحية اسم المستخدم وصلاحية الدفع (payments scope)
+            // طلب صلاحية اسم المستخدم وصلاحية الدفع
             Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
                 .then(function(auth) {
-                    // تمرير اسم المستخدم الحقيقي من شبكة Pi لتسجيل الدخول
                     loginSuccess(auth.user.username);
                 })
                 .catch(function(error) {
@@ -466,6 +465,12 @@
                 });
         }
 
+
+        // وظيفة تنفذ عند نجاح تسجيل الدخول لفتح الواجهة الرئيسية
+        function loginSuccess(username) {
+            if (!username || typeof username !== 'string') {
+                showError("اسم مستخدم غير صحيح");
+                return;
             }
 
             currentUser = username;
@@ -479,7 +484,7 @@
             loadProducts();
         }
 
-        // وظيفة لجلب النبذة الشخصية للمستخدم من قاعدة البيانات
+
         function loadUserBio() {
             const unsubscribe = db.collection("users").doc(currentUser).onSnapshot(
                 doc => {
@@ -494,10 +499,10 @@
             unsubscribeFunctions.push(unsubscribe);
         }
 
+
         // ========== إدارة النوافذ المنبثقة (Modals) ==========
         let activeCallback = null;
 
-        // وظيفة لفتح نافذة منبثقة لتعديل البيانات
         function openCustomModal(title, val1, val2, showSecond, cb) {
             document.getElementById('modal-title').innerText = sanitizeHTML(title);
             document.getElementById('modal-input-1').value = val1;
@@ -513,14 +518,14 @@
             activeCallback = cb;
         }
 
-        // وظيفة لإغلاق النافذة المنبثقة
+
         function closeModal() { 
             document.getElementById('custom-modal').style.display = 'none';
             document.getElementById('custom-modal').setAttribute('aria-hidden', 'true');
             activeCallback = null;
         }
 
-        // وظيفة لحفظ البيانات المدخلة في النافذة المنبثقة
+
         function saveModal() {
             const v1 = document.getElementById('modal-input-1').value.trim();
             const v2 = document.getElementById('modal-input-2').value.trim();
@@ -534,13 +539,14 @@
             closeModal();
         }
 
+
         document.getElementById('custom-modal').addEventListener('click', (e) => {
             if (e.target.id === 'custom-modal') closeModal();
         });
 
+
         // ========== وظائف الملف الشخصي ==========
         
-        // وظيفة لفتح نافذة تعديل النبذة الشخصية وحفظها في قاعدة البيانات
         function editBio() {
             const currentBio = document.getElementById('user-bio').innerText;
             openCustomModal("تعديل النبذة الشخصية", currentBio, "", false, (newBio) => {
@@ -554,9 +560,9 @@
             });
         }
 
+
         // ========== إدارة المنشورات (المجتمع) ==========
         
-        // وظيفة لنشر منشور جديد (نص أو صورة) في المجتمع
         function publishPost() {
             const text = document.getElementById('post-text').value.trim();
             const imageUrl = document.getElementById('post-image-url').value.trim();
@@ -592,7 +598,7 @@
             });
         }
 
-        // وظيفة لجلب وعرض المنشورات من قاعدة البيانات باستمرار
+
         function loadPosts() {
             const unsubscribe = db.collection("posts")
                 .orderBy("timestamp", "desc")
@@ -654,7 +660,7 @@
             unsubscribeFunctions.push(unsubscribe);
         }
 
-        // وظيفة لحذف منشور معين
+
         function deletePost(id) { 
             if (confirm("هل تريد حذف المنشور؟")) {
                 db.collection("posts").doc(id).delete()
@@ -662,19 +668,19 @@
             }
         }
 
-        // وظيفة لزيادة عدد الإعجابات لمنشور معين
+
         function likePost(id, currentLikes) { 
             db.collection("posts").doc(id).update({ likes: currentLikes + 1 })
                 .catch(error => showError("خطأ في الإعجاب: " + error.message));
         }
 
-        // وظيفة لإظهار أو إخفاء قسم التعليقات عند الضغط على الزر
+
         function toggleComments(id) {
             const el = document.getElementById(id);
             el.style.display = (el.style.display === 'block') ? 'none' : 'block';
         }
 
-        // وظيفة لإضافة تعليق جديد على منشور وحفظه
+
         function addComment(postId) {
             const input = document.getElementById(`new-comment-${postId}`);
             const text = input.value.trim();
@@ -696,9 +702,9 @@
             });
         }
 
+
         // ========== إدارة المنتجات (المتجر) ==========
         
-        // وظيفة لإضافة منتج جديد للبيع في المتجر
         function addNewProduct() {
             const name = document.getElementById('new-prod-name').value.trim();
             const price = parseFloat(document.getElementById('new-prod-price').value);
@@ -740,7 +746,7 @@
             });
         }
 
-        // وظيفة لجلب وعرض المنتجات في المتجر باستمرار
+
         function loadProducts() {
             const unsubscribe = db.collection("products")
                 .orderBy("timestamp", "desc")
@@ -789,7 +795,7 @@
             unsubscribeFunctions.push(unsubscribe);
         }
 
-        // وظيفة لحذف منتج من المتجر
+
         function deleteProduct(id) { 
             if (confirm("هل تريد حذف المنتج؟")) {
                 db.collection("products").doc(id).delete()
@@ -797,9 +803,8 @@
             }
         }
         
-        // وظيفة لشراء منتج واستدعاء محفظة Pi مباشرة مع التقاط الأخطاء إن وجدت
+
         function buyProduct(name, price) {
-            // حذفنا الـ alert القديم لتسريع تجربة المستخدم بمجرد ضغط الزر
             if (typeof Pi === 'undefined') { 
                 showError("نظام Pi SDK غير متاح داخل هذا المتصفح حالياً");
                 return; 
@@ -845,7 +850,6 @@
                         console.log("تم إلغاء عملية الشراء بواسطة المستخدم.");
                     },
                     onError: function(error, payment) { 
-                        // في حال رفض متصفح Pi استدعاء المحفظة بسبب إعدادات الدومين سيظهر الخطأ هنا مباشرة في أعلى الصفحة
                         showError("خطأ من شبكة Pi: " + (error?.message || "يرجى مراجعة إعدادات الرابط في الـ Developer Portal الخاص بـ Pi"));
                     }
                 });
@@ -853,6 +857,7 @@
                 showError("خطأ داخلي غير متوقع: " + globalError.message);
             }
         }
+
 
         // ========== نظام التنقل بين الصفحات ==========
         function switchTab(tab) {
