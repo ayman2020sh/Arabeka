@@ -1,1 +1,6 @@
-
+[[CURRENCIES]]
+code="ARA"
+issuer="GDNHNJG4PWWUVR55ALNLKDNTAKPKGNTETA7WEUMZVZ2OOIFEJAVKNHSX"
+name="Arabeka Platform"
+desc="العملة الرقمية لمنصة أرابيكا على شبكة Pi Testnet"
+image="https://arabeka.vercel.app/logo.png"
