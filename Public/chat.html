@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 مساعد أرابيكا الذكي</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; direction: rtl; }
+        .container { background: white; border-radius: 24px; padding: 25px; max-width: 700px; width: 100%; box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
+        h1 { color: #1a3b5d; text-align: center; font-size: 26px; margin-bottom: 5px; }
+        .sub { text-align: center; color: #777; margin-bottom: 20px; font-size: 14px; }
+        #chat-box { background: #f9fafc; border-radius: 16px; padding: 15px; height: 400px; overflow-y: auto; border: 1px solid #e6edf4; margin-bottom: 15px; display: flex; flex-direction: column; }
+        .msg { max-width: 82%; padding: 12px 18px; border-radius: 20px; margin-bottom: 10px; word-wrap: break-word; font-size: 15px; line-height: 1.6; }
+        .user { background: #1a3b5d; color: white; align-self: flex-end; border-bottom-left-radius: 5px; }
+        .bot { background: white; color: #1a1a1a; align-self: flex-start; border-bottom-right-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid #e6edf4; }
+        .loading { background: #e6edf4; color: #555; align-self: flex-start; border-radius: 20px; padding: 12px 18px; font-size: 14px; }
+        .input-area { display: flex; gap: 12px; margin-top: 5px; }
+        input { flex: 1; padding: 14px 20px; border: 2px solid #e6edf4; border-radius: 30px; font-size: 16px; outline: none; transition: 0.2s; background: #f9fafc; }
+        input:focus { border-color: #1a3b5d; background: white; }
+        button { padding: 14px 30px; background: #1a3b5d; color: white; border: none; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+        button:hover { background: #0f2a42; transform: scale(0.97); }
+        button:disabled { background: #aaa; cursor: not-allowed; }
+        .footer { text-align: center; margin-top: 15px; font-size: 12px; color: #aaa; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🤖 مساعد أرابيكا</h1>
+    <p class="sub">اسأل عن عملة ARA، التحويلات، أو المنصة</p>
+    
+    <div id="chat-box">
+        <div class="msg bot">👋 أهلاً بك! اسألني أي حاجة عن عملة ARA أو منصة أرابيكا.</div>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="اكتب سؤالك هنا..." />
+        <button id="sendBtn">إرسال ➤</button>
+    </div>
+    <div class="footer">يعمل بالذكاء الاصطناعي (Pollinations.ai)</div>
+</div>
+
+<script>
+    const chatBox = document.getElementById('chat-box');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    function addMessage(text, sender) {
+        const div = document.createElement('div');
+        div.className = `msg ${sender}`;
+        div.textContent = text;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function setLoading(show) {
+        // إزالة أي loading قديم
+        const old = document.querySelector('.loading');
+        if (old) old.remove();
+        if (show) {
+            const div = document.createElement('div');
+            div.className = 'loading';
+            div.textContent = '⏳ جاري التفكير...';
+            div.id = 'loading-msg';
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    }
+
+    async function sendMessage() {
+        const message = userInput.value.trim();
+        if (!message) return;
+
+        // عرض رسالة المستخدم وتعطيل الأزرار مؤقتاً
+        addMessage(message, 'user');
+        userInput.value = '';
+        sendBtn.disabled = true;
+        sendBtn.textContent = '⏳ جاري...';
+
+        setLoading(true);
+
+        try {
+            const response = await fetch('/api/ai-assistant', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+
+            const data = await response.json();
+            setLoading(false);
+
+            if (data.reply) {
+                addMessage(data.reply, 'bot');
+            } else {
+                addMessage('❌ عذراً، حدث خطأ: ' + (data.error || 'حاول مرة أخرى'), 'bot');
+            }
+        } catch (error) {
+            setLoading(false);
+            addMessage('❌ عذراً، تعذر الاتصال بالخادم. تأكد من اتصال الإنترنت.', 'bot');
+        } finally {
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'إرسال ➤';
+            userInput.focus();
+        }
+    }
+
+    // الأحداث
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+</script>
+</body>
+</html>
