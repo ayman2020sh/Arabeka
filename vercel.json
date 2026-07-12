@@ -1,13 +1,7 @@
 {
-  "functions": {
-    "api/*.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
   "rewrites": [
-    { "source": "/", "destination": "/index.html" },
+    { "source": "/", "destination": "/public/chat.html" },
     { "source": "/chat", "destination": "/public/chat.html" },
-    { "source": "/chat.html", "destination": "/public/chat.html" },
-    { "source": "/(.*)", "destination": "/$1" }
+    { "source": "/chat.html", "destination": "/public/chat.html" }
   ]
 }
