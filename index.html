@@ -279,6 +279,20 @@
             margin-bottom: 10px;
         }
 
+        /* زر المساعد الذكي */
+        .chat-button {
+            display: inline-block;
+            background: #1a3b5d;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: opacity 0.2s;
+        }
+        .chat-button:hover { opacity: 0.9; }
+
         @media (max-width: 600px) {
             .product-grid {
                 grid-template-columns: 1fr;
@@ -306,6 +320,8 @@
         <h2>مرحباً بك في مجتمع أرابيكا</h2>
         <p>انضم إلى مجتمعنا وابدأ التجارة الآن</p>
         <button class="btn btn-gold" id="login-btn">تسجيل الدخول باستخدام Pi</button>
+        <!-- زر المساعد الذكي -->
+        <a href="/chat.html" class="chat-button">💬 المساعد الذكي</a>
     </div>
 
     <div id="main-app" class="view-section">
@@ -345,9 +361,9 @@
         </div>
 
         <div class="bottom-nav" role="navigation" aria-label="التنقل الرئيسي">
-            <div class="nav-item active" id="nav-feed" onclick="switchTab('feed')" role="button" tabindex="0">المجتمع</div>
-            <div class="nav-item" id="nav-store" onclick="switchTab('store')" role="button" tabindex="0">المتجر</div>
-            <div class="nav-item" id="nav-profile" onclick="switchTab('profile')" role="button" tabindex="0">حسابي</div>
+            <div class="nav-item active" id="nav-feed" onclick="switchTab('feed')" role="button" tabindex="0">🫂المجتمع</div>
+            <div class="nav-item" id="nav-store" onclick="switchTab('store')" role="button" tabindex="0">💳المتجر</div>
+            <div class="nav-item" id="nav-profile" onclick="switchTab('profile')" role="button" tabindex="0">👀حسابي</div>
         </div>
     </div>
 
@@ -378,8 +394,6 @@
             initializePiSDK();
         });
 
-
-        // وظيفة لتهيئة وتجهيز نظام Pi للعمل عند فتح الصفحة
         function initializePiSDK() {
             try {
                 if (typeof Pi !== 'undefined') {
@@ -395,15 +409,12 @@
 
         document.getElementById('login-btn').addEventListener('click', handleLogin);
 
-
-        // ========== دوال مساعدة (Utility Functions) ==========
-        
+        // ========== دوال مساعدة ==========
         function sanitizeHTML(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
-
 
         function isValidUrl(string) {
             try {
@@ -413,7 +424,6 @@
                 return false;
             }
         }
-
 
         function showError(message) {
             console.error("Error:", message);
@@ -425,12 +435,10 @@
             }
         }
 
-
         function showSuccess(message) {
             console.log("Success:", message);
             alert(message);
         }
-
 
         function cleanupListeners() {
             unsubscribeFunctions.forEach(unsubscribe => {
@@ -439,23 +447,30 @@
             unsubscribeFunctions = [];
         }
 
-
         // ========== نظام تسجيل الدخول ==========
-
-        // وظيفة إجبارية يطلبها نظام Pi للتعامل مع الدفعات المعلقة
+        // : معالجة الدفعات غير المكتملة لإكمالها تلقائياً
         function onIncompletePaymentFound(payment) {
             console.log("تم العثور على دفعة غير مكتملة:", payment);
+            // إرسال إلى الخادم لإكمالها حتى لا تمنع الدفعات الجديدة
+            fetch('/api/complete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    paymentId: payment.identifier, 
+                    txid: payment.transaction?.txid || '' 
+                })
+            })
+            .then(response => response.json())
+            .then(data => console.log("تم إكمال الدفعة المعلقة:", data))
+            .catch(error => console.error("فشل إكمال الدفعة المعلقة:", error));
         }
 
-
-        // وظيفة للتعامل مع زر تسجيل الدخول بطلب صلاحيات الدفع الحقيقية
         function handleLogin() {
             if (typeof Pi === 'undefined') {
                 showError("نظام Pi SDK غير متاح حالياً. يرجى فتح التطبيق من متصفح Pi.");
                 return;
             }
 
-            // طلب صلاحية اسم المستخدم وصلاحية الدفع
             Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
                 .then(function(auth) {
                     loginSuccess(auth.user.username);
@@ -465,8 +480,6 @@
                 });
         }
 
-
-        // وظيفة تنفذ عند نجاح تسجيل الدخول لفتح الواجهة الرئيسية
         function loginSuccess(username) {
             if (!username || typeof username !== 'string') {
                 showError("اسم مستخدم غير صحيح");
@@ -484,7 +497,6 @@
             loadProducts();
         }
 
-
         function loadUserBio() {
             const unsubscribe = db.collection("users").doc(currentUser).onSnapshot(
                 doc => {
@@ -499,8 +511,7 @@
             unsubscribeFunctions.push(unsubscribe);
         }
 
-
-        // ========== إدارة النوافذ المنبثقة (Modals) ==========
+        // ========== إدارة النوافذ المنبثقة ==========
         let activeCallback = null;
 
         function openCustomModal(title, val1, val2, showSecond, cb) {
@@ -518,13 +529,11 @@
             activeCallback = cb;
         }
 
-
         function closeModal() { 
             document.getElementById('custom-modal').style.display = 'none';
             document.getElementById('custom-modal').setAttribute('aria-hidden', 'true');
             activeCallback = null;
         }
-
 
         function saveModal() {
             const v1 = document.getElementById('modal-input-1').value.trim();
@@ -539,17 +548,14 @@
             closeModal();
         }
 
-
         document.getElementById('custom-modal').addEventListener('click', (e) => {
             if (e.target.id === 'custom-modal') closeModal();
         });
 
-
         // ========== وظائف الملف الشخصي ==========
-        
         function editBio() {
             const currentBio = document.getElementById('user-bio').innerText;
-            openCustomModal("تعديل النبذة الشخصية", currentBio, "", false, (newBio) => {
+            openCustomModal("تعديل النبذة 🫆 الشخصية", currentBio, "", false, (newBio) => {
                 document.getElementById('user-bio').innerText = sanitizeHTML(newBio);
                 
                 db.collection("users").doc(currentUser).set({ bio: newBio }, { merge: true })
@@ -560,9 +566,7 @@
             });
         }
 
-
-        // ========== إدارة المنشورات (المجتمع) ==========
-        
+        // ========== إدارة المنشورات ==========
         function publishPost() {
             const text = document.getElementById('post-text').value.trim();
             const imageUrl = document.getElementById('post-image-url').value.trim();
@@ -597,7 +601,6 @@
                 publishBtn.disabled = false;
             });
         }
-
 
         function loadPosts() {
             const unsubscribe = db.collection("posts")
@@ -660,7 +663,6 @@
             unsubscribeFunctions.push(unsubscribe);
         }
 
-
         function deletePost(id) { 
             if (confirm("هل تريد حذف المنشور؟")) {
                 db.collection("posts").doc(id).delete()
@@ -668,18 +670,15 @@
             }
         }
 
-
         function likePost(id, currentLikes) { 
             db.collection("posts").doc(id).update({ likes: currentLikes + 1 })
                 .catch(error => showError("خطأ في الإعجاب: " + error.message));
         }
 
-
         function toggleComments(id) {
             const el = document.getElementById(id);
             el.style.display = (el.style.display === 'block') ? 'none' : 'block';
         }
-
 
         function addComment(postId) {
             const input = document.getElementById(`new-comment-${postId}`);
@@ -702,9 +701,7 @@
             });
         }
 
-
-        // ========== إدارة المنتجات (المتجر) ==========
-        
+        // ========== إدارة المنتجات ==========
         function addNewProduct() {
             const name = document.getElementById('new-prod-name').value.trim();
             const price = parseFloat(document.getElementById('new-prod-price').value);
@@ -745,7 +742,6 @@
                 addBtn.disabled = false;
             });
         }
-
 
         function loadProducts() {
             const unsubscribe = db.collection("products")
@@ -795,7 +791,6 @@
             unsubscribeFunctions.push(unsubscribe);
         }
 
-
         function deleteProduct(id) { 
             if (confirm("هل تريد حذف المنتج؟")) {
                 db.collection("products").doc(id).delete()
@@ -803,8 +798,9 @@
             }
         }
         
-
+        // أهم تعديل: شراء منتج مع سجلات تشخيصية
         function buyProduct(name, price) {
+            console.log("بدء عملية الشراء:", name, price);
             if (typeof Pi === 'undefined') { 
                 showError("نظام Pi SDK غير متاح داخل هذا المتصفح حالياً");
                 return; 
@@ -822,16 +818,24 @@
                     metadata: { productName: name }
                 }, {
                     onReadyForServerApproval: function(paymentId) { 
-                        console.log("جاري طلب الموافقة من الخادم..."); 
+                        console.log("طلب موافقة الخادم:", paymentId);
                         fetch('/api/approve', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ paymentId: paymentId })
                         })
-                        .catch(error => showError("فشل الاتصال بخادم الموافقة الداخلي Vercel"));
+                        .then(response => {
+                            if (!response.ok) throw new Error("فشل الخادم في الموافقة");
+                            return response.json();
+                        })
+                        .then(data => console.log("تمت الموافقة:", data))
+                        .catch(error => {
+                            console.error("خطأ في /api/approve:", error);
+                            showError("فشل الاتصال بخادم الموافقة الداخلي Vercel");
+                        });
                     },
                     onReadyForServerCompletion: function(paymentId, txid) {
-                        console.log("جاري تأكيد الدفع في الخادم...");
+                        console.log("طلب إكمال الخادم:", paymentId, txid);
                         fetch('/api/complete', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -844,22 +848,26 @@
                                 showError("تم خصم الرصيد لكن فشل خادم الـ API في التأكيد.");
                             }
                         })
-                        .catch(error => showError("فشل الاتصال بخادم الإكمال النهائي"));
+                        .catch(error => {
+                            console.error("خطأ في /api/complete:", error);
+                            showError("فشل الاتصال بخادم الإكمال النهائي");
+                        });
                     },
                     onCancel: function(paymentId) { 
-                        console.log("تم إلغاء عملية الشراء بواسطة المستخدم.");
+                        console.log("تم إلغاء عملية الشراء من قبل المستخدم:", paymentId);
                     },
                     onError: function(error, payment) { 
+                        console.error("خطأ من شبكة Pi:", error);
                         showError("خطأ من شبكة Pi: " + (error?.message || "يرجى مراجعة إعدادات الرابط في الـ Developer Portal الخاص بـ Pi"));
                     }
                 });
             } catch (globalError) {
+                console.error("خطأ داخلي غير متوقع:", globalError);
                 showError("خطأ داخلي غير متوقع: " + globalError.message);
             }
         }
 
-
-        // ========== نظام التنقل بين الصفحات ==========
+        // ========== نظام التنقل ==========
         function switchTab(tab) {
             document.querySelectorAll('#main-app .view-section').forEach(el => el.classList.remove('active-section'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -876,4 +884,4 @@
         window.addEventListener('beforeunload', cleanupListeners);
     </script>
 </body>
-</html>
+    </html>
