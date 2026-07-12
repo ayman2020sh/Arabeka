@@ -10,7 +10,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
-        /* إعدادات الألوان والتصميم الأساسي */
         :root { 
             --primary: #3f1b62; 
             --gold: #c5a059; 
@@ -62,10 +61,7 @@
             justify-content: space-between; 
         }
 
-        .post-author { 
-            font-weight: bold; 
-            color: var(--primary); 
-        }
+        .post-author { font-weight: bold; color: var(--primary); }
 
         .card-content { 
             font-size: 16px; 
@@ -121,9 +117,7 @@
             padding: 5px 0; 
         }
 
-        .comment strong { 
-            color: var(--primary); 
-        }
+        .comment strong { color: var(--primary); }
 
         input, textarea { 
             width: 100%; 
@@ -157,10 +151,7 @@
         .btn:hover { opacity: 0.9; }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        .btn-gold { 
-            background-color: var(--gold); 
-            color: #000; 
-        }
+        .btn-gold { background-color: var(--gold); color: #000; }
 
         .btn-outline { 
             background-color: transparent; 
@@ -168,11 +159,7 @@
             color: var(--primary); 
         }
 
-        .product-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
-        }
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
         .product-card { 
             background: white; 
@@ -251,10 +238,7 @@
             transition: color 0.2s;
         }
 
-        .nav-item.active { 
-            color: var(--primary); 
-            font-weight: bold; 
-        }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
 
         .error-message {
             background-color: #f8d7da;
@@ -279,7 +263,6 @@
             margin-bottom: 10px;
         }
 
-        /* زر المساعد الذكي */
         .chat-button {
             display: inline-block;
             background: #1a3b5d;
@@ -294,9 +277,7 @@
         .chat-button:hover { opacity: 0.9; }
 
         @media (max-width: 600px) {
-            .product-grid {
-                grid-template-columns: 1fr;
-            }
+            .product-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -320,7 +301,7 @@
         <h2>مرحباً بك في مجتمع أرابيكا</h2>
         <p>انضم إلى مجتمعنا وابدأ التجارة الآن</p>
         <button class="btn btn-gold" id="login-btn">تسجيل الدخول باستخدام Pi</button>
-        <!-- زر المساعد الذكي -->
+        <!-- زر المساعد يظهر فقط قبل تسجيل الدخول (اختياري) -->
         <a href="/chat.html" class="chat-button">💬 المساعد الذكي</a>
     </div>
 
@@ -353,6 +334,8 @@
                 <p id="user-bio" style="color: gray; font-size: 14px;">عضو مجتمع أرابيكا</p>
                 <hr style="border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
                 <button class="btn btn-outline" onclick="editBio()">🫆 تعديل النبذة</button>
+                <!-- زر المساعد الذكي تحت تعديل النبذة -->
+                <a href="/chat.html" class="chat-button" style="display: block; margin: 15px auto; width: fit-content;">🤖 المساعد الذكي</a>
                 
                 <a href="privacy.html" rel="noopener noreferrer" style="display: block; margin-top: 15px; color: var(--gold); text-decoration: underline; font-size: 14px;">📄 سياسة الخصوصية</a>
                 <a href="contact.html" rel="noopener noreferrer" style="display: block; margin-top: 10px; color: var(--gold); text-decoration: underline; font-size: 14px;">🛠️ الدعم الفني والتواصل</a>
@@ -361,14 +344,13 @@
         </div>
 
         <div class="bottom-nav" role="navigation" aria-label="التنقل الرئيسي">
-            <div class="nav-item active" id="nav-feed" onclick="switchTab('feed')" role="button" tabindex="0">🫂المجتمع</div>
-            <div class="nav-item" id="nav-store" onclick="switchTab('store')" role="button" tabindex="0">💳المتجر</div>
-            <div class="nav-item" id="nav-profile" onclick="switchTab('profile')" role="button" tabindex="0">👀حسابي</div>
+            <div class="nav-item active" id="nav-feed" onclick="switchTab('feed')" role="button" tabindex="0">المجتمع</div>
+            <div class="nav-item" id="nav-store" onclick="switchTab('store')" role="button" tabindex="0">المتجر</div>
+            <div class="nav-item" id="nav-profile" onclick="switchTab('profile')" role="button" tabindex="0">حسابي</div>
         </div>
     </div>
 
     <script>
-        // ========== إعدادات قاعدة بيانات Firebase للواجهة الأمامية ==========
         const firebaseConfig = {
             apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
             authDomain: "arabeka-3336c.firebaseapp.com",
@@ -378,212 +360,109 @@
             appId: "1:244460272030:web:c5aabfd0b396656721fe8f"
         };
 
-        try {
-            firebase.initializeApp(firebaseConfig);
-        } catch (error) {
-            console.error("Firebase initialization error:", error);
-            showError("خطأ في تهيئة النظام. يرجى تحديث الصفحة.");
-        }
+        try { firebase.initializeApp(firebaseConfig); } catch (error) { console.error("Firebase init error:", error); }
 
         const db = firebase.firestore();
         let currentUser = null;
         let unsubscribeFunctions = [];
 
-        // ========== التشغيل المبدئي للتطبيق ==========
-        window.addEventListener('load', function() {
-            initializePiSDK();
-        });
+        window.addEventListener('load', function() { initializePiSDK(); });
 
         function initializePiSDK() {
             try {
-                if (typeof Pi !== 'undefined') {
-                    Pi.init({ version: "2.0", sandbox: true });
-                    console.log("Pi SDK initialized successfully");
-                } else {
-                    console.warn("Pi SDK not available");
-                }
-            } catch (error) {
-                console.error("Pi SDK initialization failed:", error);
-            }
+                if (typeof Pi !== 'undefined') { Pi.init({ version: "2.0", sandbox: true }); }
+            } catch (error) { console.error("Pi SDK init failed:", error); }
         }
 
         document.getElementById('login-btn').addEventListener('click', handleLogin);
 
-        // ========== دوال مساعدة ==========
-        function sanitizeHTML(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function isValidUrl(string) {
-            try {
-                new URL(string);
-                return true;
-            } catch (_) {
-                return false;
-            }
-        }
+        function sanitizeHTML(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        function isValidUrl(string) { try { new URL(string); return true; } catch (_) { return false; } }
 
         function showError(message) {
-            console.error("Error:", message);
-            const errorEl = document.getElementById('login-error');
-            if (errorEl) {
-                errorEl.innerHTML = sanitizeHTML(message);
-                errorEl.style.display = 'block';
-                setTimeout(() => { errorEl.style.display = 'none'; }, 10000);
-            }
+            console.error(message);
+            const el = document.getElementById('login-error');
+            if (el) { el.innerHTML = sanitizeHTML(message); el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 10000); }
         }
 
-        function showSuccess(message) {
-            console.log("Success:", message);
-            alert(message);
-        }
+        function showSuccess(message) { alert(message); }
 
         function cleanupListeners() {
-            unsubscribeFunctions.forEach(unsubscribe => {
-                try { unsubscribe(); } catch (e) { console.error("Error unsubscribing:", e); }
-            });
+            unsubscribeFunctions.forEach(fn => { try { fn(); } catch(e){} });
             unsubscribeFunctions = [];
         }
 
-        // ========== نظام تسجيل الدخول ==========
-        // : معالجة الدفعات غير المكتملة لإكمالها تلقائياً
         function onIncompletePaymentFound(payment) {
-            console.log("تم العثور على دفعة غير مكتملة:", payment);
-            // إرسال إلى الخادم لإكمالها حتى لا تمنع الدفعات الجديدة
+            console.log("دفعة غير مكتملة:", payment);
             fetch('/api/complete', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    paymentId: payment.identifier, 
-                    txid: payment.transaction?.txid || '' 
-                })
-            })
-            .then(response => response.json())
-            .then(data => console.log("تم إكمال الدفعة المعلقة:", data))
-            .catch(error => console.error("فشل إكمال الدفعة المعلقة:", error));
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ paymentId: payment.identifier, txid: payment.transaction?.txid || '' })
+            }).then(res => res.json()).then(d => console.log("تم إكمال المعلقة:", d))
+            .catch(err => console.error("فشل إكمال المعلقة:", err));
         }
 
         function handleLogin() {
-            if (typeof Pi === 'undefined') {
-                showError("نظام Pi SDK غير متاح حالياً. يرجى فتح التطبيق من متصفح Pi.");
-                return;
-            }
-
+            if (typeof Pi === 'undefined') { showError("Pi SDK غير متاح"); return; }
             Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
-                .then(function(auth) {
-                    loginSuccess(auth.user.username);
-                })
-                .catch(function(error) {
-                    showError("حدث خطأ أثناء تسجيل الدخول: " + error.message);
-                });
+            .then(auth => loginSuccess(auth.user.username))
+            .catch(err => showError("خطأ تسجيل الدخول: " + err.message));
         }
 
         function loginSuccess(username) {
-            if (!username || typeof username !== 'string') {
-                showError("اسم مستخدم غير صحيح");
-                return;
-            }
-
+            if (!username) { showError("اسم مستخدم غير صحيح"); return; }
             currentUser = username;
             document.getElementById('login-view').classList.remove('active-section');
             document.getElementById('main-app').classList.add('active-section');
             document.getElementById('user-name').innerText = sanitizeHTML(username);
-            
             cleanupListeners();
-            loadUserBio();
-            loadPosts();
-            loadProducts();
+            loadUserBio(); loadPosts(); loadProducts();
         }
 
         function loadUserBio() {
-            const unsubscribe = db.collection("users").doc(currentUser).onSnapshot(
-                doc => {
-                    if (doc.exists && doc.data().bio) {
-                        document.getElementById('user-bio').innerText = sanitizeHTML(doc.data().bio);
-                    }
-                },
-                error => {
-                    console.error("Error loading user bio:", error);
+            const unsub = db.collection("users").doc(currentUser).onSnapshot(doc => {
+                if (doc.exists && doc.data().bio) {
+                    document.getElementById('user-bio').innerText = sanitizeHTML(doc.data().bio);
                 }
-            );
-            unsubscribeFunctions.push(unsubscribe);
+            }, error => console.error(error));
+            unsubscribeFunctions.push(unsub);
         }
 
-        // ========== إدارة النوافذ المنبثقة ==========
+        // Modal functions (same as before)...
         let activeCallback = null;
-
         function openCustomModal(title, val1, val2, showSecond, cb) {
             document.getElementById('modal-title').innerText = sanitizeHTML(title);
             document.getElementById('modal-input-1').value = val1;
-            const input2 = document.getElementById('modal-input-2');
-            if (showSecond) { 
-                input2.style.display = 'block'; 
-                input2.value = val2; 
-            } else { 
-                input2.style.display = 'none'; 
-            }
-            document.getElementById('custom-modal').style.display = 'flex';
-            document.getElementById('custom-modal').setAttribute('aria-hidden', 'false');
+            const in2 = document.getElementById('modal-input-2');
+            if (showSecond) { in2.style.display='block'; in2.value=val2; } else { in2.style.display='none'; }
+            document.getElementById('custom-modal').style.display='flex';
             activeCallback = cb;
         }
-
-        function closeModal() { 
-            document.getElementById('custom-modal').style.display = 'none';
-            document.getElementById('custom-modal').setAttribute('aria-hidden', 'true');
-            activeCallback = null;
-        }
-
+        function closeModal() { document.getElementById('custom-modal').style.display='none'; activeCallback=null; }
         function saveModal() {
             const v1 = document.getElementById('modal-input-1').value.trim();
             const v2 = document.getElementById('modal-input-2').value.trim();
-            
-            if (!v1) {
-                showError("الحقل الأول مطلوب");
-                return;
-            }
-            
+            if (!v1) { showError("الحقل الأول مطلوب"); return; }
             if (activeCallback) activeCallback(v1, v2);
             closeModal();
         }
+        document.getElementById('custom-modal').addEventListener('click', (e) => { if (e.target.id==='custom-modal') closeModal(); });
 
-        document.getElementById('custom-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'custom-modal') closeModal();
-        });
-
-        // ========== وظائف الملف الشخصي ==========
         function editBio() {
             const currentBio = document.getElementById('user-bio').innerText;
-            openCustomModal("تعديل النبذة 🫆 الشخصية", currentBio, "", false, (newBio) => {
+            openCustomModal("تعديل النبذة", currentBio, "", false, (newBio) => {
                 document.getElementById('user-bio').innerText = sanitizeHTML(newBio);
-                
-                db.collection("users").doc(currentUser).set({ bio: newBio }, { merge: true })
-                    .catch(error => {
-                        showError("خطأ: لا يمكن حفظ النبذة. " + error.message);
-                        document.getElementById('user-bio').innerText = currentBio;
-                    });
+                db.collection("users").doc(currentUser).set({bio: newBio}, {merge: true})
+                .catch(err => { showError("خطأ: " + err.message); document.getElementById('user-bio').innerText = currentBio; });
             });
         }
 
-        // ========== إدارة المنشورات ==========
         function publishPost() {
             const text = document.getElementById('post-text').value.trim();
             const imageUrl = document.getElementById('post-image-url').value.trim();
-            
-            if (!text && !imageUrl) {
-                showError("يرجى إضافة نص أو صورة");
-                return;
-            }
-
-            if (imageUrl && !isValidUrl(imageUrl)) {
-                showError("رابط الصورة غير صحيح");
-                return;
-            }
-
-            const publishBtn = document.getElementById('publish-btn');
-            publishBtn.disabled = true;
-            
+            if (!text && !imageUrl) { showError("أضف نصاً أو صورة"); return; }
+            if (imageUrl && !isValidUrl(imageUrl)) { showError("رابط الصورة غير صالح"); return; }
+            const btn = document.getElementById('publish-btn'); btn.disabled = true;
             db.collection("posts").add({
                 author: currentUser,
                 content: text,
@@ -591,283 +470,155 @@
                 likes: 0,
                 comments: [],
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => { 
-                document.getElementById('post-text').value = ""; 
+            }).then(() => {
+                document.getElementById('post-text').value = "";
                 document.getElementById('post-image-url').value = "";
-                showSuccess("تم نشر المنشور بنجاح");
-            }).catch(error => {
-                showError("خطأ في نشر المنشور: " + error.message);
-            }).finally(() => {
-                publishBtn.disabled = false;
-            });
+                showSuccess("تم النشر بنجاح");
+            }).catch(err => showError(err.message))
+            .finally(() => btn.disabled = false);
         }
 
         function loadPosts() {
-            const unsubscribe = db.collection("posts")
-                .orderBy("timestamp", "desc")
-                .limit(50)
-                .onSnapshot(
-                    snapshot => {
-                        const feed = document.getElementById('posts-feed');
-                        const fragments = [];
-                        
-                        snapshot.forEach(doc => {
-                            const post = doc.data();
-                            const postId = doc.id;
-                            const authorName = sanitizeHTML(post.author || 'مجهول');
-                            
-                            const imageHtml = post.imageUrl && isValidUrl(post.imageUrl) 
-                                ? `<img src="${post.imageUrl}" class="post-image" alt="صورة المنشور" onerror="this.style.display='none'">` 
-                                : '';
-                            
-                            const commentsHtml = (post.comments || [])
-                                .map(c => `<div class="comment"><strong>${sanitizeHTML(c.user)}:</strong> ${sanitizeHTML(c.text)}</div>`)
-                                .join('');
-                            
-                            let controlBtns = '';
-                            if (authorName === currentUser) {
-                                controlBtns = `<div><button class="action-btn danger" onclick="deletePost('${postId}')" aria-label="حذف المنشور">🗑️</button></div>`;
-                            }
-
-                            fragments.push(`
-                                <div class="card">
-                                    <div class="post-header">
-                                        <span class="post-author">${authorName}</span>
-                                        ${controlBtns}
-                                    </div>
-                                    <div class="card-content">${sanitizeHTML(post.content)}</div>
-                                    ${imageHtml}
-                                    <div class="post-actions">
-                                        <button class="action-btn" onclick="likePost('${postId}', ${post.likes || 0})" aria-label="إعجاب">❤️ ${post.likes || 0}</button>
-                                        <button class="action-btn" onclick="toggleComments('comments-${postId}')" aria-label="التعليقات">💬 تعليقات (${(post.comments || []).length})</button>
-                                    </div>
-                                    <div id="comments-${postId}" class="comments-section" style="display:none;">
-                                        ${commentsHtml}
-                                        <div style="display:flex; gap:5px; margin-top:10px;">
-                                            <input type="text" id="new-comment-${postId}" placeholder="اكتب تعليقاً..." style="margin-bottom:0;" aria-label="كتابة تعليق">
-                                            <button class="btn btn-gold" style="width:auto; margin:0; padding:5px 10px;" onclick="addComment('${postId}')">إرسال</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            `);
-                        });
-                        
-                        feed.innerHTML = fragments.join('');
-                    },
-                    error => {
-                        console.error("Error loading posts:", error);
-                        showError("خطأ في تحميل المنشورات");
-                    }
-                );
-            
-            unsubscribeFunctions.push(unsubscribe);
+            const unsub = db.collection("posts").orderBy("timestamp", "desc").limit(50)
+            .onSnapshot(snap => {
+                const feed = document.getElementById('posts-feed');
+                let html = '';
+                snap.forEach(doc => {
+                    const p = doc.data(); const pid = doc.id;
+                    const author = sanitizeHTML(p.author||'مجهول');
+                    const imgHtml = (p.imageUrl && isValidUrl(p.imageUrl)) ? `<img src="${p.imageUrl}" class="post-image" onerror="this.style.display='none'">` : '';
+                    const comments = (p.comments||[]).map(c => `<div class="comment"><strong>${sanitizeHTML(c.user)}:</strong> ${sanitizeHTML(c.text)}</div>`).join('');
+                    const controls = (author === currentUser) ? `<div><button class="action-btn danger" onclick="deletePost('${pid}')">🗑️</button></div>` : '';
+                    html += `<div class="card">
+                        <div class="post-header"><span class="post-author">${author}</span>${controls}</div>
+                        <div class="card-content">${sanitizeHTML(p.content)}</div>${imgHtml}
+                        <div class="post-actions">
+                            <button class="action-btn" onclick="likePost('${pid}',${p.likes||0})">❤️ ${p.likes||0}</button>
+                            <button class="action-btn" onclick="toggleComments('comments-${pid}')">💬 تعليقات (${(p.comments||[]).length})</button>
+                        </div>
+                        <div id="comments-${pid}" class="comments-section" style="display:none;">
+                            ${comments}
+                            <div style="display:flex;gap:5px;margin-top:10px;">
+                                <input type="text" id="new-comment-${pid}" placeholder="اكتب تعليقاً..." style="margin-bottom:0;">
+                                <button class="btn btn-gold" style="width:auto;margin:0;padding:5px 10px;" onclick="addComment('${pid}')">إرسال</button>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+                feed.innerHTML = html;
+            }, error => console.error(error));
+            unsubscribeFunctions.push(unsub);
         }
 
-        function deletePost(id) { 
-            if (confirm("هل تريد حذف المنشور؟")) {
-                db.collection("posts").doc(id).delete()
-                    .catch(error => showError("خطأ في حذف المنشور: " + error.message));
-            }
-        }
-
-        function likePost(id, currentLikes) { 
-            db.collection("posts").doc(id).update({ likes: currentLikes + 1 })
-                .catch(error => showError("خطأ في الإعجاب: " + error.message));
-        }
-
-        function toggleComments(id) {
-            const el = document.getElementById(id);
-            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-        }
-
-        function addComment(postId) {
-            const input = document.getElementById(`new-comment-${postId}`);
+        function deletePost(id) { if(confirm("حذف المنشور؟")) db.collection("posts").doc(id).delete().catch(e=>showError(e.message)); }
+        function likePost(id, likes) { db.collection("posts").doc(id).update({likes: likes+1}).catch(e=>showError(e.message)); }
+        function toggleComments(id) { const el = document.getElementById(id); el.style.display = (el.style.display==='block')?'none':'block'; }
+        function addComment(pid) {
+            const input = document.getElementById(`new-comment-${pid}`);
             const text = input.value.trim();
-            
-            if (!text) {
-                showError("التعليق لا يمكن أن يكون فارغاً");
-                return;
-            }
-
-            db.collection("posts").doc(postId).update({
-                comments: firebase.firestore.FieldValue.arrayUnion({ 
-                    user: currentUser, 
-                    text: text 
-                })
-            }).then(() => {
-                input.value = "";
-            }).catch(error => {
-                showError("خطأ في إضافة التعليق: " + error.message);
-            });
+            if(!text) { showError("التعليق فارغ"); return; }
+            db.collection("posts").doc(pid).update({
+                comments: firebase.firestore.FieldValue.arrayUnion({user: currentUser, text: text})
+            }).then(() => input.value = "").catch(e => showError(e.message));
         }
 
-        // ========== إدارة المنتجات ==========
         function addNewProduct() {
             const name = document.getElementById('new-prod-name').value.trim();
             const price = parseFloat(document.getElementById('new-prod-price').value);
-            const imageUrl = document.getElementById('new-prod-image').value.trim();
-            
-            if (!name) {
-                showError("اسم المنتج مطلوب");
-                return;
-            }
-
-            if (!price || price < 0) {
-                showError("السعر يجب أن يكون موجب");
-                return;
-            }
-
-            if (imageUrl && !isValidUrl(imageUrl)) {
-                showError("رابط الصورة غير صحيح");
-                return;
-            }
-
-            const addBtn = document.getElementById('add-prod-btn');
-            addBtn.disabled = true;
-            
+            const img = document.getElementById('new-prod-image').value.trim();
+            if(!name) { showError("اسم المنتج مطلوب"); return; }
+            if(!price || price<0) { showError("سعر غير صحيح"); return; }
+            if(img && !isValidUrl(img)) { showError("رابط الصورة غير صحيح"); return; }
+            const btn = document.getElementById('add-prod-btn'); btn.disabled = true;
             db.collection("products").add({
-                name: name, 
-                price: price, 
-                imageUrl: imageUrl || null,
-                owner: currentUser, 
+                name, price, imageUrl: img||null, owner: currentUser,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
-                document.getElementById('new-prod-name').value = "";
-                document.getElementById('new-prod-price').value = "";
-                document.getElementById('new-prod-image').value = "";
-                showSuccess("تم إضافة المنتج بنجاح");
-            }).catch(error => {
-                showError("خطأ في إضافة المنتج: " + error.message);
-            }).finally(() => {
-                addBtn.disabled = false;
-            });
+                document.getElementById('new-prod-name').value='';
+                document.getElementById('new-prod-price').value='';
+                document.getElementById('new-prod-image').value='';
+                showSuccess("تمت إضافة المنتج");
+            }).catch(e => showError(e.message)).finally(() => btn.disabled=false);
         }
 
         function loadProducts() {
-            const unsubscribe = db.collection("products")
-                .orderBy("timestamp", "desc")
-                .limit(50)
-                .onSnapshot(
-                    snapshot => {
-                        const store = document.getElementById('store-products');
-                        const fragments = [];
-                        
-                        snapshot.forEach(doc => {
-                            const prod = doc.data();
-                            const prodId = doc.id;
-                            
-                            const imgHtml = prod.imageUrl && isValidUrl(prod.imageUrl)
-                                ? `<img src="${prod.imageUrl}" class="prod-image" alt="صورة المنتج" onerror="this.style.display='none'">` 
-                                : '';
-                            
-                            let controlBtns = '';
-                            if (prod.owner === currentUser) {
-                                controlBtns = `
-                                    <div class="prod-actions">
-                                        <button class="action-btn danger" onclick="deleteProduct('${prodId}')" aria-label="حذف المنتج">🗑️</button>
-                                    </div>
-                                `;
-                            }
-
-                            fragments.push(`
-                                <div class="product-card">
-                                    ${controlBtns}
-                                    ${imgHtml}
-                                    <h4 style="margin: 5px 0;">${sanitizeHTML(prod.name)}</h4>
-                                    <p style="color: gray; margin: 5px 0;">${prod.price} Pi</p>
-                                    <button class="btn btn-gold" style="margin-top: 10px;" onclick="buyProduct('${sanitizeHTML(prod.name)}', ${prod.price})">شراء</button>
-                                </div>
-                            `);
-                        });
-                        
-                        store.innerHTML = fragments.join('');
-                    },
-                    error => {
-                        console.error("Error loading products:", error);
-                        showError("خطأ في تحميل المنتجات");
-                    }
-                );
-            
-            unsubscribeFunctions.push(unsubscribe);
+            const unsub = db.collection("products").orderBy("timestamp","desc").limit(50)
+            .onSnapshot(snap => {
+                const store = document.getElementById('store-products');
+                let html = '';
+                snap.forEach(doc => {
+                    const p = doc.data(); const pid = doc.id;
+                    const imgHtml = (p.imageUrl && isValidUrl(p.imageUrl)) ? `<img src="${p.imageUrl}" class="prod-image" onerror="this.style.display='none'">` : '';
+                    const controls = (p.owner===currentUser) ? `<div class="prod-actions"><button class="action-btn danger" onclick="deleteProduct('${pid}')">🗑️</button></div>` : '';
+                    html += `<div class="product-card">
+                        ${controls}${imgHtml}
+                        <h4 style="margin:5px 0;">${sanitizeHTML(p.name)}</h4>
+                        <p style="color:gray;">${p.price} Pi</p>
+                        <button class="btn btn-gold" style="margin-top:10px;" onclick="buyProduct('${sanitizeHTML(p.name)}', ${p.price})">شراء</button>
+                    </div>`;
+                });
+                store.innerHTML = html;
+            }, error => console.error(error));
+            unsubscribeFunctions.push(unsub);
         }
 
-        function deleteProduct(id) { 
-            if (confirm("هل تريد حذف المنتج؟")) {
-                db.collection("products").doc(id).delete()
-                    .catch(error => showError("خطأ في حذف المنتج: " + error.message));
-            }
-        }
-        
-        // أهم تعديل: شراء منتج مع سجلات تشخيصية
+        function deleteProduct(id) { if(confirm("حذف المنتج؟")) db.collection("products").doc(id).delete().catch(e=>showError(e.message)); }
+
+        // ========== دالة الشراء بعد التصحيح (إضافة Pi.approvePayment) ==========
         function buyProduct(name, price) {
-            console.log("بدء عملية الشراء:", name, price);
-            if (typeof Pi === 'undefined') { 
-                showError("نظام Pi SDK غير متاح داخل هذا المتصفح حالياً");
-                return; 
-            }
-
-            if (typeof price !== 'number' || price <= 0) {
-                showError("سعر المنتج المدخل غير صحيح");
-                return;
-            }
-
+            console.log("شراء:", name, price);
+            if (typeof Pi === 'undefined') { showError("Pi SDK غير متاح"); return; }
+            if (typeof price !== 'number' || price <= 0) { showError("سعر غير صحيح"); return; }
             try {
                 Pi.createPayment({
                     amount: price,
                     memo: `شراء ${name} من أرابيكا`,
                     metadata: { productName: name }
                 }, {
-                    onReadyForServerApproval: function(paymentId) { 
-                        console.log("طلب موافقة الخادم:", paymentId);
+                    onReadyForServerApproval: function(paymentId) {
+                        console.log("طلب موافقة:", paymentId);
                         fetch('/api/approve', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({ paymentId: paymentId })
                         })
                         .then(response => {
-                            if (!response.ok) throw new Error("فشل الخادم في الموافقة");
+                            if (!response.ok) throw new Error("رفض الخادم");
                             return response.json();
                         })
-                        .then(data => console.log("تمت الموافقة:", data))
+                        .then(data => {
+                            console.log("موافقة الخادم:", data);
+                            // : الموافقة على الدفع من خلال SDK
+                            Pi.approvePayment(paymentId);
+                        })
                         .catch(error => {
-                            console.error("خطأ في /api/approve:", error);
-                            showError("فشل الاتصال بخادم الموافقة الداخلي Vercel");
+                            console.error("خطأ approve:", error);
+                            showError("فشل في موافقة الخادم: " + error.message);
+                            // يمكن رفض الدفع أيضاً: Pi.rejectPayment(paymentId);
                         });
                     },
                     onReadyForServerCompletion: function(paymentId, txid) {
-                        console.log("طلب إكمال الخادم:", paymentId, txid);
+                        console.log("إكمال:", paymentId, txid);
                         fetch('/api/complete', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({ paymentId: paymentId, txid: txid })
                         })
                         .then(response => {
-                            if(response.ok) {
-                                showSuccess(`تم شراء ${name} بنجاح ومصادقته!`);
-                            } else {
-                                showError("تم خصم الرصيد لكن فشل خادم الـ API في التأكيد.");
-                            }
+                            if(response.ok) showSuccess(`تم شراء ${name} بنجاح!`);
+                            else showError("فشل تأكيد الدفع في الخادم");
                         })
-                        .catch(error => {
-                            console.error("خطأ في /api/complete:", error);
-                            showError("فشل الاتصال بخادم الإكمال النهائي");
-                        });
+                        .catch(e => showError("خطأ في الإكمال"));
                     },
-                    onCancel: function(paymentId) { 
-                        console.log("تم إلغاء عملية الشراء من قبل المستخدم:", paymentId);
-                    },
-                    onError: function(error, payment) { 
-                        console.error("خطأ من شبكة Pi:", error);
-                        showError("خطأ من شبكة Pi: " + (error?.message || "يرجى مراجعة إعدادات الرابط في الـ Developer Portal الخاص بـ Pi"));
+                    onCancel: function(paymentId) { console.log("ألغي"); },
+                    onError: function(error, payment) {
+                        console.error("خطأ Pi:", error);
+                        showError("خطأ من شبكة Pi: " + (error?.message || "غير معروف"));
                     }
                 });
-            } catch (globalError) {
-                console.error("خطأ داخلي غير متوقع:", globalError);
-                showError("خطأ داخلي غير متوقع: " + globalError.message);
-            }
+            } catch(e) { showError("خطأ غير متوقع: " + e.message); }
         }
 
-        // ========== نظام التنقل ==========
         function switchTab(tab) {
             document.querySelectorAll('#main-app .view-section').forEach(el => el.classList.remove('active-section'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -876,9 +627,7 @@
         }
 
         document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') item.click();
-            });
+            item.addEventListener('keypress', e => { if(e.key==='Enter') item.click(); });
         });
 
         window.addEventListener('beforeunload', cleanupListeners);
