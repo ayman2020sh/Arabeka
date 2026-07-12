@@ -301,7 +301,7 @@
         <h2>مرحباً بك في مجتمع أرابيكا</h2>
         <p>انضم إلى مجتمعنا وابدأ التجارة الآن</p>
         <button class="btn btn-gold" id="login-btn">تسجيل الدخول باستخدام Pi</button>
-        <!-- زر المساعد يظهر فقط قبل تسجيل الدخول (اختياري) -->
+        <!-- زر المساعد قبل تسجيل الدخول -->
         <a href="/chat.html" class="chat-button">💬 المساعد الذكي</a>
     </div>
 
@@ -334,8 +334,8 @@
                 <p id="user-bio" style="color: gray; font-size: 14px;">عضو مجتمع أرابيكا</p>
                 <hr style="border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
                 <button class="btn btn-outline" onclick="editBio()">🫆 تعديل النبذة</button>
-                <!-- زر المساعد الذكي تحت تعديل النبذة -->
-                <a href="/chat.html" class="chat-button" style="display: block; margin: 15px auto; width: fit-content;">🤖 المساعد الذكي</a>
+                <!-- زر المساعد بعد تسجيل الدخول -->
+                <a href="/chat.html" class="chat-button" style="display: block; margin: 15px auto; width: fit-content;">💬 المساعد الذكي</a>
                 
                 <a href="privacy.html" rel="noopener noreferrer" style="display: block; margin-top: 15px; color: var(--gold); text-decoration: underline; font-size: 14px;">📄 سياسة الخصوصية</a>
                 <a href="contact.html" rel="noopener noreferrer" style="display: block; margin-top: 10px; color: var(--gold); text-decoration: underline; font-size: 14px;">🛠️ الدعم الفني والتواصل</a>
@@ -368,9 +368,13 @@
 
         window.addEventListener('load', function() { initializePiSDK(); });
 
+        // ========== التعديل: إعادة sandbox: true ==========
         function initializePiSDK() {
             try {
-                if (typeof Pi !== 'undefined') { Pi.init({ version: "2.0", sandbox: true }); }
+                if (typeof Pi !== 'undefined') { 
+                    Pi.init({ version: "2.0", sandbox: true }); // true لأننا في Testnet
+                    console.log("Pi SDK initialized (Sandbox/Testnet)");
+                }
             } catch (error) { console.error("Pi SDK init failed:", error); }
         }
 
@@ -428,7 +432,6 @@
             unsubscribeFunctions.push(unsub);
         }
 
-        // Modal functions (same as before)...
         let activeCallback = null;
         function openCustomModal(title, val1, val2, showSecond, cb) {
             document.getElementById('modal-title').innerText = sanitizeHTML(title);
@@ -564,9 +567,9 @@
 
         function deleteProduct(id) { if(confirm("حذف المنتج؟")) db.collection("products").doc(id).delete().catch(e=>showError(e.message)); }
 
-        // ========== دالة الشراء بعد التصحيح (إضافة Pi.approvePayment) ==========
+        // ========== دالة الشراء مع Pi.approvePayment ==========
         function buyProduct(name, price) {
-            console.log("شراء:", name, price);
+            console.log("بدء شراء:", name, price);
             if (typeof Pi === 'undefined') { showError("Pi SDK غير متاح"); return; }
             if (typeof price !== 'number' || price <= 0) { showError("سعر غير صحيح"); return; }
             try {
@@ -576,7 +579,7 @@
                     metadata: { productName: name }
                 }, {
                     onReadyForServerApproval: function(paymentId) {
-                        console.log("طلب موافقة:", paymentId);
+                        console.log("طلب موافقة الخادم:", paymentId);
                         fetch('/api/approve', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
@@ -587,18 +590,17 @@
                             return response.json();
                         })
                         .then(data => {
-                            console.log("موافقة الخادم:", data);
-                            // : الموافقة على الدفع من خلال SDK
-                            Pi.approvePayment(paymentId);
+                            console.log("الخادم وافق:", data);
+                            Pi.approvePayment(paymentId); //  
                         })
                         .catch(error => {
-                            console.error("خطأ approve:", error);
+                            console.error("فشل approve:", error);
                             showError("فشل في موافقة الخادم: " + error.message);
-                            // يمكن رفض الدفع أيضاً: Pi.rejectPayment(paymentId);
+                            Pi.rejectPayment(paymentId);
                         });
                     },
                     onReadyForServerCompletion: function(paymentId, txid) {
-                        console.log("إكمال:", paymentId, txid);
+                        console.log("إكمال الدفع:", paymentId, txid);
                         fetch('/api/complete', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
@@ -610,13 +612,13 @@
                         })
                         .catch(e => showError("خطأ في الإكمال"));
                     },
-                    onCancel: function(paymentId) { console.log("ألغي"); },
+                    onCancel: function(paymentId) { console.log("ألغي من المستخدم"); },
                     onError: function(error, payment) {
-                        console.error("خطأ Pi:", error);
+                        console.error("خطأ من شبكة Pi:", error);
                         showError("خطأ من شبكة Pi: " + (error?.message || "غير معروف"));
                     }
                 });
-            } catch(e) { showError("خطأ غير متوقع: " + e.message); }
+            } catch(e) { showError("خطأ غير متوقع🤔: " + e.message); }
         }
 
         function switchTab(tab) {
@@ -633,4 +635,4 @@
         window.addEventListener('beforeunload', cleanupListeners);
     </script>
 </body>
-    </html>
+</html>
