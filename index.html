@@ -4,272 +4,823 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>أرابيكا - مجتمع التجارة الرقمية</title>
+    
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
     <style>
-        :root { --primary: #3f1b62; --gold: #c5a059; --bg-color: #f0f2f5; --card-bg: #ffffff; --danger: #d9534f; --success: #5cb85c; --border: #eee; }
+        :root { 
+            --primary: #3f1b62; 
+            --gold: #c5a059; 
+            --bg-color: #f0f2f5; 
+            --card-bg: #ffffff;
+            --danger: #d9534f;
+            --success: #5cb85c;
+            --border: #eee;
+        }
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); margin: 0; padding-bottom: 70px; }
-        .header { background-color: var(--primary); color: var(--gold); padding: 15px; text-align: center; font-size: 24px; font-weight: bold; position: sticky; top: 0; z-index: 100; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-color); 
+            margin: 0; 
+            padding-bottom: 70px;
+        }
+        .header { 
+            background-color: var(--primary); 
+            color: var(--gold); 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 24px; 
+            font-weight: bold; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+        }
         .container { padding: 15px; }
         .view-section { display: none; }
         .active-section { display: block; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .post-header { display: flex; align-items: center; margin-bottom: 10px; justify-content: space-between; }
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 12px; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+        }
+        .post-header { 
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 10px; 
+            justify-content: space-between; 
+        }
         .post-author { font-weight: bold; color: var(--primary); }
-        .card-content { font-size: 16px; margin-bottom: 10px; line-height: 1.5; word-break: break-word; }
-        .post-image { max-width: 100%; border-radius: 8px; margin-bottom: 10px; display: block; max-height: 300px; object-fit: cover; }
-        .post-actions { display: flex; gap: 15px; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; }
-        .action-btn { background: none; border: none; color: gray; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .card-content { 
+            font-size: 16px; 
+            margin-bottom: 10px; 
+            line-height: 1.5;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+        .post-image { 
+            max-width: 100%; 
+            border-radius: 8px; 
+            margin-bottom: 10px; 
+            display: block;
+            max-height: 300px;
+            object-fit: cover;
+        }
+        .post-actions { 
+            display: flex; 
+            gap: 15px; 
+            margin-top: 15px; 
+            border-top: 1px solid var(--border); 
+            padding-top: 10px; 
+        }
+        .action-btn { 
+            background: none; 
+            border: none; 
+            color: gray; 
+            font-size: 14px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 5px;
+            transition: color 0.2s;
+        }
         .action-btn:hover { color: var(--primary); }
         .action-btn.danger { color: var(--danger); }
-        .comments-section { margin-top: 10px; background: #f9f9f9; padding: 10px; border-radius: 8px; display: none; }
-        .comment { font-size: 13px; border-bottom: 1px solid var(--border); padding: 5px 0; }
+        .comments-section { 
+            margin-top: 10px; 
+            background: #f9f9f9; 
+            padding: 10px; 
+            border-radius: 8px; 
+            display: none; 
+        }
+        .comment { 
+            font-size: 13px; 
+            border-bottom: 1px solid var(--border); 
+            padding: 5px 0; 
+        }
         .comment strong { color: var(--primary); }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; font-family: inherit; }
-        input:focus, textarea:focus { outline: none; border-color: var(--primary); }
-        .btn { background-color: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 10px; }
+        input, textarea { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            margin-bottom: 10px; 
+            font-family: inherit;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 3px rgba(63, 27, 98, 0.2);
+        }
+        .btn { 
+            background-color: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            width: 100%; 
+            margin-bottom: 10px;
+            transition: opacity 0.2s;
+        }
         .btn:hover { opacity: 0.9; }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-gold { background-color: var(--gold); color: #000; }
-        .btn-outline { background-color: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .btn-outline { 
+            background-color: transparent; 
+            border: 1px solid var(--primary); 
+            color: var(--primary); 
+        }
         .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .product-card { background: white; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid var(--border); position: relative; }
-        .prod-image { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; background-color: var(--bg-color); }
-        .prod-actions { position: absolute; top: 5px; left: 5px; display: flex; gap: 5px; background: rgba(255,255,255,0.8); padding: 2px; border-radius: 5px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 12px; width: 85%; text-align: center; max-height: 80vh; overflow-y: auto; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--card-bg); display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); border-top: 1px solid var(--border); }
-        .nav-item { text-align: center; color: gray; cursor: pointer; flex: 1; font-size: 14px; padding: 5px; }
+        .product-card { 
+            background: white; 
+            padding: 12px; 
+            border-radius: 12px; 
+            text-align: center; 
+            border: 1px solid var(--border); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+            position: relative; 
+        }
+        .prod-image { 
+            width: 100%; 
+            height: 120px; 
+            object-fit: cover; 
+            border-radius: 8px; 
+            margin-bottom: 8px;
+            background-color: var(--bg-color);
+        }
+        .prod-actions { 
+            position: absolute; 
+            top: 5px; 
+            left: 5px; 
+            display: flex; 
+            gap: 5px; 
+            background: rgba(255,255,255,0.8); 
+            padding: 2px; 
+            border-radius: 5px; 
+        }
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.6); 
+            z-index: 1000; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        .modal-content { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            width: 85%; 
+            text-align: center;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .bottom-nav { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0;
+            right: 0;
+            width: 100%; 
+            background-color: var(--card-bg); 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 10px 0; 
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            border-top: 1px solid var(--border);
+        }
+        .nav-item { 
+            text-align: center; 
+            color: gray; 
+            cursor: pointer; 
+            flex: 1; 
+            font-size: 14px;
+            padding: 5px;
+            transition: color 0.2s;
+        }
         .nav-item.active { color: var(--primary); font-weight: bold; }
-        .error-message { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 10px; position: fixed; top: 60px; left: 15px; right: 15px; z-index: 1000; }
-        .chat-button { display: inline-block; background: #1a3b5d; color: white; padding: 12px 25px; border-radius: 30px; text-decoration: none; font-weight: bold; margin-top: 15px; }
+        .error-message {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            position: fixed;
+            top: 60px;
+            left: 15px;
+            right: 15px;
+            z-index: 1000;
+        }
+        .success-message {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .chat-button {
+            display: inline-block;
+            background: #1a3b5d;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: opacity 0.2s;
+        }
         .chat-button:hover { opacity: 0.9; }
-        @media (max-width: 600px) { .product-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) {
+            .product-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
-<div class="header">أرابيكا ☕</div>
-<div id="login-error" style="display:none;" class="error-message"></div>
 
-<div id="custom-modal" class="modal">
-    <div class="modal-content">
-        <h4 id="modal-title">تعديل البيانات</h4>
-        <input type="text" id="modal-input-1" placeholder="الحقل الأول">
-        <input type="text" id="modal-input-2" placeholder="الحقل الثاني (اختياري)" style="display:none;">
-        <button class="btn" onclick="saveModal()">حفظ التغييرات</button>
-        <button class="btn" style="background-color:#666;" onclick="closeModal()">إلغاء</button>
-    </div>
-</div>
+    <div class="header" role="banner">أرابيكا ☕</div>
+    
+    <div id="login-error" style="display:none;" class="error-message"></div>
 
-<div id="login-view" class="container view-section active-section" style="text-align: center; margin-top: 50px;">
-    <h2>مرحباً بك في مجتمع أرابيكا</h2>
-    <p>انضم إلى مجتمعنا وابدأ التجارة الآن</p>
-    <button class="btn btn-gold" id="login-btn">تسجيل الدخول باستخدام Pi</button>
-    <a href="/chat.html" class="chat-button">💬 المساعد الذكي</a>
-</div>
-
-<div id="main-app" class="view-section">
-    <div id="feed-view" class="container view-section active-section">
-        <div class="card">
-            <textarea id="post-text" placeholder="شارك أفكارك..."></textarea>
-            <input type="url" id="post-image-url" placeholder="🔗 رابط صورة للمنشور">
-            <button class="btn" id="publish-btn" onclick="publishPost()">نشر الآن</button>
-        </div>
-        <div id="posts-feed"></div>
-    </div>
-    <div id="store-view" class="container view-section">
-        <div class="card" style="border: 1px dashed var(--gold);">
-            <h4>➕ أضف منتجك للسوق</h4>
-            <input type="text" id="new-prod-name" placeholder="اسم المنتج">
-            <input type="number" id="new-prod-price" placeholder="السعر (Pi)">
-            <input type="url" id="new-prod-image" placeholder="🔗 رابط صورة المنتج">
-            <button class="btn btn-gold" id="add-prod-btn" onclick="addNewProduct()">عرض للبيع</button>
-        </div>
-        <h3>أحدث المنتجات</h3>
-        <div class="product-grid" id="store-products"></div>
-    </div>
-    <div id="profile-view" class="container view-section">
-        <div class="card" style="text-align: center;">
-            <h2 id="user-name">أرابيكا</h2>
-            <p id="user-bio">عضو مجتمع أرابيكا</p>
-            <hr>
-            <button class="btn btn-outline" onclick="editBio()">🫆 تعديل النبذة</button>
-            <a href="/chat.html" class="chat-button" style="display:block; margin:15px auto; width:fit-content;">💬 المساعد الذكي</a>
-            <a href="privacy.html" style="display:block; margin-top:15px; color:var(--gold); text-decoration:underline;">📄 سياسة الخصوصية</a>
-            <a href="contact.html" style="display:block; margin-top:10px; color:var(--gold); text-decoration:underline;">🛠️ الدعم الفني</a>
-            <a href="terms.html" style="display:block; margin-top:10px; color:var(--gold); text-decoration:underline;">📜 شروط الاستخدام</a>
+    <div id="custom-modal" class="modal" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <h4 id="modal-title">تعديل البيانات</h4>
+            <input type="text" id="modal-input-1" placeholder="الحقل الأول" aria-label="حقل إدخال أول">
+            <input type="text" id="modal-input-2" placeholder="الحقل الثاني (اختياري)" style="display:none;" aria-label="حقل إدخال ثاني">
+            <button class="btn" onclick="saveModal()">حفظ التغييرات</button>
+            <button class="btn" style="background-color:#666;" onclick="closeModal()">إلغاء</button>
         </div>
     </div>
-    <div class="bottom-nav">
-        <div class="nav-item active" id="nav-feed" onclick="switchTab('feed')">المجتمع</div>
-        <div class="nav-item" id="nav-store" onclick="switchTab('store')">المتجر</div>
-        <div class="nav-item" id="nav-profile" onclick="switchTab('profile')">حسابي</div>
+
+    <div id="login-view" class="container view-section active-section" style="text-align: center; margin-top: 50px;">
+        <h2>مرحباً بك في مجتمع أرابيكا</h2>
+        <p>انضم إلى مجتمعنا وابدأ التجارة الآن</p>
+        <button class="btn btn-gold" id="login-btn">تسجيل الدخول باستخدام Pi</button>
+        <!-- زر المساعد يظهر قبل تسجيل الدخول -->
+        <a href="/chat.html" class="chat-button">💬 المساعد الذكي</a>
     </div>
-</div>
 
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
-        authDomain: "arabeka-3336c.firebaseapp.com",
-        projectId: "arabeka-3336c",
-        storageBucket: "arabeka-3336c.firebasestorage.app",
-        messagingSenderId: "244460272030",
-        appId: "1:244460272030:web:c5aabfd0b396656721fe8f"
-    };
-    try { firebase.initializeApp(firebaseConfig); } catch(e){}
-    const db = firebase.firestore();
-    let currentUser = null;
-    let unsubscribeFunctions = [];
+    <div id="main-app" class="view-section">
+        
+        <div id="feed-view" class="container view-section active-section">
+            <div class="card">
+                <textarea id="post-text" placeholder="شارك أفكارك مع مجتمع أرابيكا..." aria-label="نص المنشور"></textarea>
+                <input type="url" id="post-image-url" placeholder="🔗 رابط صورة للمنشور (اختياري)" aria-label="رابط صورة المنشور">
+                <button class="btn" id="publish-btn" onclick="publishPost()">نشر الآن</button>
+            </div>
+            <div id="posts-feed"></div>
+        </div>
 
-    window.addEventListener('load', ()=>{
-        try {
-            if (typeof Pi !== 'undefined'){
-                Pi.init({ version: "2.0", sandbox: true });
-                console.log("✅ Pi SDK sandbox initialized");
-            }
-        } catch(e){ console.error(e); }
-    });
+        <div id="store-view" class="container view-section">
+            <div class="card" style="border: 1px dashed var(--gold);">
+                <h4 style="margin-top:0; color:var(--primary);">➕ أضف منتجك للسوق</h4>
+                <input type="text" id="new-prod-name" placeholder="اسم المنتج" aria-label="اسم المنتج" maxlength="100">
+                <input type="number" id="new-prod-price" placeholder="السعر (Pi)" aria-label="سعر المنتج" min="0" step="0.01">
+                <input type="url" id="new-prod-image" placeholder="🔗 رابط صورة المنتج (اختياري)" aria-label="رابط صورة المنتج">
+                <button class="btn btn-gold" id="add-prod-btn" onclick="addNewProduct()">عرض للبيع</button>
+            </div>
+            <h3 style="color: var(--primary);">أحدث المنتجات</h3>
+            <div class="product-grid" id="store-products"></div>
+        </div>
 
-    document.getElementById('login-btn').addEventListener('click', ()=>{
-        if (typeof Pi === 'undefined') { showError("Pi SDK غير متاح"); return; }
-        Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
-        .then(auth => loginSuccess(auth.user.username))
-        .catch(err => showError("خطأ تسجيل الدخول: " + err.message));
-    });
+        <div id="profile-view" class="container view-section">
+            <div class="card" style="text-align: center;">
+                <h2 id="user-name" style="margin: 5px 0;">أرابيكا</h2>
+                <p id="user-bio" style="color: gray; font-size: 14px;">عضو مجتمع أرابيكا</p>
+                <hr style="border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
+                <button class="btn btn-outline" onclick="editBio()">🫆 تعديل النبذة</button>
+                <!-- زر المساعد الذكي في صفحة الملف الشخصي -->
+                <a href="/chat.html" class="chat-button" style="display: block; margin: 15px auto; width: fit-content;">💬 المساعد الذكي</a>
+                
+                <a href="privacy.html" rel="noopener noreferrer" style="display: block; margin-top: 15px; color: var(--gold); text-decoration: underline; font-size: 14px;">📄 سياسة الخصوصية</a>
+                <a href="contact.html" rel="noopener noreferrer" style="display: block; margin-top: 10px; color: var(--gold); text-decoration: underline; font-size: 14px;">🛠️ الدعم الفني والتواصل</a>
+                <a href="terms.html" rel="noopener noreferrer" style="display: block; margin-top: 10px; color: var(--gold); text-decoration: underline; font-size: 14px;">📜 شروط الاستخدام</a>
+            </div>
+        </div>
 
-    function sanitizeHTML(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
-    function isValidUrl(s){ try{ new URL(s); return true; }catch{ return false; } }
-    function showError(m){ console.error(m); const el=document.getElementById('login-error'); if(el){ el.innerHTML=sanitizeHTML(m); el.style.display='block'; setTimeout(()=>el.style.display='none', 10000); } }
-    function showSuccess(m){ alert(m); }
-    function cleanupListeners(){ unsubscribeFunctions.forEach(f=>{ try{f();}catch(e){} }); unsubscribeFunctions=[]; }
+        <div class="bottom-nav" role="navigation" aria-label="التنقل الرئيسي">
+            <div class="nav-item active" id="nav-feed" onclick="switchTab('feed')" role="button" tabindex="0">المجتمع</div>
+            <div class="nav-item" id="nav-store" onclick="switchTab('store')" role="button" tabindex="0">المتجر</div>
+            <div class="nav-item" id="nav-profile" onclick="switchTab('profile')" role="button" tabindex="0">حسابي</div>
+        </div>
+    </div>
 
-    function onIncompletePaymentFound(payment){
-        console.log("دفعة غير مكتملة:", payment);
-        fetch('/api/complete', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ paymentId: payment.identifier, txid: payment.transaction?.txid || '' })
-        }).catch(e=>console.error(e));
-    }
+    <script>
+        // ========== إعدادات Firebase ==========
+        const firebaseConfig = {
+            apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
+            authDomain: "arabeka-3336c.firebaseapp.com",
+            projectId: "arabeka-3336c",
+            storageBucket: "arabeka-3336c.firebasestorage.app",
+            messagingSenderId: "244460272030",
+            appId: "1:244460272030:web:c5aabfd0b396656721fe8f"
+        };
 
-    function loginSuccess(username){
-        if(!username) return;
-        currentUser = username;
-        document.getElementById('login-view').classList.remove('active-section');
-        document.getElementById('main-app').classList.add('active-section');
-        document.getElementById('user-name').innerText = sanitizeHTML(username);
-        cleanupListeners();
-        loadUserBio(); loadPosts(); loadProducts();
-    }
+        try { firebase.initializeApp(firebaseConfig); } catch (error) { console.error("Firebase init error:", error); }
 
-    function loadUserBio(){
-        const unsub = db.collection("users").doc(currentUser).onSnapshot(doc=>{
-            if(doc.exists && doc.data().bio) document.getElementById('user-bio').innerText = sanitizeHTML(doc.data().bio);
+        const db = firebase.firestore();
+        let currentUser = null;
+        let unsubscribeFunctions = [];
+
+        // ========== التشغيل المبدئي ==========
+        window.addEventListener('load', function() {
+            initializePiSDK();
         });
-        unsubscribeFunctions.push(unsub);
-    }
 
-    let activeCallback=null;
-    function openCustomModal(t,v1,v2,sh,cb){
-        document.getElementById('modal-title').innerText=t;
-        document.getElementById('modal-input-1').value=v1;
-        const in2=document.getElementById('modal-input-2');
-        if(sh){ in2.style.display='block'; in2.value=v2; } else { in2.style.display='none'; }
-        document.getElementById('custom-modal').style.display='flex';
-        activeCallback=cb;
-    }
-    function closeModal(){ document.getElementById('custom-modal').style.display='none'; activeCallback=null; }
-    function saveModal(){
-        const v1=document.getElementById('modal-input-1').value.trim();
-        const v2=document.getElementById('modal-input-2').value.trim();
-        if(!v1){ showError("الحقل الأول مطلوب"); return; }
-        if(activeCallback) activeCallback(v1, v2);
-        closeModal();
-    }
-    document.getElementById('custom-modal').addEventListener('click', e=>{ if(e.target.id==='custom-modal') closeModal(); });
-
-    function editBio(){
-        const cur = document.getElementById('user-bio').innerText;
-        openCustomModal("تعديل النبذة", cur, "", false, (newBio)=>{
-            document.getElementById('user-bio').innerText = sanitizeHTML(newBio);
-            db.collection("users").doc(currentUser).set({bio: newBio}, {merge:true})
-            .catch(err=>{ showError(err.message); document.getElementById('user-bio').innerText = cur; });
-        });
-    }
-
-    function publishPost(){ //... */ }
-    function loadPosts(){// ... */ }
-    function deletePost(id){ if(confirm("حذف المنشور؟")) db.collection("posts").doc(id).delete().catch(e=>showError(e.message)); }
-    function likePost(id, likes){ db.collection("posts").doc(id).update({likes: likes+1}).catch(e=>showError(e.message)); }
-    function toggleComments(id){ const el=document.getElementById(id); el.style.display = (el.style.display==='block')?'none':'block'; }
-    function addComment(pid){ /* ... */ }
-    function addNewProduct(){ /* ... */ }
-    function loadProducts(){ /* ... */ }
-    function deleteProduct(id){ if(confirm("حذف المنتج؟")) db.collection("products").doc(id).delete().catch(e=>showError(e.message)); }
-
-    // ========== الوظيفة الجديدة للشراء (إصلاح المهلة) ==========
-    function buyProduct(name, price){
-        console.log("🛒 شراء:", name, price);
-        if (typeof Pi === 'undefined') { showError("Pi SDK غير متاح"); return; }
-        if (typeof price !== 'number' || price <= 0) { showError("سعر غير صحيح"); return; }
-        try {
-            Pi.createPayment({
-                amount: price,
-                memo: `شراء ${name} من أرابيكا`,
-                metadata: { productName: name }
-            }, {
-                onReadyForServerApproval: function(paymentId) {
-                    console.log("📦 paymentId:", paymentId);
-
-                    // =====: الموافقة فوراً =====
-                    Pi.approvePayment(paymentId)
-                      .then(() => console.log("✅ Pi.approvePayment تم بنجاح"))
-                      .catch(err => {
-                          console.error("❌ فشل Pi.approvePayment:", err);
-                          showError("فشل الموافقة الفورية: " + err.message);
-                      });
-
-                    // ثم نرسل للخادم في الخلفية (اختياري)
-                    fetch('/api/approve', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ paymentId })
-                    })
-                    .then(r => r.json())
-                    .then(data => console.log("📡 رد /api/approve:", data))
-                    .catch(e => console.warn("⚠️ تعذر الاتصال بالخادم للتوثيق:", e));
-                },
-                onReadyForServerCompletion: function(paymentId, txid) {
-                    console.log("✅ إكمال:", paymentId, txid);
-                    fetch('/api/complete', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ paymentId, txid })
-                    })
-                    .then(r => {
-                        if(r.ok) showSuccess(`تم شراء ${name} بنجاح`);
-                        else showError("فشل تأكيد الدفع في الخادم");
-                    })
-                    .catch(e => showError("خطأ في الإكمال"));
-                },
-                onCancel: function(paymentId) { console.log("ألغي"); },
-                onError: function(error, payment) {
-                    console.error("خطأ Pi:", error);
-                    showError("خطأ من شبكة Pi: " + (error?.message || "غير معروف"));
+        function initializePiSDK() {
+            try {
+                if (typeof Pi !== 'undefined') { 
+                    Pi.init({ version: "2.0", sandbox: true });
+                    console.log("Pi SDK initialized for Sandbox");
+                } else {
+                    console.warn("Pi SDK not available");
                 }
-            });
-        } catch(e) { showError("خطأ غير متوقع: " + e.message); }
-    }
+            } catch (error) {
+                console.error("Pi SDK initialization failed:", error);
+            }
+        }
 
-    function switchTab(tab){
-        document.querySelectorAll('#main-app .view-section').forEach(el=>el.classList.remove('active-section'));
-        document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
-        document.getElementById(tab+'-view').classList.add('active-section');
-        document.getElementById('nav-'+tab).classList.add('active');
-    }
-    window.addEventListener('beforeunload', cleanupListeners);
-</script>
+        document.getElementById('login-btn').addEventListener('click', handleLogin);
+
+        // ========== دوال مساعدة ==========
+        function sanitizeHTML(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function showError(message) {
+            console.error("Error:", message);
+            const errorEl = document.getElementById('login-error');
+            if (errorEl) {
+                errorEl.innerHTML = sanitizeHTML(message);
+                errorEl.style.display = 'block';
+                setTimeout(() => { errorEl.style.display = 'none'; }, 10000);
+            }
+        }
+
+        function showSuccess(message) {
+            alert(message);
+        }
+
+        function cleanupListeners() {
+            unsubscribeFunctions.forEach(unsubscribe => {
+                try { unsubscribe(); } catch (e) { console.error("Error unsubscribing:", e); }
+            });
+            unsubscribeFunctions = [];
+        }
+
+        // ========== تسجيل الدخول ==========
+        function onIncompletePaymentFound(payment) {
+            console.log("دفعة غير مكتملة:", payment);
+            fetch('/api/complete', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ paymentId: payment.identifier, txid: payment.transaction?.txid || '' })
+            }).then(res => res.json()).then(d => console.log("تم إكمال المعلقة:", d))
+            .catch(err => console.error("فشل إكمال المعلقة:", err));
+        }
+
+        function handleLogin() {
+            if (typeof Pi === 'undefined') {
+                showError("نظام Pi SDK غير متاح حالياً. يرجى فتح التطبيق من متصفح Pi.");
+                return;
+            }
+
+            Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
+                .then(function(auth) {
+                    loginSuccess(auth.user.username);
+                })
+                .catch(function(error) {
+                    showError("حدث خطأ أثناء تسجيل الدخول: " + error.message);
+                });
+        }
+
+        function loginSuccess(username) {
+            if (!username || typeof username !== 'string') {
+                showError("اسم مستخدم غير صحيح");
+                return;
+            }
+
+            currentUser = username;
+            document.getElementById('login-view').classList.remove('active-section');
+            document.getElementById('main-app').classList.add('active-section');
+            document.getElementById('user-name').innerText = sanitizeHTML(username);
+            
+            cleanupListeners();
+            loadUserBio();
+            loadPosts();
+            loadProducts();
+        }
+
+        function loadUserBio() {
+            const unsubscribe = db.collection("users").doc(currentUser).onSnapshot(
+                doc => {
+                    if (doc.exists && doc.data().bio) {
+                        document.getElementById('user-bio').innerText = sanitizeHTML(doc.data().bio);
+                    }
+                },
+                error => {
+                    console.error("Error loading user bio:", error);
+                }
+            );
+            unsubscribeFunctions.push(unsubscribe);
+        }
+
+        // ========== إدارة النوافذ المنبثقة ==========
+        let activeCallback = null;
+
+        function openCustomModal(title, val1, val2, showSecond, cb) {
+            document.getElementById('modal-title').innerText = sanitizeHTML(title);
+            document.getElementById('modal-input-1').value = val1;
+            const input2 = document.getElementById('modal-input-2');
+            if (showSecond) { 
+                input2.style.display = 'block'; 
+                input2.value = val2; 
+            } else { 
+                input2.style.display = 'none'; 
+            }
+            document.getElementById('custom-modal').style.display = 'flex';
+            document.getElementById('custom-modal').setAttribute('aria-hidden', 'false');
+            activeCallback = cb;
+        }
+
+        function closeModal() { 
+            document.getElementById('custom-modal').style.display = 'none';
+            document.getElementById('custom-modal').setAttribute('aria-hidden', 'true');
+            activeCallback = null;
+        }
+
+        function saveModal() {
+            const v1 = document.getElementById('modal-input-1').value.trim();
+            const v2 = document.getElementById('modal-input-2').value.trim();
+            
+            if (!v1) {
+                showError("الحقل الأول مطلوب");
+                return;
+            }
+            
+            if (activeCallback) activeCallback(v1, v2);
+            closeModal();
+        }
+
+        document.getElementById('custom-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'custom-modal') closeModal();
+        });
+
+        // ========== وظائف الملف الشخصي ==========
+        function editBio() {
+            const currentBio = document.getElementById('user-bio').innerText;
+            openCustomModal("تعديل النبذة الشخصية", currentBio, "", false, (newBio) => {
+                document.getElementById('user-bio').innerText = sanitizeHTML(newBio);
+                
+                db.collection("users").doc(currentUser).set({ bio: newBio }, { merge: true })
+                    .catch(error => {
+                        showError("خطأ: لا يمكن حفظ النبذة. " + error.message);
+                        document.getElementById('user-bio').innerText = currentBio;
+                    });
+            });
+        }
+
+        // ========== إدارة المنشورات ==========
+        function publishPost() {
+            const text = document.getElementById('post-text').value.trim();
+            const imageUrl = document.getElementById('post-image-url').value.trim();
+            
+            if (!text && !imageUrl) {
+                showError("يرجى إضافة نص أو صورة");
+                return;
+            }
+
+            if (imageUrl && !isValidUrl(imageUrl)) {
+                showError("رابط الصورة غير صحيح");
+                return;
+            }
+
+            const publishBtn = document.getElementById('publish-btn');
+            publishBtn.disabled = true;
+            
+            db.collection("posts").add({
+                author: currentUser,
+                content: text,
+                imageUrl: imageUrl || null,
+                likes: 0,
+                comments: [],
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => { 
+                document.getElementById('post-text').value = ""; 
+                document.getElementById('post-image-url').value = "";
+                showSuccess("تم نشر المنشور بنجاح");
+            }).catch(error => {
+                showError("خطأ في نشر المنشور: " + error.message);
+            }).finally(() => {
+                publishBtn.disabled = false;
+            });
+        }
+
+        function loadPosts() {
+            const unsubscribe = db.collection("posts")
+                .orderBy("timestamp", "desc")
+                .limit(50)
+                .onSnapshot(
+                    snapshot => {
+                        const feed = document.getElementById('posts-feed');
+                        const fragments = [];
+                        
+                        snapshot.forEach(doc => {
+                            const post = doc.data();
+                            const postId = doc.id;
+                            const authorName = sanitizeHTML(post.author || 'مجهول');
+                            
+                            const imageHtml = post.imageUrl && isValidUrl(post.imageUrl) 
+                                ? `<img src="${post.imageUrl}" class="post-image" alt="صورة المنشور" onerror="this.style.display='none'">` 
+                                : '';
+                            
+                            const commentsHtml = (post.comments || [])
+                                .map(c => `<div class="comment"><strong>${sanitizeHTML(c.user)}:</strong> ${sanitizeHTML(c.text)}</div>`)
+                                .join('');
+                            
+                            let controlBtns = '';
+                            if (authorName === currentUser) {
+                                controlBtns = `<div><button class="action-btn danger" onclick="deletePost('${postId}')" aria-label="حذف المنشور">🗑️</button></div>`;
+                            }
+
+                            fragments.push(`
+                                <div class="card">
+                                    <div class="post-header">
+                                        <span class="post-author">${authorName}</span>
+                                        ${controlBtns}
+                                    </div>
+                                    <div class="card-content">${sanitizeHTML(post.content)}</div>
+                                    ${imageHtml}
+                                    <div class="post-actions">
+                                        <button class="action-btn" onclick="likePost('${postId}', ${post.likes || 0})" aria-label="إعجاب">❤️ ${post.likes || 0}</button>
+                                        <button class="action-btn" onclick="toggleComments('comments-${postId}')" aria-label="التعليقات">💬 تعليقات (${(post.comments || []).length})</button>
+                                    </div>
+                                    <div id="comments-${postId}" class="comments-section" style="display:none;">
+                                        ${commentsHtml}
+                                        <div style="display:flex; gap:5px; margin-top:10px;">
+                                            <input type="text" id="new-comment-${postId}" placeholder="اكتب تعليقاً..." style="margin-bottom:0;" aria-label="كتابة تعليق">
+                                            <button class="btn btn-gold" style="width:auto; margin:0; padding:5px 10px;" onclick="addComment('${postId}')">إرسال</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `);
+                        });
+                        
+                        feed.innerHTML = fragments.join('');
+                    },
+                    error => {
+                        console.error("Error loading posts:", error);
+                        showError("خطأ في تحميل المنشورات");
+                    }
+                );
+            
+            unsubscribeFunctions.push(unsubscribe);
+        }
+
+        function deletePost(id) { 
+            if (confirm("هل تريد حذف المنشور؟")) {
+                db.collection("posts").doc(id).delete()
+                    .catch(error => showError("خطأ في حذف المنشور: " + error.message));
+            }
+        }
+
+        function likePost(id, currentLikes) { 
+            db.collection("posts").doc(id).update({ likes: currentLikes + 1 })
+                .catch(error => showError("خطأ في الإعجاب: " + error.message));
+        }
+
+        function toggleComments(id) {
+            const el = document.getElementById(id);
+            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function addComment(postId) {
+            const input = document.getElementById(`new-comment-${postId}`);
+            const text = input.value.trim();
+            
+            if (!text) {
+                showError("التعليق لا يمكن أن يكون فارغاً");
+                return;
+            }
+
+            db.collection("posts").doc(postId).update({
+                comments: firebase.firestore.FieldValue.arrayUnion({ 
+                    user: currentUser, 
+                    text: text 
+                })
+            }).then(() => {
+                input.value = "";
+            }).catch(error => {
+                showError("خطأ في إضافة التعليق: " + error.message);
+            });
+        }
+
+        // ========== إدارة المنتجات ==========
+        function addNewProduct() {
+            const name = document.getElementById('new-prod-name').value.trim();
+            const price = parseFloat(document.getElementById('new-prod-price').value);
+            const imageUrl = document.getElementById('new-prod-image').value.trim();
+            
+            if (!name) {
+                showError("اسم المنتج مطلوب");
+                return;
+            }
+
+            if (!price || price < 0) {
+                showError("السعر يجب أن يكون موجب");
+                return;
+            }
+
+            if (imageUrl && !isValidUrl(imageUrl)) {
+                showError("رابط الصورة غير صحيح");
+                return;
+            }
+
+            const addBtn = document.getElementById('add-prod-btn');
+            addBtn.disabled = true;
+            
+            db.collection("products").add({
+                name: name, 
+                price: price, 
+                imageUrl: imageUrl || null,
+                owner: currentUser, 
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                document.getElementById('new-prod-name').value = "";
+                document.getElementById('new-prod-price').value = "";
+                document.getElementById('new-prod-image').value = "";
+                showSuccess("تم إضافة المنتج بنجاح");
+            }).catch(error => {
+                showError("خطأ في إضافة المنتج: " + error.message);
+            }).finally(() => {
+                addBtn.disabled = false;
+            });
+        }
+
+        function loadProducts() {
+            const unsubscribe = db.collection("products")
+                .orderBy("timestamp", "desc")
+                .limit(50)
+                .onSnapshot(
+                    snapshot => {
+                        const store = document.getElementById('store-products');
+                        const fragments = [];
+                        
+                        snapshot.forEach(doc => {
+                            const prod = doc.data();
+                            const prodId = doc.id;
+                            
+                            const imgHtml = prod.imageUrl && isValidUrl(prod.imageUrl)
+                                ? `<img src="${prod.imageUrl}" class="prod-image" alt="صورة المنتج" onerror="this.style.display='none'">` 
+                                : '';
+                            
+                            let controlBtns = '';
+                            if (prod.owner === currentUser) {
+                                controlBtns = `
+                                    <div class="prod-actions">
+                                        <button class="action-btn danger" onclick="deleteProduct('${prodId}')" aria-label="حذف المنتج">🗑️</button>
+                                    </div>
+                                `;
+                            }
+
+                            fragments.push(`
+                                <div class="product-card">
+                                    ${controlBtns}
+                                    ${imgHtml}
+                                    <h4 style="margin: 5px 0;">${sanitizeHTML(prod.name)}</h4>
+                                    <p style="color: gray; margin: 5px 0;">${prod.price} Pi</p>
+                                    <button class="btn btn-gold" style="margin-top: 10px;" onclick="buyProduct('${sanitizeHTML(prod.name)}', ${prod.price})">شراء</button>
+                                </div>
+                            `);
+                        });
+                        
+                        store.innerHTML = fragments.join('');
+                    },
+                    error => {
+                        console.error("Error loading products:", error);
+                        showError("خطأ في تحميل المنتجات");
+                    }
+                );
+            
+            unsubscribeFunctions.push(unsubscribe);
+        }
+
+        function deleteProduct(id) { 
+            if (confirm("هل تريد حذف المنتج؟")) {
+                db.collection("products").doc(id).delete()
+                    .catch(error => showError("خطأ في حذف المنتج: " + error.message));
+            }
+        }
+        
+        // ========== دالة الشراء (مع إصلاح مهلة الموافقة) ==========
+        function buyProduct(name, price) {
+            console.log("بدء شراء:", name, price);
+            if (typeof Pi === 'undefined') { 
+                showError("نظام Pi SDK غير متاح داخل هذا المتصفح حالياً");
+                return; 
+            }
+
+            if (typeof price !== 'number' || price <= 0) {
+                showError("سعر المنتج المدخل غير صحيح");
+                return;
+            }
+
+            try {
+                Pi.createPayment({
+                    amount: price,
+                    memo: `شراء ${name} من أرابيكا`,
+                    metadata: { productName: name }
+                }, {
+                    onReadyForServerApproval: function(paymentId) {
+                        console.log("📦 paymentId:", paymentId);
+                        
+                        // الموافقة الفورية لحل مشكلة المهلة
+                        Pi.approvePayment(paymentId)
+                            .then(() => console.log("✅ Pi.approvePayment تم بنجاح"))
+                            .catch(err => {
+                                console.error("❌ فشل Pi.approvePayment:", err);
+                                showError("فشل الموافقة على الدفع: " + err.message);
+                            });
+
+                        // إرسال الطلب للخادم للتوثيق (اختياري)
+                        fetch('/api/approve', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ paymentId: paymentId })
+                        })
+                        .then(response => response.json())
+                        .then(data => console.log("📡 رد /api/approve:", data))
+                        .catch(error => console.warn("⚠️ تعذر الاتصال بـ /api/approve:", error));
+                    },
+                    onReadyForServerCompletion: function(paymentId, txid) {
+                        console.log("إكمال الدفع:", paymentId, txid);
+                        fetch('/api/complete', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ paymentId: paymentId, txid: txid })
+                        })
+                        .then(response => {
+                            if(response.ok) {
+                                showSuccess(`تم شراء ${name} بنجاح ومصادقته!`);
+                            } else {
+                                showError("تم خصم الرصيد لكن فشل خادم الـ API في التأكيد.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("خطأ في /api/complete:", error);
+                            showError("فشل الاتصال بخادم الإكمال النهائي");
+                        });
+                    },
+                    onCancel: function(paymentId) { 
+                        console.log("تم إلغاء عملية الشراء من قبل المستخدم:", paymentId);
+                    },
+                    onError: function(error, payment) { 
+                        console.error("خطأ من شبكة Pi:", error);
+                        showError("خطأ من شبكة Pi: " + (error?.message || "يرجى مراجعة إعدادات الرابط في الـ Developer Portal الخاص بـ Pi"));
+                    }
+                });
+            } catch (globalError) {
+                console.error("خطأ داخلي غير متوقع:", globalError);
+                showError("خطأ داخلي غير متوقع: " + globalError.message);
+            }
+        }
+
+        // ========== نظام التنقل بين الصفحات ==========
+        function switchTab(tab) {
+            document.querySelectorAll('#main-app .view-section').forEach(el => el.classList.remove('active-section'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab + '-view').classList.add('active-section');
+            document.getElementById('nav-' + tab).classList.add('active');
+        }
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') item.click();
+            });
+        });
+
+        window.addEventListener('beforeunload', cleanupListeners);
+    </script>
 </body>
-</html>
+    </html>
