@@ -266,7 +266,6 @@
         <h2>مرحباً بك في مجتمع أرابيكا</h2>
         <p>انضم إلى مجتمعنا وابدأ التجارة الآن</p>
         <button class="btn btn-gold" id="login-btn">تسجيل الدخول باستخدام Pi</button>
-        <!-- زر المساعد يظهر قبل تسجيل الدخول -->
         <a href="/chat.html" class="chat-button">💬 المساعد الذكي</a>
     </div>
 
@@ -285,7 +284,7 @@
             <div class="card" style="border: 1px dashed var(--gold);">
                 <h4 style="margin-top:0; color:var(--primary);">➕ أضف منتجك للسوق</h4>
                 <input type="text" id="new-prod-name" placeholder="اسم المنتج" aria-label="اسم المنتج" maxlength="100">
-                <input type="number" id="new-prod-price" placeholder="السعر (Pi)" aria-label="سعر المنتج" min="0" step="0.01">
+                <input type="number" id="new-prod-price" placeholder="السعر (ARA)" aria-label="سعر المنتج" min="0" step="0.01">
                 <input type="url" id="new-prod-image" placeholder="🔗 رابط صورة المنتج (اختياري)" aria-label="رابط صورة المنتج">
                 <button class="btn btn-gold" id="add-prod-btn" onclick="addNewProduct()">عرض للبيع</button>
             </div>
@@ -299,9 +298,7 @@
                 <p id="user-bio" style="color: gray; font-size: 14px;">عضو مجتمع أرابيكا</p>
                 <hr style="border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
                 <button class="btn btn-outline" onclick="editBio()">🫆 تعديل النبذة</button>
-                <!-- زر المساعد الذكي في صفحة الملف الشخصي -->
                 <a href="/chat.html" class="chat-button" style="display: block; margin: 15px auto; width: fit-content;">💬 المساعد الذكي</a>
-                
                 <a href="privacy.html" rel="noopener noreferrer" style="display: block; margin-top: 15px; color: var(--gold); text-decoration: underline; font-size: 14px;">📄 سياسة الخصوصية</a>
                 <a href="contact.html" rel="noopener noreferrer" style="display: block; margin-top: 10px; color: var(--gold); text-decoration: underline; font-size: 14px;">🛠️ الدعم الفني والتواصل</a>
                 <a href="terms.html" rel="noopener noreferrer" style="display: block; margin-top: 10px; color: var(--gold); text-decoration: underline; font-size: 14px;">📜 شروط الاستخدام</a>
@@ -709,7 +706,7 @@
                                     ${controlBtns}
                                     ${imgHtml}
                                     <h4 style="margin: 5px 0;">${sanitizeHTML(prod.name)}</h4>
-                                    <p style="color: gray; margin: 5px 0;">${prod.price} Pi</p>
+                                    <p style="color: gray; margin: 5px 0;">${prod.price} ARA</p>
                                     <button class="btn btn-gold" style="margin-top: 10px;" onclick="buyProduct('${sanitizeHTML(prod.name)}', ${prod.price})">شراء</button>
                                 </div>
                             `);
@@ -733,7 +730,7 @@
             }
         }
         
-        // ========== دالة الشراء (مع إصلاح مهلة الموافقة) ==========
+        // ========== دالة الشراء (تم تنظيفها وإصلاحها جذرياً) ==========
         function buyProduct(name, price) {
             console.log("بدء شراء:", name, price);
             if (typeof Pi === 'undefined') { 
@@ -753,25 +750,25 @@
                     metadata: { productName: name }
                 }, {
                     onReadyForServerApproval: function(paymentId) {
-                        console.log("📦 paymentId:", paymentId);
+                        console.log("📦 يتم الآن إرسال معرّف الدفع للسيرفر للموافقة:", paymentId);
                         
-                        // الموافقة الفورية لحل مشكلة المهلة
-                        Pi.approvePayment(paymentId)
-                            .then(() => console.log("✅ Pi.approvePayment تم بنجاح"))
-                            .catch(err => {
-                                console.error("❌ فشل Pi.approvePayment:", err);
-                                showError("فشل الموافقة على الدفع: " + err.message);
-                            });
-
-                        // إرسال الطلب للخادم للتوثيق (اختياري)
+                        // نعتمد هنا فقط على الاتصال بالسيرفر الخاص بك (بدون أكواد خلفية خاطئة في الواجهة)
                         fetch('/api/approve', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ paymentId: paymentId })
                         })
-                        .then(response => response.json())
-                        .then(data => console.log("📡 رد /api/approve:", data))
-                        .catch(error => console.warn("⚠️ تعذر الاتصال بـ /api/approve:", error));
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error("السيرفر رفض الطلب أو لم يرد بشكل صحيح");
+                            }
+                            return response.json();
+                        })
+                        .then(data => console.log("📡 تمت الموافقة من السيرفر:", data))
+                        .catch(error => {
+                            console.error("⚠️ خطأ في الاتصال بـ /api/approve:", error);
+                            showError("فشل الاتصال بالسيرفر للموافقة على الدفع.");
+                        });
                     },
                     onReadyForServerCompletion: function(paymentId, txid) {
                         console.log("إكمال الدفع:", paymentId, txid);
@@ -782,9 +779,9 @@
                         })
                         .then(response => {
                             if(response.ok) {
-                                showSuccess(`تم شراء ${name} بنجاح ومصادقته!`);
+                                showSuccess(`تم إتمام عملية الشراء بنجاح!`);
                             } else {
-                                showError("تم خصم الرصيد لكن فشل خادم الـ API في التأكيد.");
+                                showError("تم الدفع لكن فشل خادم الـ API في التأكيد النهائي.");
                             }
                         })
                         .catch(error => {
@@ -797,7 +794,7 @@
                     },
                     onError: function(error, payment) { 
                         console.error("خطأ من شبكة Pi:", error);
-                        showError("خطأ من شبكة Pi: " + (error?.message || "يرجى مراجعة إعدادات الرابط في الـ Developer Portal الخاص بـ Pi"));
+                        showError("حدث خطأ من شبكة الدفع أثناء المعالجة.");
                     }
                 });
             } catch (globalError) {
@@ -823,4 +820,4 @@
         window.addEventListener('beforeunload', cleanupListeners);
     </script>
 </body>
-    </html>
+</html>
