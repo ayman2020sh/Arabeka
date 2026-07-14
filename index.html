@@ -11,10 +11,9 @@
     
     <style>
         :root { 
-            /* ألوان التصميم المظلم الجديد (Dark Mode) */
             --primary: #8a2be2; 
-            --bg-color: #0f1015; /* لون خلفية أسود مزرق داكن جداً */
-            --card-bg: #1c1d24;  /* لون خلفية البطاقات */
+            --bg-color: #0f1015; 
+            --card-bg: #1c1d24;  
             --text-color: #ffffff; 
             --text-muted: #aaaaaa; 
             --border: #2a2b36;     
@@ -29,10 +28,9 @@
             background-color: var(--bg-color); 
             color: var(--text-color); 
             margin: 0; 
-            padding-bottom: 80px; /* مسافة للشريط السفلي */
+            padding-bottom: 80px;
         }
         
-        /* شريط العنوان العلوي */
         .header { 
             background-color: var(--card-bg); 
             color: white; 
@@ -51,11 +49,9 @@
         
         .container { padding: 15px; }
         
-        /* إخفاء وإظهار الأقسام */
         .view-section { display: none; }
         .active-section { display: block; }
         
-        /* تصميم البطاقات العامة */
         .card { 
             background: var(--card-bg); 
             border-radius: 15px; 
@@ -66,7 +62,7 @@
         }
 
         /* ========================================== */
-        /* تصاميم الكروت الإعلانية (الرئيسية)         */
+        /* كارت الترحيب المعدل                        */
         /* ========================================== */
         .promo-card-blue {
             background: linear-gradient(135deg, #0d47a1, #1976d2);
@@ -77,6 +73,138 @@
             position: relative;
             overflow: hidden;
         }
+        
+        /* ========================================== */
+        /* كارت الفيزا الجديد                         */
+        /* ========================================== */
+        .visa-card {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: white;
+            border-radius: 20px;
+            padding: 25px 20px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .visa-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.2), transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .visa-card::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            left: -20%;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(0, 188, 212, 0.15), transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .visa-card .visa-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .visa-card .visa-brand {
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .visa-card .ara-badge {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            -webkit-text-fill-color: white;
+            box-shadow: 0 2px 10px rgba(138, 43, 226, 0.4);
+        }
+        
+        .visa-card .visa-number {
+            font-size: 22px;
+            letter-spacing: 4px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0 5px 0;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .visa-card .visa-details {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+            font-size: 13px;
+            opacity: 0.8;
+        }
+        
+        .visa-card .visa-chip {
+            font-size: 30px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .visa-card .visa-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            margin-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 15px;
+        }
+        
+        .visa-card .visa-footer .join-btn {
+            background: linear-gradient(90deg, #FFD700, #FF8C00);
+            border: none;
+            padding: 8px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+        
+        .visa-card .visa-footer .join-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .visa-card .visa-footer .user-count {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .visa-card .visa-footer .user-count span {
+            color: #FFD700;
+            font-weight: bold;
+        }
+
         .promo-card-purple {
             background: linear-gradient(135deg, #4a148c, #7b1fa2);
             color: white;
@@ -85,12 +213,14 @@
             margin-bottom: 15px;
             text-align: center;
         }
+        
         .promo-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin-bottom: 15px;
         }
+        
         .promo-card-pink {
             background: linear-gradient(135deg, #ff4081, #f50057);
             color: white;
@@ -98,6 +228,7 @@
             padding: 20px 10px;
             text-align: center;
         }
+        
         .promo-card-cyan {
             background: linear-gradient(135deg, #00bcd4, #00acc1);
             color: white;
@@ -106,7 +237,6 @@
             text-align: center;
         }
         
-        /* أزرار الإجراءات والمنشورات */
         .post-header { display: flex; align-items: center; margin-bottom: 10px; justify-content: space-between; }
         .post-author { font-weight: bold; color: var(--primary); }
         .card-content { font-size: 15px; margin-bottom: 10px; line-height: 1.5; word-break: break-word; }
@@ -121,7 +251,6 @@
         .comment { font-size: 13px; border-bottom: 1px solid var(--border); padding: 5px 0; }
         .comment strong { color: var(--primary); }
         
-        /* المدخلات (النصوص والصور) */
         input, textarea { 
             width: 100%; padding: 12px; background-color: #15161c; color: var(--text-color);
             border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; 
@@ -129,7 +258,6 @@
         input:focus, textarea:focus { outline: none; border-color: var(--primary); }
         ::placeholder { color: #666666; }
         
-        /* الأزرار الرئيسية */
         .btn { 
             background-color: var(--primary); color: white; border: none; padding: 12px; 
             border-radius: 20px; cursor: pointer; font-weight: bold; width: 100%; 
@@ -138,17 +266,14 @@
         .btn:active { transform: scale(0.98); }
         .btn-gold { background-color: var(--gold); color: #000; }
         
-        /* تصميم المتجر */
         .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .product-card { background: var(--card-bg); padding: 12px; border-radius: 15px; text-align: center; border: 1px solid var(--border); position: relative; }
         .prod-image { width: 100%; height: 120px; object-fit: cover; border-radius: 10px; margin-bottom: 8px; background-color: #15161c; }
         .prod-actions { position: absolute; top: 5px; left: 5px; display: flex; gap: 5px; background: rgba(0,0,0,0.6); padding: 5px; border-radius: 8px; }
         
-        /* النوافذ المنبثقة */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: var(--card-bg); padding: 20px; border-radius: 15px; width: 85%; text-align: center; border: 1px solid var(--border); }
         
-        /* الشريط السفلي (التنقل) */
         .bottom-nav { 
             position: fixed; bottom: 0; left: 0; right: 0; width: 100%; 
             background-color: var(--card-bg); display: flex; justify-content: space-around; 
@@ -157,13 +282,17 @@
         .nav-item { 
             text-align: center; color: var(--text-muted); cursor: pointer; flex: 1; 
             font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px;
+            transition: color 0.3s;
         }
         .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-item:hover { color: var(--primary); }
         
-        /* رسائل التنبيه والخطأ */
         .error-message { background-color: rgba(255, 68, 68, 0.2); border: 1px solid var(--danger); color: #ff8888; padding: 12px; border-radius: 8px; margin-bottom: 10px; position: fixed; top: 60px; left: 15px; right: 15px; z-index: 1000; }
         
         .chat-button { display: inline-block; background: linear-gradient(45deg, var(--primary), #4169e1); color: white; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; margin-top: 15px; }
+        
+        /* تحسينات إضافية */
+        .welcome-text { font-size: 13px; opacity: 0.9; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -196,16 +325,48 @@
         
         <div id="feed-view" class="container view-section active-section">
             
+            <!-- ========================================== -->
+            <!-- كارت الترحيب المعدل                        -->
+            <!-- ========================================== -->
             <div class="promo-card-blue">
-                <h2 style="margin: 0;">عربيكا</h2>
-                <p style="margin: 5px 0 15px 0; font-size: 14px;">بيع خدماتك للتجارة الإلكترونية</p>
-                <div style="font-size: 12px; opacity: 0.8; margin-bottom: 15px;">
-                    ✓ 9305 مستخدم<br>
+                <h2 style="margin: 0; font-size: 28px;">عربيكا</h2>
+                <p style="margin: 5px 0 15px 0; font-size: 16px;">بيع الخدمات والمنتجات</p>
+                <div style="font-size: 13px; opacity: 0.9; margin-bottom: 15px;">
+                    ✓ ١٠٠٠ مستخدم 🤭<br>
                     ✓ تواصل آمن<br>
-                    ✓ بيانات مشفرة
+                    ✓ بياناتك مشفرة
                 </div>
-                <button style="background: var(--gold); border: none; padding: 5px 20px; border-radius: 15px; font-weight: bold; cursor: pointer;">تنزيل</button>
+                <button style="background: var(--gold); border: none; padding: 8px 25px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 16px;">انضم الآن</button>
                 <div style="position: absolute; right: -20px; top: 10px; font-size: 80px; opacity: 0.1;">💳</div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- كارت الفيزا الجديد                         -->
+            <!-- ========================================== -->
+            <div class="visa-card">
+                <div class="visa-top">
+                    <span class="visa-brand">✦ أرابيكا</span>
+                    <span class="ara-badge">ARA</span>
+                </div>
+                
+                <div class="visa-number">•••• •••• •••• 2026</div>
+                
+                <div class="visa-details">
+                    <span>بطاقة العضوية</span>
+                    <span>صالح حتى 12/28</span>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1;">
+                    <span class="visa-chip">💳</span>
+                    <span style="font-size: 14px; font-weight: bold; letter-spacing: 1px;">عربيكا</span>
+                </div>
+                
+                <div class="visa-footer">
+                    <div class="user-count">
+                        👥 <span>١٠٠٠+</span> عضو
+                    </div>
+                    <button class="join-btn" onclick="handleLogin()">انضم الآن</button>
+                </div>
             </div>
 
             <div class="promo-card-purple">
@@ -344,7 +505,7 @@
         function initializePiSDK() {
             try {
                 if (typeof Pi !== 'undefined') { 
-                    Pi.init({ version: "2.0", sandbox: false }); // تعمل بشكل حقيقي
+                    Pi.init({ version: "2.0", sandbox: false });
                     console.log("Pi SDK Initialized");
                 }
             } catch (error) { console.error("Pi SDK Error:", error); }
@@ -520,12 +681,24 @@
             } catch (e) { showError("خطأ: " + e.message); }
         }
 
-        // --- 8. التنقل ---
+        // --- 8. التنقل - تم إصلاح مشكلة الشاشة السوداء ---
         function switchTab(tab) {
+            // إخفاء جميع الأقسام
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-section'));
+            // إزالة التفعيل من جميع أزرار التنقل
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById(tab + '-view').classList.add('active-section');
-            document.getElementById('nav-' + tab).classList.add('active');
+            
+            // إظهار القسم المطلوب
+            const targetView = document.getElementById(tab + '-view');
+            if (targetView) {
+                targetView.classList.add('active-section');
+            }
+            
+            // تفعيل زر التنقل
+            const targetNav = document.getElementById('nav-' + tab);
+            if (targetNav) {
+                targetNav.classList.add('active');
+            }
         }
     </script>
 </body>
