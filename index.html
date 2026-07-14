@@ -12,41 +12,41 @@
     <style>
         :root { 
             /* ألوان التصميم المظلم الجديد (Dark Mode) */
-            --primary: #8a2be2; /* لون بنفسجي متوهج للأزرار والنصوص المهمة */
-            --bg-color: #121212; /* لون خلفية التطبيق الأسود */
-            --card-bg: #1e1e1e;  /* لون خلفية البطاقات (رمادي داكن) */
-            --text-color: #ffffff; /* لون النص الأساسي (أبيض) */
-            --text-muted: #aaaaaa; /* لون النص الثانوي (رمادي فاتح) */
-            --border: #333333;     /* لون الحدود */
-            --danger: #ff4444;     /* لون الخطر (أحمر) */
-            --success: #00C851;    /* لون النجاح (أخضر) */
-            --gold: #FFD700;       /* لون ذهبي للتنبيهات أو الأزرار الخاصة */
+            --primary: #8a2be2; 
+            --bg-color: #0f1015; /* لون خلفية أسود مزرق داكن جداً */
+            --card-bg: #1c1d24;  /* لون خلفية البطاقات */
+            --text-color: #ffffff; 
+            --text-muted: #aaaaaa; 
+            --border: #2a2b36;     
+            --danger: #ff4444;     
+            --success: #00C851;    
+            --gold: #FFD700;       
         }
         
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background-color: var(--bg-color); 
-            color: var(--text-color); /* تطبيق اللون الأبيض على النصوص */
+            color: var(--text-color); 
             margin: 0; 
-            padding-bottom: 70px; /* مسافة للشريط السفلي */
+            padding-bottom: 80px; /* مسافة للشريط السفلي */
         }
         
-        /* ========================================== */
-        /* شريط العنوان العلوي           */
-        /* ========================================== */
+        /* شريط العنوان العلوي */
         .header { 
             background-color: var(--card-bg); 
-            color: var(--primary); 
+            color: white; 
             padding: 15px; 
             text-align: center; 
-            font-size: 24px; 
+            font-size: 20px; 
             font-weight: bold; 
             position: sticky; 
             top: 0; 
             z-index: 100; 
             border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .container { padding: 15px; }
@@ -55,271 +55,131 @@
         .view-section { display: none; }
         .active-section { display: block; }
         
-        /* ========================================== */
-        /* تصميم البطاقات              */
-        /* ========================================== */
+        /* تصميم البطاقات العامة */
         .card { 
             background: var(--card-bg); 
-            border-radius: 12px; 
+            border-radius: 15px; 
             padding: 15px; 
             margin-bottom: 15px; 
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* ظل خفيف للبطاقة */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
             border: 1px solid var(--border);
         }
-        
-        .post-header { 
-            display: flex; 
-            align-items: center; 
-            margin-bottom: 10px; 
-            justify-content: space-between; 
+
+        /* ========================================== */
+        /* تصاميم الكروت الإعلانية (الرئيسية)         */
+        /* ========================================== */
+        .promo-card-blue {
+            background: linear-gradient(135deg, #0d47a1, #1976d2);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
         }
+        .promo-card-purple {
+            background: linear-gradient(135deg, #4a148c, #7b1fa2);
+            color: white;
+            border-radius: 15px;
+            padding: 25px 20px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .promo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .promo-card-pink {
+            background: linear-gradient(135deg, #ff4081, #f50057);
+            color: white;
+            border-radius: 15px;
+            padding: 20px 10px;
+            text-align: center;
+        }
+        .promo-card-cyan {
+            background: linear-gradient(135deg, #00bcd4, #00acc1);
+            color: white;
+            border-radius: 15px;
+            padding: 20px 10px;
+            text-align: center;
+        }
+        
+        /* أزرار الإجراءات والمنشورات */
+        .post-header { display: flex; align-items: center; margin-bottom: 10px; justify-content: space-between; }
         .post-author { font-weight: bold; color: var(--primary); }
-        .card-content { 
-            font-size: 16px; 
-            margin-bottom: 10px; 
-            line-height: 1.5;
-            word-break: break-word;
-            overflow-wrap: break-word;
-        }
-        .post-image { 
-            max-width: 100%; 
-            border-radius: 8px; 
-            margin-bottom: 10px; 
-            display: block;
-            max-height: 300px;
-            object-fit: cover;
-        }
+        .card-content { font-size: 15px; margin-bottom: 10px; line-height: 1.5; word-break: break-word; }
+        .post-image { max-width: 100%; border-radius: 8px; margin-bottom: 10px; display: block; max-height: 300px; object-fit: cover; }
         
-        /* ========================================== */
-        /* أزرار الإجراءات (المنشورات)     */
-        /* ========================================== */
-        .post-actions { 
-            display: flex; 
-            gap: 15px; 
-            margin-top: 15px; 
-            border-top: 1px solid var(--border); 
-            padding-top: 10px; 
-        }
-        .action-btn { 
-            background: none; 
-            border: none; 
-            color: var(--text-muted); 
-            font-size: 14px; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            gap: 5px;
-            transition: color 0.2s;
-        }
+        .post-actions { display: flex; gap: 15px; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; }
+        .action-btn { background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .action-btn:hover { color: var(--primary); }
         .action-btn.danger { color: var(--danger); }
         
-        /* ========================================== */
-        /* قسم التعليقات              */
-        /* ========================================== */
-        .comments-section { 
-            margin-top: 10px; 
-            background: #252525; /* خلفية داكنة للتعليقات */
-            padding: 10px; 
-            border-radius: 8px; 
-            display: none; 
-        }
-        .comment { 
-            font-size: 13px; 
-            border-bottom: 1px solid var(--border); 
-            padding: 5px 0; 
-        }
+        .comments-section { margin-top: 10px; background: #15161c; padding: 10px; border-radius: 8px; display: none; border: 1px solid var(--border); }
+        .comment { font-size: 13px; border-bottom: 1px solid var(--border); padding: 5px 0; }
         .comment strong { color: var(--primary); }
         
-        /* ========================================== */
-        /* المدخلات (النصوص والصور)       */
-        /* ========================================== */
+        /* المدخلات (النصوص والصور) */
         input, textarea { 
-            width: 100%; 
-            padding: 10px; 
-            background-color: #2a2a2a; /* لون خلفية خانة الكتابة */
-            color: var(--text-color);
-            border: 1px solid var(--border); 
-            border-radius: 8px; 
-            box-sizing: border-box; 
-            margin-bottom: 10px; 
-            font-family: inherit;
+            width: 100%; padding: 12px; background-color: #15161c; color: var(--text-color);
+            border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; 
         }
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 5px rgba(138, 43, 226, 0.5); /* توهج بنفسجي عند التحديد */
-        }
-        /* تغيير لون النص المؤقت (Placeholder) */
-        ::placeholder { color: #888888; }
+        input:focus, textarea:focus { outline: none; border-color: var(--primary); }
+        ::placeholder { color: #666666; }
         
-        /* ========================================== */
-        /* الأزرار الرئيسية             */
-        /* ========================================== */
+        /* الأزرار الرئيسية */
         .btn { 
-            background-color: var(--primary); /* زر بنفسجي */
-            color: white; 
-            border: none; 
-            padding: 12px; 
-            border-radius: 20px; /* أزرار دائرية الحواف */
-            cursor: pointer; 
-            font-weight: bold; 
-            width: 100%; 
-            margin-bottom: 10px;
-            transition: opacity 0.2s, transform 0.1s;
+            background-color: var(--primary); color: white; border: none; padding: 12px; 
+            border-radius: 20px; cursor: pointer; font-weight: bold; width: 100%; 
+            margin-bottom: 10px; transition: opacity 0.2s;
         }
-        .btn:hover { opacity: 0.9; }
-        .btn:active { transform: scale(0.98); } /* تأثير ضغط الزر */
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        
+        .btn:active { transform: scale(0.98); }
         .btn-gold { background-color: var(--gold); color: #000; }
-        .btn-outline { 
-            background-color: transparent; 
-            border: 1px solid var(--primary); 
-            color: var(--primary); 
-        }
         
-        /* ========================================== */
-        /* تصميم المتجر               */
-        /* ========================================== */
+        /* تصميم المتجر */
         .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .product-card { 
-            background: var(--card-bg); 
-            padding: 12px; 
-            border-radius: 12px; 
-            text-align: center; 
-            border: 1px solid var(--border); 
-            position: relative; 
-        }
-        .prod-image { 
-            width: 100%; 
-            height: 120px; 
-            object-fit: cover; 
-            border-radius: 8px; 
-            margin-bottom: 8px;
-            background-color: #252525;
-        }
-        .prod-actions { 
-            position: absolute; 
-            top: 5px; 
-            left: 5px; 
-            display: flex; 
-            gap: 5px; 
-            background: rgba(0,0,0,0.5); 
-            padding: 2px; 
-            border-radius: 5px; 
-        }
+        .product-card { background: var(--card-bg); padding: 12px; border-radius: 15px; text-align: center; border: 1px solid var(--border); position: relative; }
+        .prod-image { width: 100%; height: 120px; object-fit: cover; border-radius: 10px; margin-bottom: 8px; background-color: #15161c; }
+        .prod-actions { position: absolute; top: 5px; left: 5px; display: flex; gap: 5px; background: rgba(0,0,0,0.6); padding: 5px; border-radius: 8px; }
         
-        /* ========================================== */
-        /* النوافذ المنبثقة           */
-        /* ========================================== */
-        .modal { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.8); 
-            z-index: 1000; 
-            justify-content: center; 
-            align-items: center; 
-        }
-        .modal-content { 
-            background: var(--card-bg); 
-            padding: 20px; 
-            border-radius: 12px; 
-            width: 85%; 
-            text-align: center;
-            border: 1px solid var(--border);
-        }
+        /* النوافذ المنبثقة */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--card-bg); padding: 20px; border-radius: 15px; width: 85%; text-align: center; border: 1px solid var(--border); }
         
-        /* ========================================== */
-        /* الشريط السفلي (التنقل)       */
-        /* ========================================== */
+        /* الشريط السفلي (التنقل) */
         .bottom-nav { 
-            position: fixed; 
-            bottom: 0; 
-            left: 0;
-            right: 0;
-            width: 100%; 
-            background-color: var(--card-bg); 
-            display: flex; 
-            justify-content: space-around; 
-            padding: 10px 0; 
-            border-top: 1px solid var(--border);
-            z-index: 100;
+            position: fixed; bottom: 0; left: 0; right: 0; width: 100%; 
+            background-color: var(--card-bg); display: flex; justify-content: space-around; 
+            padding: 10px 0; border-top: 1px solid var(--border); z-index: 100;
         }
         .nav-item { 
-            text-align: center; 
-            color: var(--text-muted); 
-            cursor: pointer; 
-            flex: 1; 
-            font-size: 14px;
-            padding: 5px;
-            transition: color 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
+            text-align: center; color: var(--text-muted); cursor: pointer; flex: 1; 
+            font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px;
         }
         .nav-item.active { color: var(--primary); font-weight: bold; }
         
-        /* ========================================== */
-        /* رسائل التنبيه والخطأ        */
-        /* ========================================== */
-        .error-message {
-            background-color: rgba(255, 68, 68, 0.2);
-            border: 1px solid var(--danger);
-            color: #ff8888;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            position: fixed;
-            top: 60px;
-            left: 15px;
-            right: 15px;
-            z-index: 1000;
-        }
-        .success-message {
-            background-color: rgba(0, 200, 81, 0.2);
-            border: 1px solid var(--success);
-            color: #88ff88;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
+        /* رسائل التنبيه والخطأ */
+        .error-message { background-color: rgba(255, 68, 68, 0.2); border: 1px solid var(--danger); color: #ff8888; padding: 12px; border-radius: 8px; margin-bottom: 10px; position: fixed; top: 60px; left: 15px; right: 15px; z-index: 1000; }
         
-        /* زر المساعد الذكي (تم تجهيزه للمرحلة القادمة) */
-        .chat-button {
-            display: inline-block;
-            background: linear-gradient(45deg, var(--primary), #4169e1);
-            color: white;
-            padding: 12px 25px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: bold;
-            margin-top: 15px;
-            transition: opacity 0.2s;
-        }
-        .chat-button:hover { opacity: 0.9; }
-        
-        @media (max-width: 600px) {
-            .product-grid { grid-template-columns: 1fr; }
-        }
+        .chat-button { display: inline-block; background: linear-gradient(45deg, var(--primary), #4169e1); color: white; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-    <div class="header" role="banner">أرابيكا ☕</div>
+    <div class="header">
+        <span>أرابيكا</span>
+        <span style="font-size: 14px; color: var(--text-muted);">Arabeka ☕</span>
+    </div>
     
     <div id="login-error" style="display:none;" class="error-message"></div>
 
-    <div id="custom-modal" class="modal" role="dialog" aria-hidden="true">
+    <div id="custom-modal" class="modal">
         <div class="modal-content">
             <h4 id="modal-title">تعديل البيانات</h4>
-            <input type="text" id="modal-input-1" placeholder="الحقل الأول" aria-label="حقل إدخال أول">
-            <input type="text" id="modal-input-2" placeholder="الحقل الثاني (اختياري)" style="display:none;" aria-label="حقل إدخال ثاني">
+            <input type="text" id="modal-input-1" placeholder="الحقل الأول">
+            <input type="text" id="modal-input-2" placeholder="الحقل الثاني" style="display:none;">
             <button class="btn" onclick="saveModal()">حفظ التغييرات</button>
             <button class="btn" style="background-color:#444;" onclick="closeModal()">إلغاء</button>
         </div>
@@ -328,85 +188,142 @@
     <div id="login-view" class="container view-section active-section" style="text-align: center; margin-top: 50px;">
         <h2>مرحباً بك في مجتمع أرابيكا</h2>
         <p style="color: var(--text-muted);">انضم إلى مجتمعنا وابدأ التجارة الآن</p>
-        <button class="btn" id="login-btn">تسجيل الدخول باستخدام Pi</button>
+        <button class="btn" id="login-btn" style="background: linear-gradient(45deg, var(--gold), #ff8c00); color: black;">تسجيل الدخول باستخدام Pi</button>
         <a href="/chat.html" class="chat-button">💬 المساعد الذكي</a>
     </div>
 
     <div id="main-app" class="view-section">
         
         <div id="feed-view" class="container view-section active-section">
-            <div class="card">
-                <textarea id="post-text" placeholder="شارك أفكارك مع مجتمع أرابيكا..." aria-label="نص المنشور"></textarea>
-                <input type="url" id="post-image-url" placeholder="🔗 رابط صورة للمنشور (اختياري)" aria-label="رابط صورة المنشور">
-                <button class="btn" id="publish-btn" onclick="publishPost()">نشر الآن</button>
+            
+            <div class="promo-card-blue">
+                <h2 style="margin: 0;">عربيكا</h2>
+                <p style="margin: 5px 0 15px 0; font-size: 14px;">بيع خدماتك للتجارة الإلكترونية</p>
+                <div style="font-size: 12px; opacity: 0.8; margin-bottom: 15px;">
+                    ✓ 9305 مستخدم<br>
+                    ✓ تواصل آمن<br>
+                    ✓ بيانات مشفرة
+                </div>
+                <button style="background: var(--gold); border: none; padding: 5px 20px; border-radius: 15px; font-weight: bold; cursor: pointer;">تنزيل</button>
+                <div style="position: absolute; right: -20px; top: 10px; font-size: 80px; opacity: 0.1;">💳</div>
             </div>
-            <div id="posts-feed"></div> </div>
+
+            <div class="promo-card-purple">
+                <div style="font-size: 50px; margin-bottom: 10px;">👥</div>
+                <h2 style="margin: 0;">تواصل اجتماعي آمن</h2>
+                <p style="font-size: 14px; opacity: 0.9;">شارك أفكارك مع مجتمع عربي نشط</p>
+                <p style="font-size: 12px; opacity: 0.7;">تواصل مع آلاف المستخدمين، شارك منشوراتك، اكتسب متابعين</p>
+            </div>
+
+            <div class="promo-grid">
+                <div class="promo-card-pink">
+                    <div style="font-size: 30px; margin-bottom: 5px;">🛍️</div>
+                    <h3 style="margin: 5px 0; font-size: 16px;">تسوق تجاري</h3>
+                    <p style="font-size: 11px; margin: 0; opacity: 0.9;">بيع منتجاتك وخدماتك بسهولة</p>
+                </div>
+                <div class="promo-card-cyan">
+                    <div style="font-size: 30px; margin-bottom: 5px;">💳</div>
+                    <h3 style="margin: 5px 0; font-size: 16px;">دفع آمن وسريع</h3>
+                    <p style="font-size: 11px; margin: 0; opacity: 0.9;">منصة Pi Network الرقمية</p>
+                </div>
+            </div>
+
+            <h3 style="color: var(--text-color); margin-top: 25px;">منطقة تفاعل المجتمع</h3>
+            <div class="card" style="background: linear-gradient(145deg, #1c1d24, #262833);">
+                <h4 style="margin-top: 0; color: var(--primary);">✨ شارك رأيك في التطبيق</h4>
+                <textarea id="post-text" placeholder="هل تعجبك عربيكا؟ شارك تجربتك وآراءك..." rows="3"></textarea>
+                <input type="url" id="post-image-url" placeholder="🔗 رابط صورة (اختياري)">
+                <button class="btn" id="publish-btn" onclick="publishPost()" style="background: linear-gradient(90deg, #4a148c, var(--primary));">✓ إرسال الرأي</button>
+            </div>
+            
+            <div id="posts-feed"></div>
+        </div>
 
         <div id="store-view" class="container view-section">
             <div class="card" style="border: 1px dashed var(--primary);">
                 <h4 style="margin-top:0; color:var(--primary);">➕ أضف منتجك للسوق</h4>
-                <input type="text" id="new-prod-name" placeholder="اسم المنتج" aria-label="اسم المنتج" maxlength="100">
-                <input type="number" id="new-prod-price" placeholder="السعر (ARA)" aria-label="سعر المنتج" min="0" step="0.01">
-                <input type="url" id="new-prod-image" placeholder="🔗 رابط صورة المنتج (اختياري)" aria-label="رابط صورة المنتج">
+                <input type="text" id="new-prod-name" placeholder="اسم المنتج" maxlength="100">
+                <input type="number" id="new-prod-price" placeholder="السعر (ARA)" min="0" step="0.01">
+                <input type="url" id="new-prod-image" placeholder="🔗 رابط صورة المنتج (اختياري)">
                 <button class="btn" id="add-prod-btn" onclick="addNewProduct()">عرض للبيع</button>
             </div>
             <h3 style="color: var(--text-color);">أحدث المنتجات</h3>
-            <div class="product-grid" id="store-products"></div> </div>
+            <div class="product-grid" id="store-products"></div>
+        </div>
 
-                <div id="profile-view" class="container view-section">
+        <div id="profile-view" class="container view-section">
             
             <div class="card" style="text-align: center; background: linear-gradient(145deg, #1e1e1e, #2a1b3d); border-top: 4px solid var(--primary);">
-                <div style="width: 80px; height: 80px; background-color: #4a235a; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 36px; font-weight: bold; margin: 0 auto 10px auto; position: relative;">
+                <div style="width: 80px; height: 80px; background-color: #6a1b9a; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 36px; font-weight: bold; margin: 0 auto 15px auto; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
                     A
-                    <div style="position: absolute; bottom: 0; right: 0; background-color: #1da1f2; width: 24px; height: 24px; border-radius: 50%; font-size: 14px; display: flex; justify-content: center; align-items: center; border: 2px solid var(--card-bg);">
-                        ✔️
+                    <div style="position: absolute; bottom: -5px; right: -5px; background-color: #1da1f2; width: 28px; height: 28px; border-radius: 50%; font-size: 14px; display: flex; justify-content: center; align-items: center; border: 3px solid var(--card-bg); font-weight: bold;">
+                        P
                     </div>
                 </div>
                 
-                <h2 id="user-name" style="margin: 5px 0; color: var(--text-color);">أرابيكا</h2>
-                <p id="user-bio" style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">user-unknown :معرف المستخدم</p>
-                <p style="color: var(--text-muted); font-size: 12px;">تاريخ الانضمام: 2024</p>
+                <h2 id="user-name" style="margin: 5px 0; color: var(--text-color);">أحمد العرابي</h2>
+                <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">البريد الإلكتروني: email@example.com</p>
             </div>
 
-            <div class="card" style="display: flex; justify-content: space-around; text-align: center; padding: 15px 5px;">
-                <div>
-                    <div style="font-size: 20px; color: var(--primary); font-weight: bold;">0</div>
-                    <div style="color: var(--text-muted); font-size: 14px;">متابَع</div>
+            <div class="card">
+                <div style="text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px;">
+                    <p style="color: var(--text-muted); font-size: 14px; margin: 5px 0;">معرف المستخدم: <span id="user-bio" style="color: var(--text-color);">user-unknown</span></p>
+                    <p style="color: var(--text-muted); font-size: 14px; margin: 5px 0;">تاريخ الانضمام: 2024</p>
                 </div>
-                <div style="border-right: 1px solid var(--border); border-left: 1px solid var(--border); padding: 0 15px;">
-                    <div style="font-size: 20px; color: var(--primary); font-weight: bold;">0</div>
-                    <div style="color: var(--text-muted); font-size: 14px;">المتابعين</div>
-                </div>
-                <div>
-                    <div style="font-size: 20px; color: var(--primary); font-weight: bold;">0</div>
-                    <div style="color: var(--text-muted); font-size: 14px;">المنشورات</div>
+                <div style="display: flex; justify-content: space-around; text-align: center; padding-top: 5px;">
+                    <div>
+                        <div style="font-size: 24px; color: var(--primary);">👤+</div>
+                        <div style="color: var(--text-color); font-size: 14px; margin-top: 5px;">متابعة</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 24px; color: var(--primary);">👥</div>
+                        <div style="color: var(--text-color); font-size: 14px; margin-top: 5px;">المتابعين</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 24px; color: var(--primary);">🖼️</div>
+                        <div style="color: var(--text-color); font-size: 14px; margin-top: 5px;">المنشورات</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="card" style="padding: 10px 15px;">
-                <div onclick="editBio()" style="display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); cursor: pointer;">
+            <div class="card" style="padding: 5px 15px;">
+                <div onclick="editBio()" style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); cursor: pointer;">
                     <span style="font-size: 20px; margin-left: 15px; color: var(--primary);">✏️</span>
                     <span style="font-size: 16px; color: var(--text-color);">تعديل الملف</span>
                 </div>
                 
-                <a href="/chat.html" style="display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); text-decoration: none; cursor: pointer;">
-                    <span style="font-size: 20px; margin-left: 15px; color: var(--primary);">💬</span>
-                    <span style="font-size: 16px; color: var(--text-color);">المساعد الغبي</span>
+                <a href="/chat.html" style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); text-decoration: none;">
+                    <span style="font-size: 20px; margin-left: 15px; color: var(--primary);">🤖</span>
+                    <span style="font-size: 16px; color: var(--text-color);">المساعد الذكي (Omni)</span>
                 </a>
 
-                <a href="contact.html" style="display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); text-decoration: none; cursor: pointer;">
+                <a href="contact.html" style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); text-decoration: none;">
                     <span style="font-size: 20px; margin-left: 15px; color: var(--primary);">⚙️</span>
                     <span style="font-size: 16px; color: var(--text-color);">الإعدادات والدعم</span>
                 </a>
 
-                <div style="display: flex; align-items: center; padding: 12px 0; cursor: pointer;">
-                    <span style="font-size: 20px; margin-left: 15px; color: var(--danger);">➡️</span>
+                <div style="display: flex; align-items: center; padding: 15px 0; cursor: pointer;">
+                    <span style="font-size: 20px; margin-left: 15px; color: var(--danger);">🚪</span>
                     <span style="font-size: 16px; color: var(--danger);">تسجيل الخروج</span>
                 </div>
             </div>
+        </div>
 
-    
-        // --- 1. إعدادات Firebase لقاعدة البيانات ---
+        <div class="bottom-nav" role="navigation">
+            <div class="nav-item active" id="nav-feed" onclick="switchTab('feed')">
+                <span style="font-size: 24px; margin-bottom: 2px;">🏠</span> الرئيسية
+            </div>
+            <div class="nav-item" id="nav-store" onclick="switchTab('store')">
+                <span style="font-size: 24px; margin-bottom: 2px;">🛍️</span> التسوق
+            </div>
+            <div class="nav-item" id="nav-profile" onclick="switchTab('profile')">
+                <span style="font-size: 24px; margin-bottom: 2px;">👤</span> الملف الشخصي
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. إعدادات Firebase ---
         const firebaseConfig = {
             apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
             authDomain: "arabeka-3336c.firebaseapp.com",
@@ -415,327 +332,201 @@
             messagingSenderId: "244460272030",
             appId: "1:244460272030:web:c5aabfd0b396656721fe8f"
         };
-
-        try { firebase.initializeApp(firebaseConfig); } catch (error) { console.error("خطأ في تهيئة Firebase:", error); }
-
+        try { firebase.initializeApp(firebaseConfig); } catch (error) { console.error("Firebase Init Error:", error); }
+        
         const db = firebase.firestore();
         let currentUser = null;
         let unsubscribeFunctions = [];
 
-        // --- 2. تهيئة نظام Pi Network ---
-        window.addEventListener('load', function() {
-            initializePiSDK();
-        });
-
+        // --- 2. تهيئة Pi Network ---
+        window.addEventListener('load', initializePiSDK);
+        
         function initializePiSDK() {
             try {
                 if (typeof Pi !== 'undefined') { 
-                    Pi.init({ version: "2.0", sandbox: false }); // تم الإبقاء على الوضع الحقيقي بناءً على حلك السابق
-                    console.log("تم تشغيل Pi SDK بنجاح");
-                } else {
-                    console.warn("نظام Pi SDK غير متوفر حالياً");
+                    Pi.init({ version: "2.0", sandbox: false }); // تعمل بشكل حقيقي
+                    console.log("Pi SDK Initialized");
                 }
-            } catch (error) {
-                console.error("فشل في تهيئة Pi SDK:", error);
-            }
+            } catch (error) { console.error("Pi SDK Error:", error); }
         }
 
         document.getElementById('login-btn').addEventListener('click', handleLogin);
 
-        // --- 3. دوال مساعدة لتبسيط العمل ---
-        function sanitizeHTML(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        // --- 3. دوال مساعدة ---
+        function sanitizeHTML(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        function isValidUrl(string) { try { new URL(string); return true; } catch (_) { return false; } }
+        function showError(message) { 
+            const el = document.getElementById('login-error'); 
+            if(el) { el.innerHTML = sanitizeHTML(message); el.style.display = 'block'; setTimeout(() => el.style.display='none', 8000); }
         }
+        function cleanupListeners() { unsubscribeFunctions.forEach(unsub => { try { unsub(); } catch(e){} }); unsubscribeFunctions = []; }
 
-        function isValidUrl(string) {
-            try { new URL(string); return true; } catch (_) { return false; }
-        }
-
-        function showError(message) {
-            console.error("خطأ:", message);
-            const errorEl = document.getElementById('login-error');
-            if (errorEl) {
-                errorEl.innerHTML = sanitizeHTML(message);
-                errorEl.style.display = 'block';
-                setTimeout(() => { errorEl.style.display = 'none'; }, 10000); // يختفي الخطأ بعد 10 ثوانٍ
-            }
-        }
-
-        function showSuccess(message) {
-            alert(message);
-        }
-
-        function cleanupListeners() {
-            unsubscribeFunctions.forEach(unsubscribe => {
-                try { unsubscribe(); } catch (e) { console.error("Error unsubscribing:", e); }
-            });
-            unsubscribeFunctions = [];
-        }
-
-        // --- 4. تسجيل الدخول باستخدام Pi ---
+        // --- 4. تسجيل الدخول ---
         function onIncompletePaymentFound(payment) {
-            console.log("تم العثور على دفعة معلقة:", payment);
             fetch('/api/complete', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                method: 'POST', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ paymentId: payment.identifier, txid: payment.transaction?.txid || '' })
-            }).then(res => res.json()).then(d => console.log("تم إكمال العملية:", d))
-            .catch(err => console.error("فشل الإكمال:", err));
+            }).catch(err => console.error(err));
         }
 
         function handleLogin() {
-            if (typeof Pi === 'undefined') {
-                showError("نظام Pi غير متاح. يرجى الدخول من متصفح Pi.");
-                return;
-            }
-            // طلب الصلاحيات الأساسية
+            if (typeof Pi === 'undefined') { showError("الرجاء فتح التطبيق من متصفح Pi"); return; }
             Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
-                .then(function(auth) {
-                    loginSuccess(auth.user.username);
-                })
-                .catch(function(error) {
-                    showError("حدث خطأ أثناء تسجيل الدخول: " + error.message);
-                });
+                .then(auth => loginSuccess(auth.user.username))
+                .catch(error => showError("خطأ تسجيل الدخول: " + error.message));
         }
 
         function loginSuccess(username) {
-            if (!username) { showError("اسم مستخدم غير صحيح"); return; }
             currentUser = username;
-            
-            // إخفاء صفحة الدخول وإظهار التطبيق
             document.getElementById('login-view').classList.remove('active-section');
             document.getElementById('main-app').classList.add('active-section');
             document.getElementById('user-name').innerText = sanitizeHTML(username);
-            
-            cleanupListeners();
-            loadUserBio();
-            loadPosts();
-            loadProducts();
+            cleanupListeners(); loadUserBio(); loadPosts(); loadProducts();
         }
 
         // --- 5. بيانات الملف الشخصي ---
         function loadUserBio() {
-            const unsubscribe = db.collection("users").doc(currentUser).onSnapshot(
-                doc => {
-                    if (doc.exists && doc.data().bio) {
-                        document.getElementById('user-bio').innerText = sanitizeHTML(doc.data().bio);
-                    }
-                },
-                error => console.error("Error loading bio:", error)
-            );
+            const unsubscribe = db.collection("users").doc(currentUser).onSnapshot(doc => {
+                if (doc.exists && doc.data().bio) { document.getElementById('user-bio').innerText = sanitizeHTML(doc.data().bio); }
+            });
             unsubscribeFunctions.push(unsubscribe);
         }
 
-        // النوافذ المنبثقة للتعديل
         let activeCallback = null;
-
         function openCustomModal(title, val1, val2, showSecond, cb) {
             document.getElementById('modal-title').innerText = sanitizeHTML(title);
             document.getElementById('modal-input-1').value = val1;
-            const input2 = document.getElementById('modal-input-2');
-            if (showSecond) { input2.style.display = 'block'; input2.value = val2; } else { input2.style.display = 'none'; }
             document.getElementById('custom-modal').style.display = 'flex';
             activeCallback = cb;
         }
-
         function closeModal() { document.getElementById('custom-modal').style.display = 'none'; activeCallback = null; }
-
         function saveModal() {
             const v1 = document.getElementById('modal-input-1').value.trim();
-            const v2 = document.getElementById('modal-input-2').value.trim();
-            if (!v1) { showError("الحقل الأول مطلوب"); return; }
-            if (activeCallback) activeCallback(v1, v2);
+            if (!v1) { showError("الحقل مطلوب"); return; }
+            if (activeCallback) activeCallback(v1, "");
             closeModal();
         }
-
         function editBio() {
             const currentBio = document.getElementById('user-bio').innerText;
-            openCustomModal("تعديل النبذة الشخصية", currentBio, "", false, (newBio) => {
+            openCustomModal("تعديل معرف المستخدم / النبذة", currentBio, "", false, (newBio) => {
                 document.getElementById('user-bio').innerText = sanitizeHTML(newBio);
-                db.collection("users").doc(currentUser).set({ bio: newBio }, { merge: true })
-                    .catch(error => { showError("لا يمكن حفظ النبذة."); document.getElementById('user-bio').innerText = currentBio; });
+                db.collection("users").doc(currentUser).set({ bio: newBio }, { merge: true }).catch(e => showError("خطأ بالحفظ"));
             });
         }
 
-        // --- 6. إدارة المنشورات والمجتمع ---
+        // --- 6. المجتمع والمنشورات ---
         function publishPost() {
             const text = document.getElementById('post-text').value.trim();
             const imageUrl = document.getElementById('post-image-url').value.trim();
-            if (!text && !imageUrl) { showError("يرجى إضافة نص أو صورة"); return; }
-            if (imageUrl && !isValidUrl(imageUrl)) { showError("رابط الصورة غير صحيح"); return; }
-
-            const publishBtn = document.getElementById('publish-btn');
-            publishBtn.disabled = true;
-            
+            if (!text && !imageUrl) { showError("أضف نصاً أو صورة"); return; }
+            const btn = document.getElementById('publish-btn'); btn.disabled = true;
             db.collection("posts").add({
-                author: currentUser,
-                content: text,
-                imageUrl: imageUrl || null,
-                likes: 0,
-                comments: [],
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                author: currentUser, content: text, imageUrl: imageUrl || null, likes: 0, comments: [], timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => { 
-                document.getElementById('post-text').value = ""; 
-                document.getElementById('post-image-url').value = "";
-            }).catch(error => showError("خطأ في النشر"))
-              .finally(() => publishBtn.disabled = false);
+                document.getElementById('post-text').value = ""; document.getElementById('post-image-url').value = ""; 
+            }).catch(e => showError("خطأ النشر")).finally(() => btn.disabled = false);
         }
 
         function loadPosts() {
-            const unsubscribe = db.collection("posts").orderBy("timestamp", "desc").limit(50).onSnapshot(
-                snapshot => {
-                    const feed = document.getElementById('posts-feed');
-                    const fragments = [];
-                    snapshot.forEach(doc => {
-                        const post = doc.data();
-                        const postId = doc.id;
-                        const authorName = sanitizeHTML(post.author || 'مجهول');
-                        const imageHtml = post.imageUrl && isValidUrl(post.imageUrl) ? `<img src="${post.imageUrl}" class="post-image" onerror="this.style.display='none'">` : '';
-                        const commentsHtml = (post.comments || []).map(c => `<div class="comment"><strong>${sanitizeHTML(c.user)}:</strong> ${sanitizeHTML(c.text)}</div>`).join('');
-                        let controlBtns = authorName === currentUser ? `<div><button class="action-btn danger" onclick="deletePost('${postId}')">🗑️</button></div>` : '';
+            const unsubscribe = db.collection("posts").orderBy("timestamp", "desc").limit(30).onSnapshot(snapshot => {
+                const feed = document.getElementById('posts-feed');
+                const fragments = [];
+                snapshot.forEach(doc => {
+                    const post = doc.data(); const postId = doc.id;
+                    const imgHtml = post.imageUrl ? `<img src="${post.imageUrl}" class="post-image" onerror="this.style.display='none'">` : '';
+                    const commentsHtml = (post.comments || []).map(c => `<div class="comment"><strong>${sanitizeHTML(c.user)}:</strong> ${sanitizeHTML(c.text)}</div>`).join('');
+                    const delBtn = post.author === currentUser ? `<button class="action-btn danger" onclick="deletePost('${postId}')">🗑️</button>` : '';
 
-                        fragments.push(`
-                            <div class="card">
-                                <div class="post-header"><span class="post-author">${authorName}</span>${controlBtns}</div>
-                                <div class="card-content">${sanitizeHTML(post.content)}</div>
-                                ${imageHtml}
-                                <div class="post-actions">
-                                    <button class="action-btn" onclick="likePost('${postId}', ${post.likes || 0})">❤️ ${post.likes || 0}</button>
-                                    <button class="action-btn" onclick="toggleComments('comments-${postId}')">💬 تعليقات (${(post.comments || []).length})</button>
-                                </div>
-                                <div id="comments-${postId}" class="comments-section">
-                                    ${commentsHtml}
-                                    <div style="display:flex; gap:5px; margin-top:10px;">
-                                        <input type="text" id="new-comment-${postId}" placeholder="اكتب تعليقاً..." style="margin-bottom:0;">
-                                        <button class="btn" style="width:auto; margin:0; padding:5px 10px;" onclick="addComment('${postId}')">إرسال</button>
-                                    </div>
+                    fragments.push(`
+                        <div class="card">
+                            <div class="post-header"><span class="post-author">${sanitizeHTML(post.author || 'مجهول')}</span>${delBtn}</div>
+                            <div class="card-content">${sanitizeHTML(post.content)}</div>
+                            ${imgHtml}
+                            <div class="post-actions">
+                                <button class="action-btn" onclick="likePost('${postId}', ${post.likes || 0})">❤️ ${post.likes || 0}</button>
+                                <button class="action-btn" onclick="toggleComments('comments-${postId}')">💬 تعليقات (${(post.comments||[]).length})</button>
+                            </div>
+                            <div id="comments-${postId}" class="comments-section">
+                                ${commentsHtml}
+                                <div style="display:flex; gap:5px; margin-top:10px;">
+                                    <input type="text" id="new-comment-${postId}" placeholder="اكتب تعليقاً..." style="margin-bottom:0;">
+                                    <button class="btn" style="width:auto; margin:0; padding:10px;" onclick="addComment('${postId}')">إرسال</button>
                                 </div>
                             </div>
-                        `);
-                    });
-                    feed.innerHTML = fragments.join('');
-                },
-                error => showError("خطأ في تحميل المنشورات")
-            );
+                        </div>
+                    `);
+                });
+                feed.innerHTML = fragments.join('');
+            });
             unsubscribeFunctions.push(unsubscribe);
         }
 
-        function deletePost(id) { if (confirm("هل تريد حذف المنشور؟")) db.collection("posts").doc(id).delete(); }
-        function likePost(id, currentLikes) { db.collection("posts").doc(id).update({ likes: currentLikes + 1 }); }
-        function toggleComments(id) {
-            const el = document.getElementById(id);
-            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-        }
-        function addComment(postId) {
-            const input = document.getElementById(`new-comment-${postId}`);
-            const text = input.value.trim();
-            if (!text) return;
-            db.collection("posts").doc(postId).update({
-                comments: firebase.firestore.FieldValue.arrayUnion({ user: currentUser, text: text })
-            }).then(() => input.value = "");
+        function deletePost(id) { if (confirm("حذف المنشور؟")) db.collection("posts").doc(id).delete(); }
+        function likePost(id, likes) { db.collection("posts").doc(id).update({ likes: likes + 1 }); }
+        function toggleComments(id) { const el = document.getElementById(id); el.style.display = el.style.display === 'block' ? 'none' : 'block'; }
+        function addComment(id) {
+            const text = document.getElementById(`new-comment-${id}`).value.trim();
+            if (text) db.collection("posts").doc(id).update({ comments: firebase.firestore.FieldValue.arrayUnion({ user: currentUser, text: text }) });
         }
 
-        // --- 7. إدارة المتجر والمنتجات ---
+        // --- 7. المتجر والدفع ---
         function addNewProduct() {
-            const name = document.getElementById('new-prod-name').value.trim();
-            const price = parseFloat(document.getElementById('new-prod-price').value);
-            const imageUrl = document.getElementById('new-prod-image').value.trim();
-            
-            if (!name || !price || price < 0) { showError("الاسم والسعر مطلوبان بشكل صحيح"); return; }
-            if (imageUrl && !isValidUrl(imageUrl)) { showError("رابط الصورة غير صحيح"); return; }
-
-            const addBtn = document.getElementById('add-prod-btn');
-            addBtn.disabled = true;
-            
-            db.collection("products").add({
-                name: name, price: price, imageUrl: imageUrl || null, owner: currentUser, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                document.getElementById('new-prod-name').value = "";
-                document.getElementById('new-prod-price').value = "";
-                document.getElementById('new-prod-image').value = "";
-                showSuccess("تم إضافة المنتج بنجاح");
-            }).finally(() => addBtn.disabled = false);
+            const name = document.getElementById('new-prod-name').value.trim(), price = parseFloat(document.getElementById('new-prod-price').value), imageUrl = document.getElementById('new-prod-image').value.trim();
+            if (!name || !price || price < 0) { showError("البيانات غير صحيحة"); return; }
+            const btn = document.getElementById('add-prod-btn'); btn.disabled = true;
+            db.collection("products").add({ name, price, imageUrl: imageUrl || null, owner: currentUser, timestamp: firebase.firestore.FieldValue.serverTimestamp() })
+                .then(() => { document.getElementById('new-prod-name').value = ""; document.getElementById('new-prod-price').value = ""; document.getElementById('new-prod-image').value = ""; })
+                .finally(() => btn.disabled = false);
         }
 
         function loadProducts() {
-            const unsubscribe = db.collection("products").orderBy("timestamp", "desc").limit(50).onSnapshot(
-                snapshot => {
-                    const store = document.getElementById('store-products');
-                    const fragments = [];
-                    snapshot.forEach(doc => {
-                        const prod = doc.data();
-                        const prodId = doc.id;
-                        const imgHtml = prod.imageUrl && isValidUrl(prod.imageUrl) ? `<img src="${prod.imageUrl}" class="prod-image" onerror="this.style.display='none'">` : '';
-                        let controlBtns = prod.owner === currentUser ? `<div class="prod-actions"><button class="action-btn danger" onclick="deleteProduct('${prodId}')">🗑️</button></div>` : '';
-
-                        fragments.push(`
-                            <div class="product-card">
-                                ${controlBtns}
-                                ${imgHtml}
-                                <h4 style="margin: 5px 0;">${sanitizeHTML(prod.name)}</h4>
-                                <p style="color: var(--text-muted); margin: 5px 0;">${prod.price} ARA</p>
-                                <button class="btn" style="margin-top: 10px;" onclick="buyProduct('${sanitizeHTML(prod.name)}', ${prod.price})">شراء</button>
-                            </div>
-                        `);
-                    });
-                    store.innerHTML = fragments.join('');
-                },
-                error => showError("خطأ في تحميل المنتجات")
-            );
+            const unsubscribe = db.collection("products").orderBy("timestamp", "desc").limit(30).onSnapshot(snapshot => {
+                const store = document.getElementById('store-products'); const fragments = [];
+                snapshot.forEach(doc => {
+                    const prod = doc.data(); const prodId = doc.id;
+                    const imgHtml = prod.imageUrl ? `<img src="${prod.imageUrl}" class="prod-image" onerror="this.style.display='none'">` : '';
+                    const delBtn = prod.owner === currentUser ? `<div class="prod-actions"><button class="action-btn danger" onclick="deleteProduct('${prodId}')">🗑️</button></div>` : '';
+                    fragments.push(`
+                        <div class="product-card">
+                            ${delBtn}${imgHtml}
+                            <h4 style="margin: 5px 0;">${sanitizeHTML(prod.name)}</h4>
+                            <p style="color: var(--text-muted); margin: 5px 0;">${prod.price} ARA</p>
+                            <button class="btn" style="background: linear-gradient(90deg, #4a148c, var(--primary)); margin-top: 10px;" onclick="buyProduct('${sanitizeHTML(prod.name)}', ${prod.price})">شراء</button>
+                        </div>
+                    `);
+                });
+                store.innerHTML = fragments.join('');
+            });
             unsubscribeFunctions.push(unsubscribe);
         }
 
-        function deleteProduct(id) { if (confirm("هل تريد حذف المنتج؟")) db.collection("products").doc(id).delete(); }
-        
-        // --- 8. عملية الدفع المتصلة بالخادم (Backend) ---
-        function buyProduct(name, price) {
-            console.log("بدء شراء:", name, price);
-            if (typeof Pi === 'undefined') { showError("نظام Pi غير متاح هنا"); return; }
-            if (typeof price !== 'number' || price <= 0) { showError("سعر غير صحيح"); return; }
+        function deleteProduct(id) { if (confirm("حذف المنتج؟")) db.collection("products").doc(id).delete(); }
 
+        function buyProduct(name, price) {
+            if (typeof Pi === 'undefined') { showError("نظام Pi غير متاح هنا"); return; }
             try {
-                Pi.createPayment({
-                    amount: price,
-                    memo: `شراء ${name} من أرابيكا`,
-                    metadata: { productName: name }
-                }, {
+                Pi.createPayment({ amount: price, memo: `شراء ${name}`, metadata: { productName: name } }, {
                     onReadyForServerApproval: function(paymentId) {
-                        fetch('/api/approve', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ paymentId: paymentId })
-                        }).then(response => {
-                            if (!response.ok) throw new Error("السيرفر رفض الطلب");
-                        }).catch(error => showError("فشل الاتصال بالموافقة"));
+                        fetch('/api/approve', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paymentId: paymentId }) })
+                        .then(res => { if (!res.ok) throw new Error("السيرفر رفض الطلب"); }).catch(e => showError("فشل الاتصال للموافقة"));
                     },
                     onReadyForServerCompletion: function(paymentId, txid) {
-                        fetch('/api/complete', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ paymentId: paymentId, txid: txid })
-                        }).then(response => {
-                            if(response.ok) showSuccess(`تم الشراء بنجاح!`);
-                            else showError("فشل التأكيد النهائي.");
-                        }).catch(error => showError("خطأ في الاتصال للخادم"));
+                        fetch('/api/complete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paymentId, txid }) })
+                        .then(res => { if(res.ok) alert("تم الشراء بنجاح!"); else showError("فشل التأكيد."); }).catch(e => showError("خطأ السيرفر"));
                     },
-                    onCancel: function(paymentId) { console.log("تم الإلغاء:", paymentId); },
-                    onError: function(error, payment) { showError("حدث خطأ في الشبكة"); }
+                    onCancel: function(paymentId) { console.log("إلغاء:", paymentId); },
+                    onError: function(error, payment) { showError("خطأ في الشبكة"); }
                 });
-            } catch (globalError) {
-                showError("خطأ داخلي: " + globalError.message);
-            }
+            } catch (e) { showError("خطأ: " + e.message); }
         }
 
-        // --- 9. التنقل بين الأقسام (الشريط السفلي) ---
+        // --- 8. التنقل ---
         function switchTab(tab) {
-            document.querySelectorAll('#main-app .view-section').forEach(el => el.classList.remove('active-section'));
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-section'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             document.getElementById(tab + '-view').classList.add('active-section');
             document.getElementById('nav-' + tab).classList.add('active');
         }
-
     </script>
 </body>
 </html>
