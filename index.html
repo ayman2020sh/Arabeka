@@ -8,8 +8,10 @@
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     
     <style>
+        /* الهوية البصرية الموحدة (الداكنة والفاخرة) */
         :root { 
             --primary: #8a2be2; 
             --bg-color: #0f1015; 
@@ -18,6 +20,7 @@
             --text-muted: #aaaaaa; 
             --border: #2a2b36; 
             --gold: #FFD700;
+            --neon-glow: 0 0 10px rgba(138, 43, 226, 0.3);
         }
         
         body { 
@@ -34,15 +37,23 @@
         .app-page { display: none; }
         .active-page { display: block; }
 
-        .header { background: var(--card-bg); padding: 15px; text-align: center; font-weight: bold; font-size: 18px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+        .header { background: var(--card-bg); padding: 15px; text-align: center; font-weight: bold; font-size: 18px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: var(--neon-glow); }
         .container { padding: 15px; }
-        .card { background: var(--card-bg); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
+        
+        /* تصميم الكروت الموحد */
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 15px; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            border: 1px solid var(--border); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: transform 0.2s;
+        }
 
-        /* ========================================= */
-        /* تصميم الكارت العلوي (المطابق للصورة)      */
-        /* ========================================= */
+        /* تصميم الكارت العلوي المائل */
         .premium-dashboard {
-            background-color: #1a62d4; /* اللون الأزرق المماثل للصورة */
+            background-color: #1a62d4;
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 25px;
@@ -51,29 +62,14 @@
             align-items: center;
             overflow: hidden;
             position: relative;
+            box-shadow: 0 8px 25px rgba(26, 98, 212, 0.4);
         }
 
-        .dashboard-text {
-            color: white;
-            z-index: 2;
-            width: 50%;
-        }
+        .dashboard-text { color: white; z-index: 2; width: 50%; }
         .dashboard-text h2 { margin: 0 0 5px 0; font-size: 28px; font-weight: bold; }
         .dashboard-text p { margin: 0 0 15px 0; font-size: 14px; }
         .dashboard-features { font-size: 12px; line-height: 1.8; }
-        .join-btn {
-            background-color: #ffd700;
-            color: black;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 16px;
-            margin-top: 15px;
-            cursor: pointer;
-        }
 
-        /* تصميم كارت الفيزا المائل */
         .tilted-card {
             background: linear-gradient(135deg, #1c1d2a 0%, #2a1b3d 100%);
             width: 180px;
@@ -81,9 +77,9 @@
             border-radius: 15px;
             padding: 15px;
             position: absolute;
-            left: -10px; /* لإزاحته لليسار قليلاً */
+            left: -10px;
             top: 20px;
-            transform: rotate(-8deg); /* الميلان المطلوب */
+            transform: rotate(-8deg);
             box-shadow: 5px 10px 20px rgba(0,0,0,0.4);
             border: 1px solid rgba(255,255,255,0.1);
             color: white;
@@ -95,37 +91,35 @@
         .card-logo { font-size: 14px; font-weight: bold; color: #ffd700; }
         .card-chip { width: 25px; height: 18px; background: #ffd700; border-radius: 3px; margin-top: 10px; opacity: 0.8; }
         .card-number { margin-top: 10px; font-size: 12px; letter-spacing: 2px; }
-        
-        /* علامة الشخص المضيئة */
-        .glowing-user {
-            position: absolute;
-            bottom: 5px;
-            left: 15px;
-            font-size: 30px;
-            filter: drop-shadow(0 0 10px #ffd700); /* التوهج الذهبي */
-        }
+        .glowing-user { position: absolute; bottom: 5px; left: 15px; font-size: 30px; filter: drop-shadow(0 0 10px #ffd700); }
 
-        /* باقي التصميمات الأساسية */
-        .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 20px; width: 100%; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
+        /* الأزرار والمدخلات */
+        .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 20px; width: 100%; cursor: pointer; font-weight: bold; margin-bottom: 10px; box-shadow: var(--neon-glow); transition: 0.3s; }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        input, textarea { width: 100%; padding: 12px; background-color: #15161c; color: var(--text-color); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; box-sizing: border-box;}
+        input[type="text"], input[type="number"], textarea, input[type="file"] { width: 100%; padding: 12px; background-color: #15161c; color: var(--text-color); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; box-sizing: border-box; }
         
+        /* المتجر */
         .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .product-card { background: var(--card-bg); padding: 12px; border-radius: 15px; text-align: center; border: 1px solid var(--border); position: relative; }
+        .product-card { background: var(--card-bg); padding: 12px; border-radius: 15px; text-align: center; border: 1px solid var(--border); position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .prod-image { width: 100%; height: 120px; object-fit: cover; border-radius: 10px; margin-bottom: 8px; background-color: #15161c; }
         
+        /* المنشورات */
         .post-header { display: flex; align-items: center; margin-bottom: 10px; justify-content: space-between; }
-        .post-author { font-weight: bold; color: var(--primary); }
+        .post-author { font-weight: bold; color: var(--gold); }
         .post-image { max-width: 100%; border-radius: 8px; margin-bottom: 10px; display: block; max-height: 300px; object-fit: cover; }
         .action-btn { background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; }
         .action-btn.danger { color: #ff4444; }
 
+        /* الشريط السفلي */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--border); z-index: 1000; }
-        .nav-item { cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; font-size: 12px; }
+        .nav-item { cursor: pointer; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; font-size: 12px; transition: 0.3s; }
         .nav-item span { font-size: 18px; margin-bottom: 2px; }
-        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-item.active { color: var(--primary); font-weight: bold; text-shadow: var(--neon-glow); }
         
+        /* رسائل النظام والنوافذ المنبثقة */
         .error-message { background-color: rgba(255, 68, 68, 0.2); border: 1px solid #ff4444; color: #ff8888; padding: 12px; border-radius: 8px; margin-bottom: 10px; position: fixed; top: 60px; left: 15px; right: 15px; z-index: 1000; display: none;}
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--card-bg); padding: 20px; border-radius: 15px; width: 85%; text-align: center; border: 1px solid var(--border); box-shadow: var(--neon-glow); }
     </style>
 </head>
 <body>
@@ -133,28 +127,34 @@
     <div class="header">أرابيكا</div>
     <div id="login-error" class="error-message"></div>
 
+    <div id="edit-bio-modal" class="modal">
+        <div class="modal-content">
+            <h4>تعديل النبذة الشخصية</h4>
+            <textarea id="bio-input" rows="3" placeholder="اكتب نبذة عنك..."></textarea>
+            <button class="btn" onclick="saveBio()">حفظ التغييرات</button>
+            <button class="btn" style="background-color:#444; box-shadow:none;" onclick="closeModal('edit-bio-modal')">إلغاء</button>
+        </div>
+    </div>
+
     <div id="login-view" class="view-section active-section" style="text-align: center; margin-top: 80px; padding: 20px;">
         <h2>مرحباً بك في أرابيكا</h2>
         <p style="color: var(--text-muted);">مجتمع التجارة الرقمية لرواد شبكة Pi</p>
-        <button class="btn" id="login-btn" style="width: auto; padding: 12px 40px; margin-top: 20px; background: #ffd700; color: black;">تسجيل الدخول بـ Pi</button>
+        <button class="btn" id="login-btn" style="width: auto; padding: 12px 40px; margin-top: 20px; background: #ffd700; color: black; box-shadow: 0 0 15px rgba(255,215,0,0.4);">تسجيل الدخول بـ Pi</button>
     </div>
 
     <div id="main-app" class="view-section">
         
         <div id="feed-view" class="app-page active-page container">
-            
             <div class="premium-dashboard">
                 <div class="dashboard-text">
                     <h2>عربيكا</h2>
                     <p>بيع الخدمات والمنتجات</p>
                     <div class="dashboard-features">
-                        ✓ ١٠٠٠ مستخدم<br>
+                        ✓ آلاف المستخدمين<br>
                         ✓ تواصل آمن<br>
                         ✓ بياناتك مشفرة
                     </div>
-                    <button class="join-btn">انضم الآن</button>
                 </div>
-                
                 <div class="tilted-card">
                     <div class="card-top-row">
                         <span class="ara-badge">ARA</span>
@@ -175,7 +175,8 @@
             <h3>نشر موضوع جديد للمجتمع</h3>
             <div class="card">
                 <textarea id="post-text" placeholder="ما رأيك أو تجربتك؟" rows="4"></textarea>
-                <input type="url" id="post-image-url" placeholder="🔗 رابط صورة (اختياري)">
+                <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px; display: block;">أضف صورة (اختياري):</label>
+                <input type="file" id="post-image-file" accept="image/*">
                 <button class="btn" id="publish-btn" onclick="publishPost()">نشر الآن</button>
             </div>
         </div>
@@ -185,197 +186,33 @@
                 <h4 style="margin-top:0; color:var(--primary);">➕ أضف منتجك</h4>
                 <input type="text" id="new-prod-name" placeholder="اسم المنتج">
                 <input type="number" id="new-prod-price" placeholder="السعر (ARA)">
-                <input type="url" id="new-prod-image" placeholder="رابط صورة المنتج (اختياري)">
-                <button class="btn" id="add-prod-btn" onclick="addNewProduct()" style="background: #ffd700; color: black;">عرض للبيع</button>
+                <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px; display: block;">صورة المنتج (اختياري):</label>
+                <input type="file" id="new-prod-image" accept="image/*">
+                <button class="btn" id="add-prod-btn" onclick="addNewProduct()" style="background: #ffd700; color: black; box-shadow: 0 0 10px rgba(255,215,0,0.3);">عرض للبيع</button>
             </div>
             <h3>أحدث المنتجات</h3>
             <div class="product-grid" id="store-products"></div>
         </div>
 
         <div id="profile-view" class="app-page container">
-            <div class="card" style="text-align: center;">
+            <div class="card" style="text-align: center; position: relative;">
+                <button class="action-btn" style="position: absolute; top: 15px; left: 15px; font-size: 18px;" onclick="openBioModal()">✏️</button>
+                <div style="width: 80px; height: 80px; background: linear-gradient(45deg, var(--primary), var(--gold)); border-radius: 50%; margin: 0 auto 10px auto; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; box-shadow: var(--neon-glow);">👤</div>
                 <h2 id="user-name" style="margin: 5px 0;">أرابيكا</h2>
-                <p id="user-bio" style="color: var(--text-muted); font-size: 14px;">عضو مجتمع أرابيكا</p>
+                <p id="user-bio-display" style="color: var(--text-muted); font-size: 14px;">عضو مجتمع أرابيكا</p>
             </div>
+            
             <div class="card">
                 <a href="/chat.html" style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); text-decoration: none; color: white;">
                     <span style="font-size: 20px; margin-left: 15px;">🤖</span> المساعد الذكي
                 </a>
-                <div style="display: flex; align-items: center; padding: 15px 0; cursor: pointer; color: #ff4444;" onclick="location.reload()">
-                    <span style="font-size: 20px; margin-left: 15px;">🚪</span> تسجيل الخروج
-                </div>
-            </div>
-        </div>
-
-        <div class="bottom-nav">
-            <div class="nav-item active" id="nav-feed" onclick="switchTab('feed')"><span>🏠</span>الرئيسية</div>
-            <div class="nav-item" id="nav-create" onclick="switchTab('create')"><span>➕</span>نشر رأي</div>
-            <div class="nav-item" id="nav-store" onclick="switchTab('store')"><span>🛍️</span>التسوق</div>
-            <div class="nav-item" id="nav-profile" onclick="switchTab('profile')"><span>👤</span>حسابي</div>
-        </div>
-    </div>
-
-    <script>
-        // 1. إعدادات Firebase الحقيقية للمشروع
-        const firebaseConfig = {
-            apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo",
-            authDomain: "arabeka-3336c.firebaseapp.com",
-            projectId: "arabeka-3336c",
-            storageBucket: "arabeka-3336c.firebasestorage.app",
-            messagingSenderId: "244460272030",
-            appId: "1:244460272030:web:c5aabfd0b396656721fe8f"
-        };
-        try { firebase.initializeApp(firebaseConfig); } catch (e) { console.error("Firebase Error:", e); }
-        
-        const db = firebase.firestore();
-        let currentUser = null;
-        let unsubscribeFuncs = [];
-
-        // 2. تهيئة Pi SDK
-        window.addEventListener('load', () => {
-            try {
-                if (typeof Pi !== 'undefined') {
-                    Pi.init({ version: "2.0", sandbox: false });
-                    console.log("Pi SDK Ready");
-                }
-            } catch (e) { console.error("Pi init failed", e); }
-        });
-
-        // دوال مساعدة
-        function sanitizeHTML(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
-        function showError(msg) { 
-            const el = document.getElementById('login-error'); 
-            el.innerHTML = sanitizeHTML(msg); el.style.display = 'block'; 
-            setTimeout(() => el.style.display='none', 8000); 
-        }
-
-        // 3. نظام تسجيل الدخول الفعلي بـ Pi (تم استرجاعه)
-        document.getElementById('login-btn').addEventListener('click', () => {
-            if (typeof Pi === 'undefined') { showError("الرجاء فتح التطبيق من متصفح Pi"); return; }
-            
-            Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
-                .then(auth => {
-                    currentUser = auth.user.username;
-                    document.getElementById('login-view').classList.remove('active-section');
-                    document.getElementById('main-app').classList.add('active-section');
-                    document.getElementById('user-name').innerText = sanitizeHTML(currentUser);
-                    switchTab('feed');
-                    loadPosts();
-                    loadProducts();
-                })
-                .catch(err => showError("خطأ تسجيل الدخول: " + err.message));
-        });
-
-        function onIncompletePaymentFound(payment) {
-            fetch('/api/complete', {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ paymentId: payment.identifier, txid: payment.transaction?.txid || '' })
-            }).catch(e => console.error(e));
-        }
-
-        // 4. نظام التنقل السليم (بدون شاشة سوداء)
-        function switchTab(tab) {
-            document.querySelectorAll('.app-page').forEach(el => el.classList.remove('active-page'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            
-            const targetPage = document.getElementById(tab + '-view');
-            const targetNav = document.getElementById('nav-' + tab);
-            
-            if (targetPage) targetPage.classList.add('active-page');
-            if (targetNav) targetNav.classList.add('active');
-        }
-
-        // 5. وظائف النشر والمجتمع
-        function publishPost() {
-            const text = document.getElementById('post-text').value.trim();
-            const img = document.getElementById('post-image-url').value.trim();
-            if (!text && !img) { showError("أضف محتوى للنشر"); return; }
-            
-            const btn = document.getElementById('publish-btn'); btn.disabled = true;
-            db.collection("posts").add({
-                author: currentUser, content: text, imageUrl: img || null, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                document.getElementById('post-text').value = ""; document.getElementById('post-image-url').value = "";
-                switchTab('feed');
-            }).catch(e => showError("خطأ النشر")).finally(() => btn.disabled = false);
-        }
-
-        function loadPosts() {
-            const unsub = db.collection("posts").orderBy("timestamp", "desc").limit(30).onSnapshot(snap => {
-                const feed = document.getElementById('posts-feed');
-                let html = "";
-                snap.forEach(doc => {
-                    const p = doc.data();
-                    const imgHtml = p.imageUrl ? `<img src="${p.imageUrl}" class="post-image">` : '';
-                    const delBtn = p.author === currentUser ? `<button class="action-btn danger" onclick="deletePost('${doc.id}')">🗑️</button>` : '';
-                    html += `
-                        <div class="card">
-                            <div class="post-header"><span class="post-author">${sanitizeHTML(p.author)}</span>${delBtn}</div>
-                            <div style="font-size:14px; margin-bottom:10px;">${sanitizeHTML(p.content)}</div>
-                            ${imgHtml}
-                        </div>`;
-                });
-                feed.innerHTML = html;
-            });
-            unsubscribeFuncs.push(unsub);
-        }
-        function deletePost(id) { if(confirm("حذف؟")) db.collection("posts").doc(id).delete(); }
-
-        // 6. وظائف المتجر والدفع الفعلي بـ Pi
-        function addNewProduct() {
-            const name = document.getElementById('new-prod-name').value.trim();
-            const price = parseFloat(document.getElementById('new-prod-price').value);
-            const img = document.getElementById('new-prod-image').value.trim();
-            
-            if (!name || !price || price <= 0) { showError("بيانات المنتج غير صحيحة"); return; }
-            const btn = document.getElementById('add-prod-btn'); btn.disabled = true;
-            
-            db.collection("products").add({
-                name: name, price: price, imageUrl: img || null, owner: currentUser, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                document.getElementById('new-prod-name').value = ""; document.getElementById('new-prod-price').value = "";
-            }).finally(() => btn.disabled = false);
-        }
-
-        function loadProducts() {
-            const unsub = db.collection("products").orderBy("timestamp", "desc").limit(30).onSnapshot(snap => {
-                const store = document.getElementById('store-products');
-                let html = "";
-                snap.forEach(doc => {
-                    const p = doc.data();
-                    const imgHtml = p.imageUrl ? `<img src="${p.imageUrl}" class="prod-image">` : '';
-                    const delBtn = p.owner === currentUser ? `<button class="action-btn danger" style="position:absolute; top:5px; left:5px;" onclick="deleteProduct('${doc.id}')">🗑️</button>` : '';
-                    html += `
-                        <div class="product-card">
-                            ${delBtn}${imgHtml}
-                            <h4 style="margin:5px 0;">${sanitizeHTML(p.name)}</h4>
-                            <p style="color:var(--text-muted);">${p.price} ARA</p>
-                            <button class="btn" style="background:#ffd700; color:black;" onclick="buyProduct('${sanitizeHTML(p.name)}', ${p.price})">شراء</button>
-                        </div>`;
-                });
-                store.innerHTML = html;
-            });
-            unsubscribeFuncs.push(unsub);
-        }
-        function deleteProduct(id) { if(confirm("حذف؟")) db.collection("products").doc(id).delete(); }
-
-        function buyProduct(name, price) {
-            if (typeof Pi === 'undefined') { showError("متصفح Pi غير متاح"); return; }
-            try {
-                Pi.createPayment({ amount: price, memo: `شراء ${name}`, metadata: { productName: name } }, {
-                    onReadyForServerApproval: function(paymentId) {
-                        fetch('/api/approve', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paymentId }) })
-                        .then(res => { if (!res.ok) throw new Error("السيرفر رفض الطلب"); }).catch(e => showError("فشل الموافقة"));
-                    },
-                    onReadyForServerCompletion: function(paymentId, txid) {
-                        fetch('/api/complete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paymentId, txid }) })
-                        .then(res => { if(res.ok) alert("تم الشراء بنجاح"); else showError("فشل التأكيد"); }).catch(e => showError("خطأ السيرفر"));
-                    },
-                    onCancel: function(paymentId) { console.log("إلغاء"); },
-                    onError: function(error, payment) { showError("خطأ الدفع"); }
-                });
-            } catch (e) { showError(e.message); }
-        }
-    </script>
-</body>
-</html>
+                <a href="/settings.html" style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); text-decoration: none; color: white;">
+                    <span style="font-size: 20px; margin-left: 15px;">⚙️</span> الإعدادات
+                </a>
+                <a href="/privacy.html" style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); text-decoration: none; color: white;">
+                    <span style="font-size: 20px; margin-left: 15px;">🛡️</span> سياسة الخصوصية
+                </a>
+                <a href="/support.html" style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); text-decoration: none; color: white;">
+                    <span style="font-size: 20px; margin-left: 15px;">🎧</span> الدعم الفني
+                </a>
+                <div style="display: flex; align-items: center; padding: 15px 0; cursor: pointer
