@@ -549,6 +549,18 @@
 
         // --- 3. دوال مساعدة ---
         function sanitizeHTML(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+        // إصلاح: تعقيم روابط الصور - يمنع كسر السمة src عبر علامات اقتباس
+        // ويقتصر على بروتوكولات http/https فقط (يمنع javascript: وغيرها)
+        function sanitizeURL(url) {
+            if (!url) return '';
+            try {
+                const u = new URL(url, window.location.href);
+                if (u.protocol !== 'http:' && u.protocol !== 'https:') return '';
+                return sanitizeHTML(u.href);
+            } catch (e) { return ''; }
+        }
+
         function showError(message) { 
             const el = document.getElementById('login-error'); 
             if(el) { el.innerHTML = sanitizeHTML(message); el.style.display = 'block'; setTimeout(() => el.style.display='none', 8000); }
@@ -629,7 +641,9 @@
                 const fragments = [];
                 snapshot.forEach(doc => {
                     const post = doc.data(); const postId = doc.id;
-                    const imgHtml = post.imageUrl ? `<img src="${post.imageUrl}" class="post-image" onerror="this.style.display='none'">` : '';
+                    // إصلاح: استخدام sanitizeURL بدلاً من إدراج imageUrl مباشرة (يمنع كسر سمة src)
+                    const safeImg = sanitizeURL(post.imageUrl);
+                    const imgHtml = safeImg ? `<img src="${safeImg}" class="post-image" onerror="this.style.display='none'">` : '';
                     const commentsHtml = (post.comments || []).map(c => `<div class="comment"><strong>${sanitizeHTML(c.user)}:</strong> ${sanitizeHTML(c.text)}</div>`).join('');
                     const delBtn = post.author === currentUser ? `<button class="action-btn danger" onclick="deletePost('${postId}')">🗑️</button>` : '';
 
@@ -680,18 +694,29 @@
                 const store = document.getElementById('store-products'); const fragments = [];
                 snapshot.forEach(doc => {
                     const prod = doc.data(); const prodId = doc.id;
-                    const imgHtml = prod.imageUrl ? `<img src="${prod.imageUrl}" class="prod-image" onerror="this.style.display='none'">` : '';
+                    // إصلاح: استخدام sanitizeURL لرابط صورة المنتج
+                    const safeImg = sanitizeURL(prod.imageUrl);
+                    const imgHtml = safeImg ? `<img src="${safeImg}" class="prod-image" onerror="this.style.display='none'">` : '';
                     const delBtn = prod.owner === currentUser ? `<div class="prod-actions"><button class="action-btn danger" onclick="deleteProduct('${prodId}')">🗑️</button></div>` : '';
+                    // إصلاح: لا نُدرج اسم/سعر المنتج داخل onclick كسلسلة نصية (كان عرضة لكسر السياق عبر '
+                    // بدلاً من ذلك نخزّن البيانات في data-* ونربط الحدث لاحقاً عبر addEventListener
                     fragments.push(`
-                        <div class="product-card">
+                        <div class="product-card" data-prod-name="${sanitizeHTML(prod.name)}" data-prod-price="${prod.price}">
                             ${delBtn}${imgHtml}
                             <h4 style="margin: 5px 0;">${sanitizeHTML(prod.name)}</h4>
                             <p style="color: var(--text-muted); margin: 5px 0;">${prod.price} ARA</p>
-                            <button class="btn" style="background: linear-gradient(90deg, #4a148c, var(--primary)); margin-top: 10px;" onclick="buyProduct('${sanitizeHTML(prod.name)}', ${prod.price})">شراء</button>
+                            <button class="btn buy-btn" style="background: linear-gradient(90deg, #4a148c, var(--primary)); margin-top: 10px;">شراء</button>
                         </div>
                     `);
                 });
                 store.innerHTML = fragments.join('');
+                // ربط أزرار الشراء بعد إدراج HTML (بديل آمن عن onclick المضمّن ببيانات المستخدم)
+                store.querySelectorAll('.buy-btn').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const card = this.closest('.product-card');
+                        buyProduct(card.dataset.prodName, parseFloat(card.dataset.prodPrice));
+                    });
+                });
             });
             unsubscribeFunctions.push(unsubscribe);
         }
@@ -720,8 +745,11 @@
         // --- 8. نظام التنقل - إصلاح نهائي 100% ---
         // ============================================================
         function switchPage(page) {
-            // إخفاء جميع الصفحات
-            var pages = document.querySelectorAll('.page');
+            // إصلاح: البحث عن الصفحات الفرعية داخل main-app فقط
+            // (سابقاً كان querySelectorAll('.page') يشمل أيضاً #login-view و#main-app
+            // نفسه، فتُزال منه class="active" ويختفي التطبيق بالكامل)
+            var mainApp = document.getElementById('main-app');
+            var pages = mainApp.querySelectorAll('.page');
             for (var i = 0; i < pages.length; i++) {
                 pages[i].classList.remove('active');
             }
