@@ -315,6 +315,26 @@
         .error-message { background-color: rgba(255, 68, 68, 0.2); border: 1px solid var(--danger); color: #ff8888; padding: 12px; border-radius: 8px; margin-bottom: 10px; position: fixed; top: 60px; left: 15px; right: 15px; z-index: 1000; }
         
         .chat-button { display: inline-block; background: linear-gradient(45deg, var(--primary), #4169e1); color: white; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; margin-top: 15px; }
+
+        /* ========================================== */
+        /* عناصر قائمة الإعدادات/الملف الشخصي         */
+        /* ========================================== */
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .settings-row:last-child { border-bottom: none; }
+        .settings-row .row-left { display: flex; align-items: center; }
+        .settings-row .row-left span.icon { font-size: 20px; margin-left: 15px; color: var(--primary); }
+        .settings-row .row-left span.label { font-size: 16px; color: var(--text-color); }
+        .settings-row .row-arrow { color: var(--text-muted); font-size: 18px; }
+        .back-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .back-btn { background: none; border: none; color: var(--primary); font-size: 22px; cursor: pointer; padding: 5px; line-height: 1; }
         
         /* تحسينات للشاشات الصغيرة */
         @media (max-width: 480px) {
@@ -479,26 +499,97 @@
                     </div>
                 </div>
 
+                <!-- قائمة الملف الشخصي: تعديل الملف / المساعد الذكي / الإعدادات / الدعم -->
                 <div class="card" style="padding: 5px 15px;">
-                    <div onclick="editBio()" style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); cursor: pointer;">
-                        <span style="font-size: 20px; margin-left: 15px; color: var(--primary);">✏️</span>
-                        <span style="font-size: 16px; color: var(--text-color);">تعديل الملف</span>
+                    <div class="settings-row" onclick="editBio()">
+                        <div class="row-left">
+                            <span class="icon">✏️</span>
+                            <span class="label">تعديل الملف</span>
+                        </div>
+                        <span class="row-arrow">›</span>
                     </div>
-                    
-                    <a href="/chat.html" style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); text-decoration: none;">
-                        <span style="font-size: 20px; margin-left: 15px; color: var(--primary);">🤖</span>
-                        <span style="font-size: 16px; color: var(--text-color);">المساعد الذكي (Omni)</span>
+
+                    <a href="/chat.html" class="settings-row">
+                        <div class="row-left">
+                            <span class="icon">🤖</span>
+                            <span class="label">المساعد الذكي (Omni)</span>
+                        </div>
+                        <span class="row-arrow">›</span>
                     </a>
 
-                    <a href="contact.html" style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); text-decoration: none;">
-                        <span style="font-size: 20px; margin-left: 15px; color: var(--primary);">⚙️</span>
-                        <span style="font-size: 16px; color: var(--text-color);">الإعدادات والدعم</span>
-                    </a>
-
-                    <div style="display: flex; align-items: center; padding: 15px 0; cursor: pointer;">
-                        <span style="font-size: 20px; margin-left: 15px; color: var(--danger);">🚪</span>
-                        <span style="font-size: 16px; color: var(--danger);">تسجيل الخروج</span>
+                    <div class="settings-row" onclick="switchPage('settings')">
+                        <div class="row-left">
+                            <span class="icon">⚙️</span>
+                            <span class="label">الإعدادات</span>
+                        </div>
+                        <span class="row-arrow">›</span>
                     </div>
+
+                    <a href="contact.html" class="settings-row">
+                        <div class="row-left">
+                            <span class="icon">🎧</span>
+                            <span class="label">الدعم</span>
+                        </div>
+                        <span class="row-arrow">›</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== صفحة الإعدادات ====== -->
+        <div id="page-settings" class="page">
+            <div class="container">
+                <div class="back-row">
+                    <button class="back-btn" onclick="switchPage('profile')" aria-label="رجوع">→</button>
+                    <h2 style="margin:0; color: var(--text-color);">الإعدادات</h2>
+                </div>
+
+                <div class="card">
+                    <h4 style="margin-top:0; color:var(--primary);">👤 إعدادات الحساب</h4>
+                    <div class="settings-row" onclick="editBio()">
+                        <div class="row-left">
+                            <span class="icon">✏️</span>
+                            <span class="label">تعديل معرف المستخدم / النبذة</span>
+                        </div>
+                        <span class="row-arrow">›</span>
+                    </div>
+                    <div class="settings-row" style="cursor: default;">
+                        <div class="row-left">
+                            <span class="icon">🆔</span>
+                            <span class="label">اسم مستخدم Pi</span>
+                        </div>
+                        <span class="row-arrow" id="settings-username" style="color: var(--text-muted); font-size: 14px;">-</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h4 style="margin-top:0; color:var(--primary);">📄 السياسات والقوانين</h4>
+                    <a href="privacy.html" class="settings-row">
+                        <div class="row-left">
+                            <span class="icon">🔒</span>
+                            <span class="label">سياسة الخصوصية</span>
+                        </div>
+                        <span class="row-arrow">›</span>
+                    </a>
+                    <a href="terms.html" class="settings-row">
+                        <div class="row-left">
+                            <span class="icon">📜</span>
+                            <span class="label">الشروط والأحكام</span>
+                        </div>
+                        <span class="row-arrow">›</span>
+                    </a>
+                    <a href="contact.html" class="settings-row">
+                        <div class="row-left">
+                            <span class="icon">🎧</span>
+                            <span class="label">تواصل مع الدعم</span>
+                        </div>
+                        <span class="row-arrow">›</span>
+                    </a>
+                </div>
+
+                <div class="card" style="border: 1px solid var(--danger);">
+                    <h4 style="margin-top:0; color:var(--danger);">⚠️ منطقة خطرة</h4>
+                    <button class="btn" style="background-color: var(--danger);" onclick="logout()">🚪 تسجيل الخروج</button>
                 </div>
             </div>
         </div>
@@ -550,7 +641,7 @@
         // --- 3. دوال مساعدة ---
         function sanitizeHTML(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
-        // إصلاح: تعقيم روابط الصور - يمنع كسر السمة src عبر علامات اقتباس
+        // تعقيم روابط الصور: يمنع كسر السمة src عبر علامات اقتباس
         // ويقتصر على بروتوكولات http/https فقط (يمنع javascript: وغيرها)
         function sanitizeURL(url) {
             if (!url) return '';
@@ -567,7 +658,7 @@
         }
         function cleanupListeners() { unsubscribeFunctions.forEach(unsub => { try { unsub(); } catch(e){} }); unsubscribeFunctions = []; }
 
-        // --- 4. تسجيل الدخول ---
+        // --- 4. تسجيل الدخول / الخروج ---
         function onIncompletePaymentFound(payment) {
             fetch('/api/complete', {
                 method: 'POST', headers: {'Content-Type': 'application/json'},
@@ -587,8 +678,20 @@
             document.getElementById('login-view').classList.remove('active');
             document.getElementById('main-app').classList.add('active');
             document.getElementById('user-name').innerText = sanitizeHTML(username);
+            document.getElementById('settings-username').innerText = sanitizeHTML(username);
             cleanupListeners(); loadUserBio(); loadPosts(); loadProducts();
             // التبديل إلى صفحة الرئيسية بعد تسجيل الدخول
+            switchPage('feed');
+        }
+
+        // تسجيل الخروج: تنظيف المستمعين على Firestore وإعادة المستخدم لشاشة الدخول
+        function logout() {
+            if (!confirm("هل تريد تسجيل الخروج؟")) return;
+            cleanupListeners();
+            currentUser = null;
+            document.getElementById('main-app').classList.remove('active');
+            document.getElementById('login-view').classList.add('active');
+            // إعادة ضبط الصفحة الداخلية الافتراضية استعداداً لتسجيل دخول لاحق
             switchPage('feed');
         }
 
@@ -641,7 +744,6 @@
                 const fragments = [];
                 snapshot.forEach(doc => {
                     const post = doc.data(); const postId = doc.id;
-                    // إصلاح: استخدام sanitizeURL بدلاً من إدراج imageUrl مباشرة (يمنع كسر سمة src)
                     const safeImg = sanitizeURL(post.imageUrl);
                     const imgHtml = safeImg ? `<img src="${safeImg}" class="post-image" onerror="this.style.display='none'">` : '';
                     const commentsHtml = (post.comments || []).map(c => `<div class="comment"><strong>${sanitizeHTML(c.user)}:</strong> ${sanitizeHTML(c.text)}</div>`).join('');
@@ -694,11 +796,10 @@
                 const store = document.getElementById('store-products'); const fragments = [];
                 snapshot.forEach(doc => {
                     const prod = doc.data(); const prodId = doc.id;
-                    // إصلاح: استخدام sanitizeURL لرابط صورة المنتج
                     const safeImg = sanitizeURL(prod.imageUrl);
                     const imgHtml = safeImg ? `<img src="${safeImg}" class="prod-image" onerror="this.style.display='none'">` : '';
                     const delBtn = prod.owner === currentUser ? `<div class="prod-actions"><button class="action-btn danger" onclick="deleteProduct('${prodId}')">🗑️</button></div>` : '';
-                    // إصلاح: لا نُدرج اسم/سعر المنتج داخل onclick كسلسلة نصية (كان عرضة لكسر السياق عبر '
+                    // لا نُدرج اسم/سعر المنتج داخل onclick كسلسلة نصية (كان عرضة لكسر السياق)
                     // بدلاً من ذلك نخزّن البيانات في data-* ونربط الحدث لاحقاً عبر addEventListener
                     fragments.push(`
                         <div class="product-card" data-prod-name="${sanitizeHTML(prod.name)}" data-prod-price="${prod.price}">
@@ -745,9 +846,9 @@
         // --- 8. نظام التنقل - إصلاح نهائي 100% ---
         // ============================================================
         function switchPage(page) {
-            // إصلاح: البحث عن الصفحات الفرعية داخل main-app فقط
-            // (سابقاً كان querySelectorAll('.page') يشمل أيضاً #login-view و#main-app
-            // نفسه، فتُزال منه class="active" ويختفي التطبيق بالكامل)
+            // البحث عن الصفحات الفرعية داخل main-app فقط
+            // (لو استخدمنا querySelectorAll('.page') على مستوى الصفحة كلها كان هيشمل
+            // أيضاً #login-view و#main-app نفسه، فتُزال منه class="active" ويختفي التطبيق بالكامل)
             var mainApp = document.getElementById('main-app');
             var pages = mainApp.querySelectorAll('.page');
             for (var i = 0; i < pages.length; i++) {
@@ -764,13 +865,16 @@
                 if (fallback) fallback.classList.add('active');
             }
             
-            // تحديث شريط التنقل
+            // تحديث شريط التنقل السفلي
+            // صفحة "الإعدادات" هي صفحة فرعية من "الملف الشخصي"، فنبقي تبويب
+            // الملف الشخصي مُفعّلاً بصرياً أثناء التواجد داخل الإعدادات
+            var navPage = (page === 'settings') ? 'profile' : page;
             var navItems = document.querySelectorAll('.nav-item');
             for (var j = 0; j < navItems.length; j++) {
                 navItems[j].classList.remove('active');
             }
             
-            var activeNav = document.querySelector('.nav-item[data-page="' + page + '"]');
+            var activeNav = document.querySelector('.nav-item[data-page="' + navPage + '"]');
             if (activeNav) {
                 activeNav.classList.add('active');
             }
