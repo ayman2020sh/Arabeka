@@ -8,33 +8,52 @@ module.exports = async (req, res) => {
     const { paymentId } = req.body || {};
     const API_KEY = process.env.PI_API_KEY;
 
-    // 🔍 تشخيصي موسع
-    console.log('🔍 [approve.js] paymentId received:', paymentId);
+    console.log('🔍 [approve.js] paymentId:', paymentId);
     console.log('🔍 [approve.js] API_KEY exists:', !!API_KEY);
-    console.log('🔍 [approve.js] API_KEY length:', API_KEY ? API_KEY.length : 0);
-    console.log('🔍 [approve.js] Full req.body:', JSON.stringify(req.body));
+    console.log('🔍 [approve.js] API_KEY prefix:', API_KEY ? API_KEY.substring(0, 10) : 'null');
 
     if (!paymentId) {
-        console.error('❌ [approve.js] paymentId missing');
         return res.status(400).json({ error: 'paymentId required' });
     }
 
     if (!API_KEY) {
-        console.error('❌ [approve.js] API_KEY missing in environment');
         return res.status(500).json({ error: 'API Key missing' });
     }
 
+    // محاولة 1: Production
     try {
-        console.log('🔍 [approve.js] Sending approve request to Pi API...');
+        console.log('🔍 [approve.js] Trying Production API...');
         const r = await axios.post(
             `https://api.minepi.com/v2/payments/${paymentId}/approve`,
             {},
             { headers: { Authorization: `Key ${API_KEY}` } }
         );
-        console.log('✅ [approve.js] Pi API response:', r.data);
+        console.log('✅ [approve.js] Production success:', r.data);
         return res.status(200).json(r.data);
-    } catch (e) {
-        console.error('❌ [approve.js] Error:', e.response?.data || e.message);
-        return res.status(400).json({ error: e.response?.data || e.message });
+    } catch (e1) {
+        console.log('❌ [approve.js] Production failed:', e1.response?.data || e1.message);
+
+        // محاولة 2: Sandbox
+        try {
+            console.log('🔍 [approve.js] Trying Sandbox API...');
+            const r = await axios.post(
+                `https://api.minepi.com/v2/payments/${paymentId}/approve`,
+                {},
+                { 
+                    headers: { 
+                        Authorization: `Key ${API_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            console.log('✅ [approve.js] Sandbox success:', r.data);
+            return res.status(200).json(r.data);
+        } catch (e2) {
+            console.error('❌ [approve.js] Both attempts failed:', e2.response?.data || e2.message);
+            return res.status(400).json({ 
+                error: e2.response?.data || e2.message,
+                attempts: ['Production failed', 'Sandbox failed']
+            });
+        }
     }
 };
