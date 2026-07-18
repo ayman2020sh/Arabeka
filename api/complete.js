@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
     try {
         if (!txid) {
             const info = await axios.get(
-                `https://api.testnet.minepi.com/v2/payments/${paymentId}`,
+                `https://api.minepi.com/v2/payments/${paymentId}`,
                 { headers: { Authorization: `Key ${API_KEY}` } }
             );
             txid = info.data?.transaction?.txid;
@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
         }
 
         const r = await axios.post(
-            `https://api.testnet.minepi.com/v2/payments/${paymentId}/complete`,
+            `https://api.minepi.com/v2/payments/${paymentId}/complete`,
             { txid },
             { headers: { Authorization: `Key ${API_KEY}` } }
         );
