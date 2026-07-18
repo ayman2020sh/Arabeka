@@ -5,11 +5,15 @@ module.exports = async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    let { paymentId, txid } = req.body;
+    let body = req.body;
+    if (!body || (typeof body === 'string' && body.length === 0)) {
+        return res.status(400).json({ error: 'جسم الطلب فارغ' });
+    }
+
+    let { paymentId, txid } = body;
     const API_KEY = process.env.PI_API_KEY;
 
     if (!API_KEY) {
-        console.error("المفتاح PI_API_KEY غير موجود في إعدادات Vercel");
         return res.status(500).json({ error: "API Key missing in Vercel" });
     }
 
@@ -19,20 +23,13 @@ module.exports = async function handler(req, res) {
 
     try {
         if (!txid) {
-            console.log(`جاري جلب الـ txid للمعاملة: ${paymentId}`);
-            
             const paymentInfo = await axios.get(
                 `https://api.minepi.com/v2/payments/${paymentId}`,
                 { headers: { Authorization: `Key ${API_KEY}` } }
             );
-            
-            txid = paymentInfo.data.transaction ? paymentInfo.data.transaction.txid : null;
-            
+            txid = paymentInfo.data?.transaction?.txid || null;
             if (!txid) {
-                return res.status(400).json({ 
-                    error: 'لم يتم العثور على معاملة بلوكشين لهذه الدفعة',
-                    details: 'لم يقم المستخدم بالدفع بعد أو المعاملة لم تكتمل'
-                });
+                return res.status(400).json({ error: 'لم يتم العثور على معاملة بلوكشين' });
             }
         }
 
@@ -42,24 +39,12 @@ module.exports = async function handler(req, res) {
             { headers: { Authorization: `Key ${API_KEY}` } }
         );
 
-        console.log(`تم إكمال الدفعة بنجاح: ${paymentId}`);
-        
-        return res.status(200).json({
-            success: true,
-            message: 'تم إكمال الدفع وإغلاق نافذة الدفع بنجاح',
-            data: response.data
-        });
+        console.log(`تم إكمال الدفعة: ${paymentId}`);
+        return res.status(200).json(response.data);
 
     } catch (error) {
-        const piErrorDetails = error.response && error.response.data 
-            ? error.response.data 
-            : error.message;
-            
-        console.error("فشل إكمال الدفع:", piErrorDetails);
-        
-        return res.status(500).json({ 
-            error: "فشلت عملية إكمال وتسوية الدفع", 
-            details: piErrorDetails
-        });
+        const piError = error.response?.data || error.message;
+        console.error("فشل الإكمال:", piError);
+        return res.status(500).json({ error: "فشلت عملية إكمال الدفع", details: piError });
     }
 };
