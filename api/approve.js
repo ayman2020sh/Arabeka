@@ -19,10 +19,8 @@ module.exports = async (req, res) => {
     }
 
     try {
-        // ملاحظة: التطبيق مسجّل على شبكة Testnet، فلازم نستخدم
-        // api.testnet.minepi.com بدل api.minepi.com العادي (بتاع Mainnet)
         const r = await axios.post(
-            `https://api.testnet.minepi.com/v2/payments/${paymentId}/approve`,
+            `https://api.minepi.com/v2/payments/${paymentId}/approve`,
             {},
             { headers: { Authorization: `Key ${API_KEY}` } }
         );
