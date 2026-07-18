@@ -1,49 +1,52 @@
 const axios = require('axios');
 
-module.exports = async function handler(req, res) {
-    console.log("=== approve.js تم استدعاؤه ===");
-    console.log("طريقة الطلب:", req.method);
-    console.log("جسم الطلب:", JSON.stringify(req.body));
+// دالة مساعدة لتحليل جسم الطلب يدويًا
+async function parseBody(req) {
+    return new Promise((resolve) => {
+        if (req.body && typeof req.body === 'object' && Object.keys(req.body).length > 0) {
+            resolve(req.body);
+        } else {
+            let rawBody = '';
+            req.on('data', chunk => { rawBody += chunk.toString(); });
+            req.on('end', () => {
+                try {
+                    resolve(JSON.parse(rawBody || '{}'));
+                } catch (e) {
+                    resolve({});
+                }
+            });
+        }
+    });
+}
 
+module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
-        console.log("تم رفض الطلب: الطريقة ليست POST");
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { paymentId } = req.body;
+    const body = await parseBody(req);
+    const { paymentId } = body;
     const API_KEY = process.env.PI_API_KEY;
 
-    console.log("paymentId المستلم:", paymentId);
-    console.log("هل مفتاح API موجود؟", !!API_KEY);
-
-    if (!API_KEY) {
-        console.error("المفتاح PI_API_KEY غير موجود");
-        return res.status(500).json({ error: "API Key missing in Vercel" });
+    if (!paymentId) {
+        return res.status(400).json({ error: 'paymentId missing' });
     }
 
-    if (!paymentId) {
-        console.error("paymentId مفقود من الطلب");
-        return res.status(400).json({ error: 'معرف الدفع (paymentId) مطلوب' });
+    if (!API_KEY) {
+        return res.status(500).json({ error: 'API Key missing' });
     }
 
     try {
-        console.log(`جاري إرسال طلب الموافقة إلى Pi للمعاملة: ${paymentId}`);
-        
         const response = await axios.post(
             `https://api.minepi.com/v2/payments/${paymentId}/approve`,
             {},
             { headers: { Authorization: `Key ${API_KEY}` } }
         );
-
-        console.log("تمت الموافقة بنجاح من Pi:", JSON.stringify(response.data));
         return res.status(200).json(response.data);
-
     } catch (error) {
-        const piErrorDetails = error.response?.data || error.message;
-        console.error("فشل من Pi:", JSON.stringify(piErrorDetails));
         return res.status(400).json({ 
-            error: "رفضت شبكة Pi الموافقة على الدفع", 
-            details: piErrorDetails 
+            error: "approve failed", 
+            details: error.response?.data || error.message 
         });
     }
 };
