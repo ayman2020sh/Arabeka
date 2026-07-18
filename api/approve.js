@@ -5,11 +5,16 @@ module.exports = async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { paymentId, userId } = req.body;
+    // قراءة جسم الطلب بشكل صحيح (حل مشكلة Vercel)
+    let body = req.body;
+    if (!body || (typeof body === 'string' && body.length === 0)) {
+        return res.status(400).json({ error: 'جسم الطلب فارغ' });
+    }
+
+    const paymentId = body.paymentId;
     const API_KEY = process.env.PI_API_KEY;
 
     if (!API_KEY) {
-        console.error("المفتاح PI_API_KEY غير موجود في إعدادات Vercel");
         return res.status(500).json({ error: "API Key missing in Vercel" });
     }
 
@@ -18,34 +23,20 @@ module.exports = async function handler(req, res) {
     }
 
     try {
+        console.log(`محاولة الموافقة على الدفعة: ${paymentId}`);
+        
         const response = await axios.post(
             `https://api.minepi.com/v2/payments/${paymentId}/approve`,
             {},
-            {
-                headers: {
-                    Authorization: `Key ${API_KEY}`
-                }
-            }
+            { headers: { Authorization: `Key ${API_KEY}` } }
         );
 
         console.log(`تمت الموافقة على الدفعة: ${paymentId}`);
-        
-        return res.status(200).json({
-            success: true,
-            message: 'تمت الموافقة على الدفع',
-            data: response.data
-        });
+        return res.status(200).json(response.data);
 
     } catch (error) {
-        const piErrorDetails = error.response && error.response.data 
-            ? error.response.data 
-            : error.message;
-            
-        console.error("سبب رفض شبكة Pi:", piErrorDetails);
-
-        return res.status(400).json({ 
-            error: "رفضت شبكة Pi الموافقة على الدفع", 
-            details: piErrorDetails 
-        });
+        const piError = error.response?.data || error.message;
+        console.error("فشل الموافقة:", piError);
+        return res.status(400).json({ error: "رفضت شبكة Pi الموافقة", details: piError });
     }
 };
