@@ -630,7 +630,7 @@
         function initializePiSDK() {
             try {
                 if (typeof Pi !== 'undefined') { 
-                    Pi.init({ version: "2.0", sandbox: true });
+                    Pi.init({ version: "2.0", sandbox: false });
                     console.log("Pi SDK Initialized");
                 }
             } catch (error) { console.error("Pi SDK Error:", error); }
