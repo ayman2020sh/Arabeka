@@ -8,13 +8,21 @@ module.exports = async (req, res) => {
     const { paymentId } = req.body || {};
     const API_KEY = process.env.PI_API_KEY;
 
-    // 🔍 تشخيصي: نسجل القيم المستلمة
+    // 🔍 تشخيصي موسع
     console.log('🔍 [approve.js] paymentId received:', paymentId);
     console.log('🔍 [approve.js] API_KEY exists:', !!API_KEY);
+    console.log('🔍 [approve.js] API_KEY length:', API_KEY ? API_KEY.length : 0);
     console.log('🔍 [approve.js] Full req.body:', JSON.stringify(req.body));
 
-    if (!paymentId) return res.status(400).json({ error: 'paymentId required' });
-    if (!API_KEY) return res.status(500).json({ error: 'API Key missing' });
+    if (!paymentId) {
+        console.error('❌ [approve.js] paymentId missing');
+        return res.status(400).json({ error: 'paymentId required' });
+    }
+
+    if (!API_KEY) {
+        console.error('❌ [approve.js] API_KEY missing in environment');
+        return res.status(500).json({ error: 'API Key missing' });
+    }
 
     try {
         console.log('🔍 [approve.js] Sending approve request to Pi API...');
