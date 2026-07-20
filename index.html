@@ -105,75 +105,119 @@
             border-radius: 50%;
         }
 
-        /* ===== الفيزا: أول عنصر بصري، بارز فوق العنوان ===== */
-        .visa-inner {
-            background: linear-gradient(145deg, #14162a, #0a1230);
-            border-radius: 16px;
-            padding: 20px 22px;
-            margin: 0 0 22px 0;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+        /* ===== الفيزا: كارت مائل ثلاثي الأبعاد + قاعدة ذهبية ===== */
+        .hero-visual {
             position: relative;
+            padding: 10px 10px 55px 10px;
+            display: flex;
+            justify-content: center;
             z-index: 1;
         }
 
-        .visa-inner .visa-top-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+        .visa-card-3d {
+            width: 100%;
+            max-width: 300px;
+            background: linear-gradient(160deg, #171a33 0%, #0c0f26 55%, #05060f 100%);
+            border-radius: 16px;
+            padding: 18px 20px 22px 20px;
+            position: relative;
+            z-index: 2;
+            transform: rotate(-3deg);
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
         }
 
-        .visa-inner .visa-ara {
-            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
-            color: #fff;
-            font-size: 13px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            padding: 4px 14px;
-            border-radius: 20px;
-            display: inline-block;
-        }
-
-        .visa-inner .visa-chip {
-            font-size: 26px;
-            opacity: 0.85;
-        }
-
-        .visa-inner .visa-year {
-            font-size: 26px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            color: #ffffff;
-            margin-top: 14px;
-        }
-
-        .visa-inner .visa-expiry {
-            font-size: 12px;
-            opacity: 0.6;
-            color: #ffffff;
-            margin-top: 2px;
-        }
-
-        .visa-inner .visa-bottom-row {
+        .visa-top-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 18px;
         }
 
-        .visa-inner .visa-brand-name {
-            font-size: 18px;
+        .visa-brand-mini {
+            font-size: 13px;
             font-weight: bold;
-            letter-spacing: 1px;
             background: linear-gradient(90deg, #FFD700, #FFA500);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .visa-inner .visa-type {
-            font-size: 11px;
-            opacity: 0.55;
+        .visa-ara {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            color: #fff;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            padding: 4px 14px;
+            border-radius: 20px;
+        }
+
+        .visa-dots {
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 5px;
+            font-size: 16px;
+            margin-top: 18px;
+        }
+
+        .visa-year {
+            font-size: 24px;
+            font-weight: bold;
             color: #ffffff;
+            margin-top: 10px;
+        }
+
+        .visa-expiry {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 2px;
+        }
+
+        .visa-bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 20px;
+        }
+
+        .visa-chip {
+            font-size: 22px;
+            opacity: 0.85;
+        }
+
+        .visa-brand-name {
+            font-size: 17px;
+            font-weight: bold;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ===== القاعدة الذهبية + الختم الدائري ===== */
+        .visa-stand {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) rotate(1.5deg);
+            width: 72%;
+            max-width: 220px;
+            height: 52px;
+            background: linear-gradient(160deg, #d9a441 0%, #a8781f 55%, #5c4204 100%);
+            border-radius: 50% 50% 18px 18px / 65% 65% 18px 18px;
+            z-index: 1;
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.45);
+            display: flex;
+            justify-content: center;
+        }
+
+        .visa-stand-seal {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            margin-top: 6px;
+            background: radial-gradient(circle at 35% 30%, #ffe17d, #d4a017 60%, #8b6508);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.5);
         }
 
         /* ===== العنوان والمميزات وزر الدخول - تحت الفيزا ===== */
@@ -224,7 +268,7 @@
         .login-btn-card {
             background: linear-gradient(90deg, #FFD700, #FF8C00);
             border: none;
-            padding: 14px 40px;
+            padding: 12px 30px;
             border-radius: 30px;
             font-weight: bold;
             cursor: pointer;
@@ -232,12 +276,28 @@
             color: #000;
             position: relative;
             z-index: 1;
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             margin: 0 auto;
             width: 100%;
             max-width: 280px;
             box-shadow: 0 4px 20px rgba(255, 215, 0, 0.25);
             transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .login-btn-icon {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            color: #fff;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
         }
 
         .login-btn-card:hover {
@@ -372,12 +432,11 @@
             .card-title {
                 font-size: 26px;
             }
-            .visa-inner {
-                padding: 16px 18px;
+            .visa-card-3d {
+                padding: 16px 18px 20px 18px;
             }
             .login-btn-card {
                 font-size: 16px;
-                padding: 12px 30px;
             }
         }
     </style>
@@ -437,16 +496,22 @@
             <div class="container">
                 
                 <div class="main-card">
-                    <div class="visa-inner">
-                        <div class="visa-top-row">
-                            <span class="visa-ara">ARA</span>
-                            <span class="visa-chip">💳</span>
+                    <div class="hero-visual">
+                        <div class="visa-card-3d">
+                            <div class="visa-top-row">
+                                <span class="visa-brand-mini">✦ أرابيكا</span>
+                                <span class="visa-ara">ARA</span>
+                            </div>
+                            <div class="visa-dots">••••••••••</div>
+                            <div class="visa-year">2026</div>
+                            <div class="visa-expiry">صالح حتى 12/28</div>
+                            <div class="visa-bottom-row">
+                                <span class="visa-brand-name">عربيكا</span>
+                                <span class="visa-chip">💳</span>
+                            </div>
                         </div>
-                        <div class="visa-year">2026</div>
-                        <div class="visa-expiry">صالح حتى 12/28</div>
-                        <div class="visa-bottom-row">
-                            <span class="visa-type">بطاقة العضوية</span>
-                            <span class="visa-brand-name">عربيكا</span>
+                        <div class="visa-stand">
+                            <div class="visa-stand-seal">👤</div>
                         </div>
                     </div>
 
@@ -455,10 +520,12 @@
 
                     <div class="card-features">
                         <span>تواصل آمن</span>
-                        <span>بيانات مشفرة</span>
+                        <span>بياناتك مشفرة</span>
                     </div>
 
-                    <button class="login-btn-card" onclick="handleLogin()">pi sign.in</button>
+                    <button class="login-btn-card" onclick="handleLogin()">
+                        <span class="login-btn-icon">➜</span><span>pi sign.in</span>
+                    </button>
                 </div>
 
                 <div class="promo-card-purple">
