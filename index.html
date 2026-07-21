@@ -445,7 +445,7 @@
 
     <div class="header">
         <span>أرابيكا</span>
-        <span style="font-size: 14px; color: var(--text-muted);">Arabeka ☕</span>
+        <span style="font-size: 14px; color: var(--text-muted);">Arabeka 🫆</span>
     </div>
     
     <div id="login-error" style="display:none;" class="error-message"></div>
@@ -484,8 +484,8 @@
     <div id="login-view" class="page active" style="text-align: center; margin-top: 50px; padding: 0 15px;">
         <h2>مرحباً بك في مجتمع أرابيكا</h2>
         <p style="color: var(--text-muted);">انضم إلى مجتمعنا وابدأ التجارة الآن</p>
-        <button class="btn" id="login-btn" style="background: linear-gradient(45deg, var(--gold), #ff8c00); color: black;">تسجيل الدخول باستخدام Pi</button>
-        <a href="/chat.html" class="chat-button">💬 المساعد الذكي</a>
+        <button class="btn" id="login-btn" style="background: linear-gradient(45deg, var(--gold), #ff8c00); color: black;">Pi.sign.in</button>
+        <a href="/chat.html" class="chat-button">💬 مساعد غبي</a>
     </div>
 
     <!-- ====== التطبيق الرئيسي ====== -->
@@ -516,7 +516,7 @@
                     </div>
 
                     <div class="card-title">عربيكا</div>
-                    <div class="card-subtitle">بيع الخدمات والمنتجات</div>
+                    <div class="card-subtitle">تجارة الخدمات والمنتجات</div>
 
                     <div class="card-features">
                         <span>تواصل آمن</span>
@@ -537,7 +537,7 @@
 
                 <div class="promo-grid">
                     <div class="promo-card-pink">
-                        <div style="font-size: 30px; margin-bottom: 5px;">🛍️</div>
+                        <div style="font-size: 30px; margin-bottom: 5px;">🧊</div>
                         <h3 style="margin: 5px 0; font-size: 16px;">تسوق تجاري</h3>
                         <p style="font-size: 11px; margin: 0; opacity: 0.9;">بيع منتجاتك وخدماتك بسهولة</p>
                     </div>
@@ -553,7 +553,7 @@
                     <h4 style="margin-top: 0; color: var(--primary);">✨ شارك رأيك في التطبيق</h4>
                     <textarea id="post-text" placeholder="هل تعجبك عربيكا؟ شارك تجربتك وآراءك..." rows="3"></textarea>
                     <input type="url" id="post-image-url" placeholder="🔗 رابط صورة (اختياري)">
-                    <button class="btn" id="publish-btn" onclick="publishPost()" style="background: linear-gradient(90deg, #4a148c, var(--primary));">✓ إرسال الرأي</button>
+                    <button class="btn" id="publish-btn" onclick="publishPost()" style="background: linear-gradient(90deg, #4a148c, var(--primary));">🛹 إرسال منشورك</button>
                 </div>
 
                 <!-- بانر فلتر "منشوراتي فقط" -->
@@ -630,7 +630,7 @@
                     <a href="/chat.html" class="settings-row">
                         <div class="row-left">
                             <span class="icon">🤖</span>
-                            <span class="label">المساعد الذكي (Omni)</span>
+                            <span class="label">مساعد غبي (Omni)</span>
                         </div>
                         <span class="row-arrow">›</span>
                     </a>
@@ -666,7 +666,7 @@
                     <h4 style="margin-top:0; color:var(--primary);">👤 إعدادات الحساب</h4>
                     <div class="settings-row" onclick="editBio()">
                         <div class="row-left">
-                            <span class="icon">✏️</span>
+                            <span class="icon">🪄</span>
                             <span class="label">تعديل معرف المستخدم / النبذة</span>
                         </div>
                         <span class="row-arrow">›</span>
@@ -718,7 +718,7 @@
                 <span style="font-size: 24px;">🏠</span> الرئيسية
             </button>
             <button class="nav-item" data-page="store" onclick="switchPage('store')">
-                <span style="font-size: 24px;">🛍️</span> التسوق
+                <span style="font-size: 24px;">🧊</span> التسوق
             </button>
             <button class="nav-item" data-page="profile" onclick="switchPage('profile')">
                 <span style="font-size: 24px;">👤</span> الملف الشخصي
@@ -760,13 +760,13 @@
         document.getElementById('login-btn').addEventListener('click', handleLogin);
 
         // --- 3. دوال مساعدة ---
-        // تعقيم للعرض داخل نص HTML (Text Node) - كافٍ هنا لأن علامات الاقتباس
-        // لا معنى خاص لها داخل محتوى نصي عادي
+        
+    
         function sanitizeHTML(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
-        // تعقيم مخصص لإدراج قيم داخل خصائص HTML (attributes) بين علامتي اقتباس "
-        // بيهرب علامة الاقتباس نفسها كمان، وده ضروري هنا لأن sanitizeHTML وحدها
-        // مش كافية لحماية الخصائص (attributes) من الانكسار لو القيمة فيها "
+        //مHTML (attributes) بين علامتي اقتباس "
+        
+
         function escapeAttr(text) {
             if (text === null || text === undefined) return '';
             return String(text)
