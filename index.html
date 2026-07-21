@@ -445,7 +445,7 @@
 
     <div class="header">
         <span>أرابيكا</span>
-        <span style="font-size: 14px; color: var(--text-muted);">Arabeka 🫆</span>
+        <span style="font-size: 14px; color: var(--text-muted);">🫆 Arabeka</span>
     </div>
     
     <div id="login-error" style="display:none;" class="error-message"></div>
@@ -504,7 +504,7 @@
                             </div>
                             <div class="visa-dots">••••••••••</div>
                             <div class="visa-year">2026</div>
-                            <div class="visa-expiry">صالح حتى 12/28</div>
+                            <div class="visa-expiry">صالح لحد ما تموت 😄</div>
                             <div class="visa-bottom-row">
                                 <span class="visa-brand-name">عربيكا</span>
                                 <span class="visa-chip">💳</span>
@@ -544,7 +544,7 @@
                     <div class="promo-card-cyan">
                         <div style="font-size: 30px; margin-bottom: 5px;">💳</div>
                         <h3 style="margin: 5px 0; font-size: 16px;">دفع آمن وسريع</h3>
-                        <p style="font-size: 11px; margin: 0; opacity: 0.9;">منصة Pi Network الرقمية</p>
+                        <p style="font-size: 11px; margin: 0; opacity: 0.9;"> Pi Network</p>
                     </div>
                 </div>
 
@@ -592,7 +592,7 @@
                         </div>
                     </div>
                     
-                    <h2 id="user-name" style="margin: 5px 0; color: var(--text-color);">أحمد العرابي</h2>
+                    <h2 id="user-name" style="margin: 5px 0; color: var(--text-color);">🎗</h2>
                     <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">البريد الإلكتروني: email@example.com</p>
                 </div>
 
@@ -621,7 +621,7 @@
                 <div class="card" style="padding: 5px 15px;">
                     <div class="settings-row" onclick="editBio()">
                         <div class="row-left">
-                            <span class="icon">✏️</span>
+                            <span class="icon">🪄</span>
                             <span class="label">تعديل الملف</span>
                         </div>
                         <span class="row-arrow">›</span>
@@ -667,14 +667,14 @@
                     <div class="settings-row" onclick="editBio()">
                         <div class="row-left">
                             <span class="icon">🪄</span>
-                            <span class="label">تعديل معرف المستخدم / النبذة</span>
+                            <span class="label">تعديل النبذة 🫆</span>
                         </div>
                         <span class="row-arrow">›</span>
                     </div>
                     <div class="settings-row" style="cursor: default;">
                         <div class="row-left">
                             <span class="icon">🆔</span>
-                            <span class="label">اسم مستخدم Pi</span>
+                            <span class="label"> مستخدم Pi</span>
                         </div>
                         <span class="row-arrow" id="settings-username" style="color: var(--text-muted); font-size: 14px;">-</span>
                     </div>
@@ -706,7 +706,7 @@
                 </div>
 
                 <div class="card" style="border: 1px solid var(--danger);">
-                    <h4 style="margin-top:0; color:var(--danger);">⚠️ منطقة خطرة</h4>
+                    <h4 style="margin-top:0; color:var(--danger);">الي اللقاء🫡</h4>
                     <button class="btn" style="background-color: var(--danger);" onclick="logout()">🚪 تسجيل الخروج</button>
                 </div>
             </div>
@@ -855,7 +855,7 @@
         }
         function editBio() {
             const currentBio = document.getElementById('user-bio').innerText;
-            openCustomModal("تعديل معرف المستخدم / النبذة", currentBio, "", false, (newBio) => {
+            openCustomModal("🫆 تعديل النبذة", currentBio, "", false, (newBio) => {
                 document.getElementById('user-bio').innerText = sanitizeHTML(newBio);
                 db.collection("users").doc(currentUser).set({ bio: newBio }, { merge: true }).catch(e => showError("خطأ بالحفظ"));
             });
@@ -967,7 +967,7 @@
                 const escText = escapeAttr(post.content || '');
                 const escImg = escapeAttr(post.imageUrl || '');
                 const editBtn = post.author === currentUser
-                    ? `<button class="action-btn edit-post-btn" data-post-id="${postId}" data-post-text="${escText}" data-post-image="${escImg}">✏️ تعديل</button>`
+                    ? `<button class="action-btn edit-post-btn" data-post-id="${postId}" data-post-text="${escText}" data-post-image="${escImg}">🪄 تعديل</button>`
                     : '';
                 const editedTag = post.edited ? ' <span style="color:var(--text-muted); font-size:12px;">(معدّل)</span>' : '';
 
