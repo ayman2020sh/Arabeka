@@ -68,235 +68,96 @@
         }
 
         /* ========================================== */
-        /* الكارت الرئيسي - تصميم جديد: الفيزا بارزة فوق */
-        /* بنفس ألوان التصميم القديم (كحلي/بنفسجي)      */
+        /* الكارت الرئيسي - تصميم أفقي: الفيزا (صورة حقيقية) */
+        /* شمال، والعنوان + المميزات + الزرار يمين          */
         /* ========================================== */
         .main-card {
-            background: linear-gradient(145deg, #0d1b3e, #1a2a6c, #0d47a1);
+            background: linear-gradient(135deg, #0a1030 0%, #142a63 55%, #1e5fb8 100%);
             color: white;
             border-radius: 20px;
-            padding: 30px 22px 28px 22px;
+            padding: 22px 16px;
             margin-bottom: 15px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-        }
-
-        .main-card::before {
-            content: '';
-            position: absolute;
-            top: -30%;
-            right: -20%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(138, 43, 226, 0.18), transparent 70%);
-            border-radius: 50%;
-        }
-
-        .main-card::after {
-            content: '';
-            position: absolute;
-            bottom: -20%;
-            left: -10%;
-            width: 220px;
-            height: 220px;
-            background: radial-gradient(circle, rgba(0, 188, 212, 0.1), transparent 70%);
-            border-radius: 50%;
-        }
-
-        /* ===== الفيزا: كارت مائل ثلاثي الأبعاد + قاعدة ذهبية ===== */
-        .hero-visual {
-            position: relative;
-            padding: 10px 10px 55px 10px;
             display: flex;
-            justify-content: center;
-            z-index: 1;
-        }
-
-        .visa-card-3d {
-            width: 100%;
-            max-width: 300px;
-            background: linear-gradient(160deg, #171a33 0%, #0c0f26 55%, #05060f 100%);
-            border-radius: 16px;
-            padding: 18px 20px 22px 20px;
-            position: relative;
-            z-index: 2;
-            transform: rotate(-3deg);
-            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
-        }
-
-        .visa-top-row {
-            display: flex;
-            justify-content: space-between;
+            flex-direction: row;
             align-items: center;
+            gap: 12px;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.5);
         }
 
-        .visa-brand-mini {
-            font-size: 13px;
-            font-weight: bold;
-            background: linear-gradient(90deg, #FFD700, #FFA500);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .visa-ara {
-            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
-            color: #fff;
-            font-size: 12px;
-            font-weight: bold;
-            letter-spacing: 1.5px;
-            padding: 4px 14px;
-            border-radius: 20px;
-        }
-
-        .visa-dots {
-            color: rgba(255, 255, 255, 0.3);
-            letter-spacing: 5px;
-            font-size: 16px;
-            margin-top: 18px;
-        }
-
-        .visa-year {
-            font-size: 24px;
-            font-weight: bold;
-            color: #ffffff;
-            margin-top: 10px;
-        }
-
-        .visa-expiry {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.5);
-            margin-top: 2px;
-        }
-
-        .visa-bottom-row {
+        .hero-text {
+            flex: 1;
             display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: 20px;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: right;
+            min-width: 0;
         }
 
-        .visa-chip {
-            font-size: 22px;
-            opacity: 0.85;
-        }
-
-        .visa-brand-name {
-            font-size: 17px;
-            font-weight: bold;
-            background: linear-gradient(90deg, #FFD700, #FFA500);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* ===== القاعدة الذهبية + الختم الدائري ===== */
-        .visa-stand {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%) rotate(1.5deg);
-            width: 72%;
-            max-width: 220px;
-            height: 52px;
-            background: linear-gradient(160deg, #d9a441 0%, #a8781f 55%, #5c4204 100%);
-            border-radius: 50% 50% 18px 18px / 65% 65% 18px 18px;
-            z-index: 1;
-            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.45);
-            display: flex;
-            justify-content: center;
-        }
-
-        .visa-stand-seal {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            margin-top: 6px;
-            background: radial-gradient(circle at 35% 30%, #ffe17d, #d4a017 60%, #8b6508);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.5);
-        }
-
-        /* ===== العنوان والمميزات وزر الدخول - تحت الفيزا ===== */
         .card-title {
-            font-size: 32px;
-            font-weight: bold;
-            margin: 0;
-            position: relative;
-            z-index: 1;
-            text-align: center;
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 2px;
             background: linear-gradient(90deg, #FFD700, #FFA500);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .card-subtitle {
-            font-size: 17px;
-            text-align: center;
-            margin: 6px 0 20px 0;
-            opacity: 0.9;
-            position: relative;
-            z-index: 1;
-            color: #ffffff;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
         }
 
         .card-features {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            margin: 0 0 22px 0;
-            position: relative;
-            z-index: 1;
+            gap: 4px;
+            margin-bottom: 12px;
         }
 
         .card-features span {
-            font-size: 14px;
-            opacity: 0.9;
-            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.9);
+            white-space: nowrap;
         }
 
         .card-features span::before {
-            content: '✓ ';
+            content: '✓';
             color: #4CAF50;
             font-weight: bold;
         }
 
         .login-btn-card {
-            background: linear-gradient(90deg, #FFD700, #FF8C00);
+            width: 100%;
+            background: linear-gradient(90deg, var(--gold), #ff8c00);
             border: none;
-            padding: 12px 30px;
-            border-radius: 30px;
+            padding: 9px 14px;
+            border-radius: 22px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 18px;
-            color: #000;
-            position: relative;
-            z-index: 1;
+            font-size: 13px;
+            color: #1a1305;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin: 0 auto;
-            width: 100%;
-            max-width: 280px;
-            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.25);
+            gap: 6px;
+            box-shadow: 0 6px 15px rgba(255, 140, 0, 0.3);
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .login-btn-icon {
-            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            background: linear-gradient(135deg, var(--primary), #6a1b9a);
             color: #fff;
-            width: 26px;
-            height: 26px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            font-size: 9px;
             flex-shrink: 0;
         }
 
@@ -307,6 +168,55 @@
 
         .login-btn-card:active {
             transform: scale(0.97);
+        }
+
+        /* ===== صورة الفيزا الحقيقية (PNG) ===== */
+        .card-image-wrap {
+            flex-shrink: 0;
+            width: 61%;
+            max-width: 205px;
+            position: relative;
+        }
+
+        .card-image-wrap img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.45));
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================
+           عناصر ديكور الألماظ - Placeholder إيموجي مؤقت
+           لحذف أي ألماظة: امسح الـ span بتاعها كامل
+           لاستبدالها بصورة حقيقية: بدّل <span class="deco-diamond dX">💎</span>
+           بـ <img class="deco-diamond dX" src="diamond.png" alt="">
+           ============================================ */
+        .deco-diamond {
+            position: absolute;
+            z-index: 2;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+            pointer-events: none;
+            line-height: 1;
+        }
+        .deco-diamond.d1 {
+            font-size: 42px;
+            top: -14px;
+            right: 8px;
+            transform: rotate(-8deg);
+        }
+        .deco-diamond.d2 {
+            font-size: 24px;
+            top: 6px;
+            right: -6px;
+            transform: rotate(10deg);
+        }
+        .deco-diamond.d3 {
+            font-size: 22px;
+            bottom: -6px;
+            right: 30px;
+            transform: rotate(-6deg);
         }
 
         .promo-card-purple {
@@ -425,18 +335,12 @@
         .filter-banner { display: none; align-items: center; justify-content: space-between; flex-direction: row; padding: 12px 15px; }
         
         /* تحسينات للشاشات الصغيرة */
-        @media (max-width: 480px) {
-            .main-card {
-                padding: 24px 16px 24px 16px;
-            }
+        @media (max-width: 360px) {
             .card-title {
-                font-size: 26px;
+                font-size: 18px;
             }
-            .visa-card-3d {
-                padding: 16px 18px 20px 18px;
-            }
-            .login-btn-card {
-                font-size: 16px;
+            .card-image-wrap {
+                width: 52%;
             }
         }
     </style>
@@ -445,7 +349,7 @@
 
     <div class="header">
         <span>أرابيكا</span>
-        <span style="font-size: 14px; color: var(--text-muted);">🫆 Arabeka</span>
+        <span style="font-size: 14px; color: var(--text-muted);">Arabeka ☕</span>
     </div>
     
     <div id="login-error" style="display:none;" class="error-message"></div>
@@ -484,8 +388,8 @@
     <div id="login-view" class="page active" style="text-align: center; margin-top: 50px; padding: 0 15px;">
         <h2>مرحباً بك في مجتمع أرابيكا</h2>
         <p style="color: var(--text-muted);">انضم إلى مجتمعنا وابدأ التجارة الآن</p>
-        <button class="btn" id="login-btn" style="background: linear-gradient(45deg, var(--gold), #ff8c00); color: black;">Pi.sign.in</button>
-        <a href="/chat.html" class="chat-button">💬 مساعد غبي</a>
+        <button class="btn" id="login-btn" style="background: linear-gradient(45deg, var(--gold), #ff8c00); color: black;">تسجيل الدخول باستخدام Pi</button>
+        <a href="/chat.html" class="chat-button">💬 المساعد الذكي</a>
     </div>
 
     <!-- ====== التطبيق الرئيسي ====== -->
@@ -496,36 +400,23 @@
             <div class="container">
                 
                 <div class="main-card">
-                    <div class="hero-visual">
-                        <div class="visa-card-3d">
-                            <div class="visa-top-row">
-                                <span class="visa-brand-mini">✦ أرابيكا</span>
-                                <span class="visa-ara">ARA</span>
-                            </div>
-                            <div class="visa-dots">••••••••••</div>
-                            <div class="visa-year">2026</div>
-                            <div class="visa-expiry">صالح لحد ما تموت 😄</div>
-                            <div class="visa-bottom-row">
-                                <span class="visa-brand-name">عربيكا</span>
-                                <span class="visa-chip">💠</span>
-                            </div>
+                    <div class="hero-text">
+                        <div class="card-title">آرابيكا</div>
+                        <div class="card-subtitle">بيع الخدمات والمنتجات</div>
+                        <div class="card-features">
+                            <span>تواصل آمن</span>
+                            <span>بياناتك مشفرة</span>
                         </div>
-                        <div class="visa-stand">
-                            <div class="visa-stand-seal">👤</div>
-                        </div>
+                        <button class="login-btn-card" onclick="handleLogin()">
+                            <span class="login-btn-icon">➜</span><span>pi sign.in</span>
+                        </button>
                     </div>
-
-                    <div class="card-title">عربيكا</div>
-                    <div class="card-subtitle">تجارة الخدمات والمنتجات</div>
-
-                    <div class="card-features">
-                        <span>تواصل آمن</span>
-                        <span>بياناتك مشفرة</span>
+                    <div class="card-image-wrap">
+                        <span class="deco-diamond d1">💎</span>
+                        <span class="deco-diamond d2">💎</span>
+                        <span class="deco-diamond d3">💎</span>
+                        <img src="arabeka_card.png" alt="كارت آرابيكا">
                     </div>
-
-                    <button class="login-btn-card" onclick="handleLogin()">
-                        <span class="login-btn-icon">➜</span><span>pi sign.in</span>
-                    </button>
                 </div>
 
                 <div class="promo-card-purple">
@@ -537,23 +428,23 @@
 
                 <div class="promo-grid">
                     <div class="promo-card-pink">
-                        <div style="font-size: 30px; margin-bottom: 5px;">🧊</div>
+                        <div style="font-size: 30px; margin-bottom: 5px;">🛍️</div>
                         <h3 style="margin: 5px 0; font-size: 16px;">تسوق تجاري</h3>
                         <p style="font-size: 11px; margin: 0; opacity: 0.9;">بيع منتجاتك وخدماتك بسهولة</p>
                     </div>
                     <div class="promo-card-cyan">
-                        <div style="font-size: 30px; margin-bottom: 5px;">💠💶</div>
+                        <div style="font-size: 30px; margin-bottom: 5px;">💳</div>
                         <h3 style="margin: 5px 0; font-size: 16px;">دفع آمن وسريع</h3>
-                        <p style="font-size: 11px; margin: 0; opacity: 0.9;"> Pi wallet</p>
+                        <p style="font-size: 11px; margin: 0; opacity: 0.9;">منصة Pi Network الرقمية</p>
                     </div>
                 </div>
 
-                <h3 style="color: var(--text-color); margin-top: 25px;"> تفاعل المجتمع</h3>
+                <h3 style="color: var(--text-color); margin-top: 25px;">منطقة تفاعل المجتمع</h3>
                 <div class="card" style="background: linear-gradient(145deg, #1c1d24, #262833);">
-                    <h4 style="margin-top: 0; color: var(--primary);">✨شارك رأيك في ارابيكا</h4>
+                    <h4 style="margin-top: 0; color: var(--primary);">✨ شارك رأيك في التطبيق</h4>
                     <textarea id="post-text" placeholder="هل تعجبك عربيكا؟ شارك تجربتك وآراءك..." rows="3"></textarea>
                     <input type="url" id="post-image-url" placeholder="🔗 رابط صورة (اختياري)">
-                    <button class="btn" id="publish-btn" onclick="publishPost()" style="background: linear-gradient(90deg, #4a148c, var(--primary));"> إرسال منشورك🛹</button>
+                    <button class="btn" id="publish-btn" onclick="publishPost()" style="background: linear-gradient(90deg, #4a148c, var(--primary));">✓ إرسال الرأي</button>
                 </div>
 
                 <!-- بانر فلتر "منشوراتي فقط" -->
@@ -592,14 +483,14 @@
                         </div>
                     </div>
                     
-                    <h2 id="user-name" style="margin: 5px 0; color: var(--text-color);">🎗</h2>
-                    <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">🎗جارِ اضافه وسيله اتصال🎗</p>
+                    <h2 id="user-name" style="margin: 5px 0; color: var(--text-color);">أحمد العرابي</h2>
+                    <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">البريد الإلكتروني: email@example.com</p>
                 </div>
 
                 <div class="card">
                     <div style="text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px;">
-                        <p style="color: var(--text-muted); font-size: 14px; margin: 5px 0;">🫆<span id="user-bio" style="color: var(--text-color);">user-unknown</span></p>
-                        <p style="color: var(--text-muted); font-size: 14px; margin: 5px 0;">تاريخ الانضمام: 2026</p>
+                        <p style="color: var(--text-muted); font-size: 14px; margin: 5px 0;">معرف المستخدم: <span id="user-bio" style="color: var(--text-color);">user-unknown</span></p>
+                        <p style="color: var(--text-muted); font-size: 14px; margin: 5px 0;">تاريخ الانضمام: 2024</p>
                     </div>
                     <div style="display: flex; justify-content: space-around; text-align: center; padding-top: 5px;">
                         <div class="stat-block" onclick="showFollowing()">
@@ -621,8 +512,8 @@
                 <div class="card" style="padding: 5px 15px;">
                     <div class="settings-row" onclick="editBio()">
                         <div class="row-left">
-                            <span class="icon">🫆</span>
-                            <span class="label">تعديل النبذه</span>
+                            <span class="icon">✏️</span>
+                            <span class="label">تعديل الملف</span>
                         </div>
                         <span class="row-arrow">›</span>
                     </div>
@@ -630,7 +521,7 @@
                     <a href="/chat.html" class="settings-row">
                         <div class="row-left">
                             <span class="icon">🤖</span>
-                            <span class="label">مساعد غبي (Omni)</span>
+                            <span class="label">المساعد الذكي (Omni)</span>
                         </div>
                         <span class="row-arrow">›</span>
                     </a>
@@ -666,15 +557,15 @@
                     <h4 style="margin-top:0; color:var(--primary);">👤 إعدادات الحساب</h4>
                     <div class="settings-row" onclick="editBio()">
                         <div class="row-left">
-                            <span class="icon"></span>
-                            <span class="label">تعديل النبذة 🫆</span>
+                            <span class="icon">✏️</span>
+                            <span class="label">تعديل معرف المستخدم / النبذة</span>
                         </div>
                         <span class="row-arrow">›</span>
                     </div>
                     <div class="settings-row" style="cursor: default;">
                         <div class="row-left">
                             <span class="icon">🆔</span>
-                            <span class="label"> مستخدم ارابيكا </span>
+                            <span class="label">اسم مستخدم Pi</span>
                         </div>
                         <span class="row-arrow" id="settings-username" style="color: var(--text-muted); font-size: 14px;">-</span>
                     </div>
@@ -706,7 +597,7 @@
                 </div>
 
                 <div class="card" style="border: 1px solid var(--danger);">
-                    <h4 style="margin-top:0; color:var(--danger);">الي اللقاء🫡</h4>
+                    <h4 style="margin-top:0; color:var(--danger);">⚠️ منطقة خطرة</h4>
                     <button class="btn" style="background-color: var(--danger);" onclick="logout()">🚪 تسجيل الخروج</button>
                 </div>
             </div>
@@ -718,7 +609,7 @@
                 <span style="font-size: 24px;">🏠</span> الرئيسية
             </button>
             <button class="nav-item" data-page="store" onclick="switchPage('store')">
-                <span style="font-size: 24px;">🧊</span> التسوق
+                <span style="font-size: 24px;">🛍️</span> التسوق
             </button>
             <button class="nav-item" data-page="profile" onclick="switchPage('profile')">
                 <span style="font-size: 24px;">👤</span> الملف الشخصي
@@ -760,13 +651,13 @@
         document.getElementById('login-btn').addEventListener('click', handleLogin);
 
         // --- 3. دوال مساعدة ---
-        
-    
+        // تعقيم للعرض داخل نص HTML (Text Node) - كافٍ هنا لأن علامات الاقتباس
+        // لا معنى خاص لها داخل محتوى نصي عادي
         function sanitizeHTML(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
-        //مHTML (attributes) بين علامتي اقتباس "
-        
-
+        // تعقيم مخصص لإدراج قيم داخل خصائص HTML (attributes) بين علامتي اقتباس "
+        // بيهرب علامة الاقتباس نفسها كمان، وده ضروري هنا لأن sanitizeHTML وحدها
+        // مش كافية لحماية الخصائص (attributes) من الانكسار لو القيمة فيها "
         function escapeAttr(text) {
             if (text === null || text === undefined) return '';
             return String(text)
@@ -855,7 +746,7 @@
         }
         function editBio() {
             const currentBio = document.getElementById('user-bio').innerText;
-            openCustomModal("🫆 تعديل النبذة", currentBio, "", false, (newBio) => {
+            openCustomModal("تعديل معرف المستخدم / النبذة", currentBio, "", false, (newBio) => {
                 document.getElementById('user-bio').innerText = sanitizeHTML(newBio);
                 db.collection("users").doc(currentUser).set({ bio: newBio }, { merge: true }).catch(e => showError("خطأ بالحفظ"));
             });
@@ -967,7 +858,7 @@
                 const escText = escapeAttr(post.content || '');
                 const escImg = escapeAttr(post.imageUrl || '');
                 const editBtn = post.author === currentUser
-                    ? `<button class="action-btn edit-post-btn" data-post-id="${postId}" data-post-text="${escText}" data-post-image="${escImg}">🪄 تعديل</button>`
+                    ? `<button class="action-btn edit-post-btn" data-post-id="${postId}" data-post-text="${escText}" data-post-image="${escImg}">✏️ تعديل</button>`
                     : '';
                 const editedTag = post.edited ? ' <span style="color:var(--text-muted); font-size:12px;">(معدّل)</span>' : '';
 
