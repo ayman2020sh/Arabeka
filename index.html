@@ -1038,7 +1038,7 @@
                 activeNav.classList.add('active');
             }
         }
-    </script><!-- بداية كود التعامل مع بيئة تلجرام -->
+    //<!-- بداية كود التعامل مع بيئة تلجرام -->
 <script>
   document.addEventListener("DOMContentLoaded", function() {
       
@@ -1049,16 +1049,18 @@
           
           console.log("المنصة تعمل الآن في وضع تطبيق تلجرام المصغر");
           
-          // إخفاء زر تسجيل الدخول
-          const piLoginButton = document.getElementById('Pi sign.in');
-          
-          if (piLoginButton) {
-              piLoginButton.style.display = 'none'; 
-          }
+          // البحث عن أي زر أو عنصر يحتوي على جملة Pi sign.in وإخفاؤه
+          const allElements = document.querySelectorAll('*');
+          allElements.forEach(element => {
+              if (element.children.length === 0 && element.textContent.includes('Pi sign.in')) {
+                  element.style.display = 'none';
+              }
+          });
       }
   });
 </script>
 <!-- نهاية كود التعامل مع بيئة تلجرام -->
+
 
 </body>
 </html>
