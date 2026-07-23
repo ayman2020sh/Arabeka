@@ -1049,17 +1049,31 @@
           
           console.log("المنصة تعمل الآن في وضع تطبيق تلجرام المصغر");
           
-          // البحث عن أي زر أو عنصر يحتوي على جملة Pi sign.in وإخفاؤه
-          const allElements = document.querySelectorAll('*');
-          allElements.forEach(element => {
-              if (element.children.length === 0 && element.textContent.includes('Pi sign.in')) {
-                  element.style.display = 'none';
-              }
-          });
+          <!-- بداية كود التعامل مع بيئة تلجرام -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      // التأكد من تحميل مكتبة التلجرام
+      if (window.Telegram && window.Telegram.WebApp) {
+          const tg = window.Telegram.WebApp;
+          tg.expand();
+
+          // التحقق من العمل داخل التلجرام
+          if (tg.initDataUnsafe && Object.keys(tg.initDataUnsafe).length > 0) {
+              
+              // البحث عن زر Pi بإحدى الطرق التالية:
+              // 1. البحث عن طريق الـ ID أو الـ Class
+              const buttons = document.querySelectorAll('button, a, div');
+              buttons.forEach(btn => {
+                  if (btn.innerText && btn.innerText.toLowerCase().includes('pi')) {
+                      btn.style.display = 'none';
+                  }
+              });
+          }
       }
   });
 </script>
 <!-- نهاية كود التعامل مع بيئة تلجرام -->
+
 
 
 </body>
