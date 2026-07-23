@@ -655,13 +655,8 @@
         document.getElementById('login-btn').addEventListener('click', handleLogin);
 
         // --- 3. دوال مساعدة ---
-        // تعقيم للعرض داخل نص HTML (Text Node) - كافٍ هنا لأن علامات الاقتباس
-        // لا معنى خاص لها داخل محتوى نصي عادي
         function sanitizeHTML(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
-        // تعقيم مخصص لإدراج قيم داخل خصائص HTML (attributes) بين علامتي اقتباس "
-        // بيهرب علامة الاقتباس نفسها كمان، وده ضروري هنا لأن sanitizeHTML وحدها
-        // مش كافية لحماية الخصائص (attributes) من الانكسار لو القيمة فيها "
         function escapeAttr(text) {
             if (text === null || text === undefined) return '';
             return String(text)
@@ -672,8 +667,6 @@
                 .replace(/'/g, '&#39;');
         }
 
-        // تعقيم روابط الصور: يمنع كسر السمة src عبر علامات اقتباس
-        // ويقتصر على بروتوكولات http/https فقط (يمنع javascript: وغيرها)
         function sanitizeURL(url) {
             if (!url) return '';
             try {
@@ -756,11 +749,7 @@
             });
         }
 
-        // ============================================================
-        // --- 6. المتابعة (متابعة / متابعين / منشوراتي) ---
-        // مجموعة "follows" في Firestore: كل مستند معرّفه follower_target
-        // ويحتوي على { follower, target, timestamp }
-        // ============================================================
+        // --- 6. المتابعة ---
         function loadProfileStats() {
             const unsubFollowing = db.collection('follows').where('follower', '==', currentUser).onSnapshot(snap => {
                 document.getElementById('following-count').innerText = snap.size;
@@ -1009,9 +998,7 @@
             } catch (e) { showError("خطأ: " + e.message); }
         }
 
-        // ============================================================
         // --- 9. نظام التنقل ---
-        // ============================================================
         function switchPage(page) {
             var mainApp = document.getElementById('main-app');
             var pages = mainApp.querySelectorAll('.page');
@@ -1038,43 +1025,26 @@
                 activeNav.classList.add('active');
             }
         }
-    //<!-- بداية كود التعامل مع بيئة تلجرام -->
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-      
-      const tg = window.Telegram.WebApp;
-      tg.expand();
 
-      if (tg.initDataUnsafe && Object.keys(tg.initDataUnsafe).length > 0) {
-          
-          console.log("المنصة تعمل الآن في وضع تطبيق تلجرام المصغر");
-          
-          <!-- بداية كود التعامل مع بيئة تلجرام -->
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-      // التأكد من تحميل مكتبة التلجرام
-      if (window.Telegram && window.Telegram.WebApp) {
-          const tg = window.Telegram.WebApp;
-          tg.expand();
-
-          // التحقق من العمل داخل التلجرام
-          if (tg.initDataUnsafe && Object.keys(tg.initDataUnsafe).length > 0) {
-              
-              // البحث عن زر Pi بإحدى الطرق التالية:
-              // 1. البحث عن طريق الـ ID أو الـ Class
-              const buttons = document.querySelectorAll('button, a, div');
-              buttons.forEach(btn => {
-                  if (btn.innerText && btn.innerText.toLowerCase().includes('pi')) {
-                      btn.style.display = 'none';
-                  }
-              });
-          }
-      }
-  });
-</script>
-<!-- نهاية كود التعامل مع بيئة تلجرام -->
-
-
-
+        // --- 10. كود تلجرام المضاف بأمان ---
+        document.addEventListener("DOMContentLoaded", function() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                const tg = window.Telegram.WebApp;
+                tg.expand();
+                if (tg.initDataUnsafe && Object.keys(tg.initDataUnsafe).length > 0) {
+                    document.getElementById('login-view').classList.remove('active');
+                    document.getElementById('main-app').classList.add('active');
+                    document.getElementById('user-name').innerText = "زائر من تلجرام";
+                    const mainLoginBtn = document.getElementById('login-btn');
+                    if(mainLoginBtn) mainLoginBtn.style.display = 'none';
+                    const cardLoginBtn = document.querySelector('.login-btn-card');
+                    if(cardLoginBtn) cardLoginBtn.style.display = 'none';
+                    loadPosts(); 
+                    loadProducts();
+                    switchPage('feed');
+                }
+            }
+        });
+    </script>
 </body>
 </html>
