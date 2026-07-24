@@ -1,7 +1,4 @@
-// api/ai-assistant.js
-// باستخدام Pollinations.ai - مجاني وسحابي، من غير مفاتيح
-
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     // نسمح فقط بطريقة POST
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'استخدم POST فقط' });
@@ -53,4 +50,4 @@ export default async function handler(req, res) {
         console.error('خطأ في المساعد:', error);
         res.status(500).json({ error: 'حصل عطل في الخادم، حاول مرة أخرى' });
     }
-}
+};
