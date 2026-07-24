@@ -682,6 +682,9 @@
         }
         function cleanupListeners() { unsubscribeFunctions.forEach(unsub => { try { unsub(); } catch(e){} }); unsubscribeFunctions = []; }
 
+        // مستخدم Guest من تليجرام: أي ID بيبدأ بـ tg_ معناه زائر من تليجرام
+        function isGuest() { return !!currentUser && currentUser.indexOf('tg_') === 0; }
+
         // --- 4. تسجيل الدخول / الخروج ---
         function onIncompletePaymentFound(payment) {
             fetch('/api/complete', {
@@ -854,11 +857,14 @@
                     ? `<button class="action-btn edit-post-btn" data-post-id="${postId}" data-post-text="${escText}" data-post-image="${escImg}">✏️ تعديل</button>`
                     : '';
                 const editedTag = post.edited ? ' <span style="color:var(--text-muted); font-size:12px;">(معدّل)</span>' : '';
+                const authorIsGuest = post.author && post.author.indexOf('tg_') === 0;
+                const authorDisplay = authorIsGuest ? ('زائر تلجرام #' + post.author.slice(3)) : (post.author || 'مجهول');
+                const guestBadge = authorIsGuest ? ' <span style="background:#0088cc; color:#fff; font-size:10px; padding:2px 6px; border-radius:8px;">TG</span>' : '';
 
                 fragments.push(`
                     <div class="card">
                         <div class="post-header">
-                            <span class="post-author">${sanitizeHTML(post.author || 'مجهول')}</span>
+                            <span class="post-author">${sanitizeHTML(authorDisplay)}${guestBadge}</span>
                             <div style="display:flex; gap:8px; align-items:center;">${followBtn}${delBtn}</div>
                         </div>
                         <div class="card-content">${sanitizeHTML(post.content)}${editedTag}</div>
@@ -942,6 +948,7 @@
 
         // --- 8. المتجر والدفع ---
         function addNewProduct() {
+            if (isGuest()) { showError("إضافة المنتجات متاحة فقط من تطبيق Pi."); return; }
             const name = document.getElementById('new-prod-name').value.trim(), price = parseFloat(document.getElementById('new-prod-price').value), imageUrl = document.getElementById('new-prod-image').value.trim();
             if (!name || !price || price < 0) { showError("البيانات غير صحيحة"); return; }
             const btn = document.getElementById('add-prod-btn'); btn.disabled = true;
@@ -981,6 +988,10 @@
         function deleteProduct(id) { if (confirm("حذف المنتج؟")) db.collection("products").doc(id).delete(); }
 
         function buyProduct(name, price) {
+            if (isGuest()) {
+                showError("الشراء متاح فقط من تطبيق Pi. افتح Arabeka من داخل Pi Browser لإتمام عملية الشراء.");
+                return;
+            }
             if (typeof Pi === 'undefined') { showError("نظام Pi غير متاح هنا"); return; }
             try {
                 Pi.createPayment({ amount: price, memo: `شراء ${name}`, metadata: { productName: name } }, {
@@ -1026,22 +1037,20 @@
             }
         }
 
-        // --- 10. كود تلجرام المضاف بأمان ---
+        // --- 10. كود تلجرام: تسجيل دخول Guest حقيقي بهوية ثابتة ---
         document.addEventListener("DOMContentLoaded", function() {
             if (window.Telegram && window.Telegram.WebApp) {
                 const tg = window.Telegram.WebApp;
                 tg.expand();
-                if (tg.initDataUnsafe && Object.keys(tg.initDataUnsafe).length > 0) {
-                    document.getElementById('login-view').classList.remove('active');
-                    document.getElementById('main-app').classList.add('active');
-                    document.getElementById('user-name').innerText = "زائر من تلجرام";
+                const tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user;
+                if (tgUser && tgUser.id) {
+                    const guestId = 'tg_' + tgUser.id; // ثابت لنفس المستخدم في كل مرة يفتح فيها التطبيق
+                    loginSuccess(guestId);
+                    document.getElementById('user-name').innerText = "زائر تلجرام #" + tgUser.id;
                     const mainLoginBtn = document.getElementById('login-btn');
-                    if(mainLoginBtn) mainLoginBtn.style.display = 'none';
+                    if (mainLoginBtn) mainLoginBtn.style.display = 'none';
                     const cardLoginBtn = document.querySelector('.login-btn-card');
-                    if(cardLoginBtn) cardLoginBtn.style.display = 'none';
-                    loadPosts(); 
-                    loadProducts();
-                    switchPage('feed');
+                    if (cardLoginBtn) cardLoginBtn.style.display = 'none';
                 }
             }
         });
