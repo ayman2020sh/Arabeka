@@ -650,7 +650,7 @@
         });
         firebase.auth().signInAnonymously().catch(function (error) {
             console.error("Auth Error:", error);
-            showError("تعذر تجهيز الهوية الآمنة، حاول تحديث الصفحة");
+            showError("تعذر تجهيز الهوية الآمنة: [" + error.code + "] " + error.message);
         });
 
         // --- 2. تهيئة Pi Network ---
