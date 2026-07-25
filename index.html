@@ -12,6 +12,7 @@
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     
     <style>
         :root { 
@@ -467,7 +468,7 @@
                 <div class="card" style="border: 1px dashed var(--primary);">
                     <h4 style="margin-top:0; color:var(--primary);">➕ أضف منتجك للسوق</h4>
                     <input type="text" id="new-prod-name" placeholder="اسم المنتج" maxlength="100">
-                    <input type="number" id="new-prod-price" placeholder="السعر (ARA)" min="0" step="0.01">
+                    <input type="number" id="new-prod-price" placeholder="السعر (Pi)" min="0" step="0.01">
                     <input type="url" id="new-prod-image" placeholder="🔗 رابط صورة المنتج (اختياري)">
                     <button class="btn" id="add-prod-btn" onclick="addNewProduct()">عرض للبيع</button>
                 </div>
@@ -640,6 +641,18 @@
         let showOnlyMyPosts = false;
         let editingPostId = null;
 
+        // --- هوية حقيقية من Firebase (مطلوبة لأي Security Rules فعلية) ---
+        let authUid = null;
+        let authReadyPromise = new Promise((resolve) => {
+            firebase.auth().onAuthStateChanged(function (user) {
+                if (user) { authUid = user.uid; resolve(authUid); }
+            });
+        });
+        firebase.auth().signInAnonymously().catch(function (error) {
+            console.error("Auth Error:", error);
+            showError("تعذر تجهيز الهوية الآمنة، حاول تحديث الصفحة");
+        });
+
         // --- 2. تهيئة Pi Network ---
         window.addEventListener('load', initializePiSDK);
         
@@ -748,7 +761,7 @@
             const currentBio = document.getElementById('user-bio').innerText;
             openCustomModal(" > النبذة", currentBio, "", false, (newBio) => {
                 document.getElementById('user-bio').innerText = sanitizeHTML(newBio);
-                db.collection("users").doc(currentUser).set({ bio: newBio }, { merge: true }).catch(e => showError("خطأ بالحفظ"));
+                db.collection("users").doc(currentUser).set({ bio: newBio, ownerUid: authUid }, { merge: true }).catch(e => showError("خطأ بالحفظ"));
             });
         }
 
@@ -775,7 +788,7 @@
                     ref.delete();
                     if (btnEl) btnEl.innerText = '➕ متابعة';
                 } else {
-                    ref.set({ follower: currentUser, target: author, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+                    ref.set({ follower: currentUser, followerUid: authUid, target: author, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
                     if (btnEl) btnEl.innerText = '✓ متابَع';
                 }
             }).catch(e => showError('خطأ في المتابعة'));
@@ -817,12 +830,13 @@
 
         // --- 7. المجتمع والمنشورات ---
         function publishPost() {
+            if (!authUid) { showError("لسه بيجهز الاتصال الآمن، حاول تاني بعد ثانية"); return; }
             const text = document.getElementById('post-text').value.trim();
             const imageUrl = document.getElementById('post-image-url').value.trim();
             if (!text && !imageUrl) { showError("أضف نصاً أو صورة"); return; }
             const btn = document.getElementById('publish-btn'); btn.disabled = true;
             db.collection("posts").add({
-                author: currentUser, content: text, imageUrl: imageUrl || null, likes: 0, comments: [], edited: false, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                author: currentUser, authorUid: authUid, content: text, imageUrl: imageUrl || null, likes: 0, comments: [], edited: false, timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => { 
                 document.getElementById('post-text').value = ""; document.getElementById('post-image-url').value = ""; 
             }).catch(e => showError("خطأ النشر")).finally(() => btn.disabled = false);
@@ -949,10 +963,11 @@
         // --- 8. المتجر والدفع ---
         function addNewProduct() {
             if (isGuest()) { showError("إضافة المنتجات متاحة فقط من تطبيق Pi."); return; }
+            if (!authUid) { showError("لسه بيجهز الاتصال الآمن، حاول تاني بعد ثانية"); return; }
             const name = document.getElementById('new-prod-name').value.trim(), price = parseFloat(document.getElementById('new-prod-price').value), imageUrl = document.getElementById('new-prod-image').value.trim();
             if (!name || !price || price < 0) { showError("البيانات غير صحيحة"); return; }
             const btn = document.getElementById('add-prod-btn'); btn.disabled = true;
-            db.collection("products").add({ name, price, imageUrl: imageUrl || null, owner: currentUser, timestamp: firebase.firestore.FieldValue.serverTimestamp() })
+            db.collection("products").add({ name, price, imageUrl: imageUrl || null, owner: currentUser, ownerUid: authUid, timestamp: firebase.firestore.FieldValue.serverTimestamp() })
                 .then(() => { document.getElementById('new-prod-name').value = ""; document.getElementById('new-prod-price').value = ""; document.getElementById('new-prod-image').value = ""; })
                 .finally(() => btn.disabled = false);
         }
@@ -969,7 +984,7 @@
                         <div class="product-card" data-prod-name="${escapeAttr(prod.name)}" data-prod-price="${prod.price}">
                             ${delBtn}${imgHtml}
                             <h4 style="margin: 5px 0;">${sanitizeHTML(prod.name)}</h4>
-                            <p style="color: var(--text-muted); margin: 5px 0;">${prod.price} ARA</p>
+                            <p style="color: var(--text-muted); margin: 5px 0;">${prod.price} Pi</p>
                             <button class="btn buy-btn" style="background: linear-gradient(90deg, #4a148c, var(--primary)); margin-top: 10px;">شراء</button>
                         </div>
                     `);
