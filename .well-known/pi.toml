@@ -1,6 +1,8 @@
 [[CURRENCIES]]
 code="ARA"
 issuer="GBI34HPZHEHTTL5J5YY3FQSZHGE5M4WDVCKUUP67HSV6ZCTZOXYN2W5K"
-name="Arabeka Platform"
-desc="العملة الرقمية لمنصة أرابيكا على شبكة Pi Testnet"
-image="https://i.ibb.co/Q75Y07fG/8184-removebg-preview.png"
+name = "Arabeka Platform"
+desc = "العملة الرقمية لمنصة أرابيكا على شبكة Pi Testnet"
+icon_url = "https://arabeka.vercel.app/ara.png"
+
+
