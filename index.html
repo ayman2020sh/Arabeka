@@ -489,6 +489,7 @@
                     </div>
                     
                     <h2 id="user-name" style="margin: 5px 0; color: var(--text-color);"> العربي </h2>
+                    <p id="user-loyalty-badge" style="color: var(--gold); font-size: 13px; margin: 2px 0; font-weight: bold;"></p>
                     <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">🎗        🎗       🎗</p>
                 </div>
 
@@ -751,6 +752,10 @@
         function loadUserBio() {
             const unsubscribe = db.collection("users").doc(currentUser).onSnapshot(doc => {
                 if (doc.exists && doc.data().bio) { document.getElementById('user-bio').innerText = sanitizeHTML(doc.data().bio); }
+                const points = doc.exists ? (doc.data().loyaltyPoints || 0) : 0;
+                const badge = getLoyaltyBadge(points);
+                const badgeEl = document.getElementById('user-loyalty-badge');
+                if (badgeEl) badgeEl.innerText = badge ? (badge + ' · ' + points + ' نقطة') : (points + ' نقطة');
             });
             unsubscribeFunctions.push(unsubscribe);
         }
@@ -851,7 +856,25 @@
                 author: currentUser, authorUid: authUid, content: text, imageUrl: imageUrl || null, likes: 0, comments: [], edited: false, timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => { 
                 document.getElementById('post-text').value = ""; document.getElementById('post-image-url').value = ""; 
+                awardLoyaltyPoints(2);
             }).catch(e => showError("خطأ النشر")).finally(() => btn.disabled = false);
+        }
+
+        // --- نظام نقاط الولاء (ARA لاحقًا) — مرحلة ١: نقاط داخلية بس، بدون تحويل عملة فعلي ---
+        function awardLoyaltyPoints(amount) {
+            if (isGuest() || !authUid || !currentUser) return; // زوار تليجرام مش جزء من برنامج الولاء حاليًا
+            db.collection("users").doc(currentUser).set({
+                loyaltyPoints: firebase.firestore.FieldValue.increment(amount),
+                ownerUid: authUid
+            }, { merge: true }).catch(e => console.error("Loyalty points error:", e));
+        }
+
+        function getLoyaltyBadge(points) {
+            const p = points || 0;
+            if (p >= 500) return '🥇 عضو أساسي';
+            if (p >= 200) return '🥈 عضو مميز';
+            if (p >= 50) return '🥉 عضو نشط';
+            return '';
         }
 
         function loadPosts() {
