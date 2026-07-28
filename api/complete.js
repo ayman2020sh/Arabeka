@@ -15,8 +15,9 @@ module.exports = async (req, res) => {
     if (!paymentId) return res.status(400).json({ error: 'paymentId required' });
     if (!API_KEY) return res.status(500).json({ error: 'API Key missing' });
 
-    const MAX_ATTEMPTS = 4;
-    const DELAY_MS = 1500;
+    const MAX_ATTEMPTS = 5;
+    const DELAY_MS = 2000;
+    let lastError = null;
 
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
         try {
@@ -37,19 +38,15 @@ module.exports = async (req, res) => {
             console.log('✅ [complete.js] Completed on attempt ' + attempt + ':', r.data);
             return res.status(200).json(r.data);
         } catch (e) {
-            const errData = e.response?.data || e.message;
-            console.error('❌ [complete.js] Attempt ' + attempt + ' failed:', errData);
+            lastError = e.response?.data || e.message;
+            console.error('❌ [complete.js] Attempt ' + attempt + ' failed (status ' + (e.response?.status || 'n/a') + '):', lastError);
 
-            const isNotFound = e.response?.status === 400 &&
-                JSON.stringify(errData).includes('not_found');
-
-            if (isNotFound && attempt < MAX_ATTEMPTS) {
+            if (attempt < MAX_ATTEMPTS) {
                 console.log('⏳ [complete.js] Retrying in ' + DELAY_MS + 'ms...');
                 await delay(DELAY_MS);
-                continue;
             }
-
-            return res.status(500).json({ error: errData, attempts: attempt });
         }
     }
+
+    return res.status(500).json({ error: lastError, attempts: MAX_ATTEMPTS });
 };
