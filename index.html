@@ -514,6 +514,12 @@
                     </div>
                 </div>
 
+                <!-- المهام (Tasks) — مكافآت لمرة واحدة -->
+                <div class="card">
+                    <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 8px 0; font-weight: bold;">المهام 🎯</p>
+                    <div id="tasks-list" style="font-size: 13px; color: var(--text-color); display: flex; flex-direction: column; gap: 4px;"></div>
+                </div>
+
                 <!-- قائمة الملف الشخصي: تعديل الملف / المساعد الذكي / الإعدادات / الدعم -->
                 <div class="card" style="padding: 5px 15px;">
                     <div class="settings-row" onclick="editBio()">
@@ -749,6 +755,24 @@
         }
 
         // --- 5. بيانات الملف الشخصي ---
+        const TASKS_LIST = [
+            { key: 'completeBio', label: 'أكمل نبذتك الشخصية', points: 5 },
+            { key: 'firstPost', label: 'انشر أول منشور', points: 10 },
+            { key: 'firstFollow', label: 'تابع أول شخص', points: 5 }
+        ];
+
+        function renderTasksList(tasksCompleted) {
+            const el = document.getElementById('tasks-list');
+            if (!el) return;
+            const done = tasksCompleted || {};
+            el.innerHTML = TASKS_LIST.map(function (t) {
+                const isDone = !!done[t.key];
+                const icon = isDone ? '✅' : '⬜';
+                const style = isDone ? 'color: var(--text-muted); text-decoration: line-through;' : '';
+                return '<div style="' + style + '">' + icon + ' ' + sanitizeHTML(t.label) + ' (+' + t.points + ')</div>';
+            }).join('');
+        }
+
         function loadUserBio() {
             const unsubscribe = db.collection("users").doc(currentUser).onSnapshot(doc => {
                 if (doc.exists && doc.data().bio) { document.getElementById('user-bio').innerText = sanitizeHTML(doc.data().bio); }
@@ -756,6 +780,7 @@
                 const badge = getLoyaltyBadge(points);
                 const badgeEl = document.getElementById('user-loyalty-badge');
                 if (badgeEl) badgeEl.innerText = badge ? (badge + ' · ' + points + ' نقطة') : (points + ' نقطة');
+                renderTasksList(doc.exists ? doc.data().tasksCompleted : null);
             });
             unsubscribeFunctions.push(unsubscribe);
         }
@@ -778,7 +803,9 @@
             const currentBio = document.getElementById('user-bio').innerText;
             openCustomModal(" > النبذة", currentBio, "", false, (newBio) => {
                 document.getElementById('user-bio').innerText = sanitizeHTML(newBio);
-                db.collection("users").doc(currentUser).set({ bio: newBio, ownerUid: authUid }, { merge: true }).catch(e => showError("خطأ بالحفظ"));
+                db.collection("users").doc(currentUser).set({ bio: newBio, ownerUid: authUid }, { merge: true })
+                    .then(() => awardTaskOnce('completeBio', 5))
+                    .catch(e => showError("خطأ بالحفظ"));
             });
         }
 
@@ -807,6 +834,7 @@
                 } else {
                     ref.set({ follower: currentUser, followerUid: authUid, target: author, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
                     if (btnEl) btnEl.innerText = '✓ متابَع';
+                    awardTaskOnce('firstFollow', 5);
                 }
             }).catch(e => showError('خطأ في المتابعة'));
         }
@@ -857,6 +885,7 @@
             }).then(() => { 
                 document.getElementById('post-text').value = ""; document.getElementById('post-image-url').value = ""; 
                 awardLoyaltyPoints(2);
+                awardTaskOnce('firstPost', 10);
             }).catch(e => showError("خطأ النشر")).finally(() => btn.disabled = false);
         }
 
@@ -867,6 +896,19 @@
                 loyaltyPoints: firebase.firestore.FieldValue.increment(amount),
                 ownerUid: authUid
             }, { merge: true }).catch(e => console.error("Loyalty points error:", e));
+        }
+
+        // مهام لمرة واحدة: بتتأكد الأول إن المهمة مش منجزة قبل ما تدي المكافأة
+        function awardTaskOnce(taskKey, points) {
+            if (isGuest() || !authUid || !currentUser) return;
+            const userRef = db.collection("users").doc(currentUser);
+            userRef.get().then(doc => {
+                const alreadyDone = doc.exists && doc.data().tasksCompleted && doc.data().tasksCompleted[taskKey];
+                if (alreadyDone) return;
+                const update = { ownerUid: authUid, loyaltyPoints: firebase.firestore.FieldValue.increment(points) };
+                update['tasksCompleted.' + taskKey] = true;
+                userRef.set(update, { merge: true }).catch(e => console.error("Task award error:", e));
+            });
         }
 
         function getLoyaltyBadge(points) {
