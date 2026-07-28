@@ -653,16 +653,24 @@
             showError("تعذر تجهيز الهوية الآمنة: [" + error.code + "] " + error.message);
         });
 
-        // --- 2. تهيئة Pi Network ---
+        // --- 2. تهيئة Pi Network (مع إعادة محاولة تلقائية) ---
+        let piReady = false;
         window.addEventListener('load', initializePiSDK);
-        
-        function initializePiSDK() {
+
+        function initializePiSDK(attemptsLeft) {
+            if (attemptsLeft === undefined) attemptsLeft = 10;
             try {
-                if (typeof Pi !== 'undefined') { 
+                if (typeof Pi !== 'undefined') {
                     Pi.init({ version: "2.0", sandbox: false });
+                    piReady = true;
                     console.log("Pi SDK Initialized");
+                    return;
                 }
             } catch (error) { console.error("Pi SDK Error:", error); }
+
+            if (attemptsLeft > 0) {
+                setTimeout(function () { initializePiSDK(attemptsLeft - 1); }, 300);
+            }
         }
 
         document.getElementById('login-btn').addEventListener('click', handleLogin);
@@ -708,6 +716,10 @@
 
         function handleLogin() {
             if (typeof Pi === 'undefined') { showError("الرجاء فتح التطبيق من متصفح Pi"); return; }
+            if (!piReady) {
+                showError("لسه بيجهز الاتصال بـ Pi، حاول تاني بعد ثانية");
+                return;
+            }
             Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
                 .then(auth => loginSuccess(auth.user.username))
                 .catch(error => showError("خطأ تسجيل الدخول: " + error.message));
