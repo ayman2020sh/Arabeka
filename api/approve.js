@@ -1,5 +1,9 @@
 const axios = require('axios');
 
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 module.exports = async (req, res) => {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
@@ -18,16 +22,32 @@ module.exports = async (req, res) => {
         return res.status(500).json({ error: 'API Key missing' });
     }
 
-    try {
-        const r = await axios.post(
-            `https://api.minepi.com/v2/payments/${paymentId}/approve`,
-            {},
-            { headers: { Authorization: `Key ${API_KEY}` } }
-        );
-        console.log('✅ [approve.js] Approved:', r.data);
-        return res.status(200).json(r.data);
-    } catch (e) {
-        console.error('❌ [approve.js] Failed:', e.response?.data || e.message);
-        return res.status(400).json({ error: e.response?.data || e.message });
+    const MAX_ATTEMPTS = 4;
+    const DELAY_MS = 1500;
+
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        try {
+            const r = await axios.post(
+                `https://api.minepi.com/v2/payments/${paymentId}/approve`,
+                {},
+                { headers: { Authorization: `Key ${API_KEY}` } }
+            );
+            console.log('✅ [approve.js] Approved on attempt ' + attempt + ':', r.data);
+            return res.status(200).json(r.data);
+        } catch (e) {
+            const errData = e.response?.data || e.message;
+            console.error('❌ [approve.js] Attempt ' + attempt + ' failed:', errData);
+
+            const isNotFound = e.response?.status === 400 &&
+                JSON.stringify(errData).includes('not_found');
+
+            if (isNotFound && attempt < MAX_ATTEMPTS) {
+                console.log('⏳ [approve.js] Retrying in ' + DELAY_MS + 'ms...');
+                await delay(DELAY_MS);
+                continue;
+            }
+
+            return res.status(400).json({ error: errData, attempts: attempt });
+        }
     }
 };
