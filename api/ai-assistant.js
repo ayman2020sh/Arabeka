@@ -1,5 +1,5 @@
 // api/ai-assistant.js
-// Pollinations.ai (gen.pollinations.ai) — يتطلب مفتاح API مجاني من enter.pollinations.ai
+// Pollinations.ai (gen.pollinations.ai) — استخدام مجهول (Anonymous) بدون مفتاح أو رصيد
 
 const ARABEKA_FACTS = `
 معلومات حقيقية ثابتة عن منصة أرابيكا (استخدمها فقط، ولا تخترع أي معلومة غيرها):
@@ -23,17 +23,12 @@ module.exports = async function handler(req, res) {
         return res.status(400).json({ error: 'الرجاء إرسال رسالة' });
     }
 
-    const POLLINATIONS_KEY = process.env.POLLINATIONS_API_KEY;
-    if (!POLLINATIONS_KEY) {
-        return res.status(500).json({ error: 'مفتاح المساعد الذكي غير مُعد على الخادم' });
-    }
-
     try {
         const response = await fetch('https://gen.pollinations.ai/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${POLLINATIONS_KEY}`
+                'Content-Type': 'application/json'
+                // بدون Authorization: استخدام مجهول (Anonymous) — مجاني بدون رصيد
             },
             body: JSON.stringify({
                 model: 'openai',
@@ -54,7 +49,7 @@ ${ARABEKA_FACTS}
         if (!response.ok) {
             const errText = await response.text();
             console.error('Pollinations error:', response.status, errText);
-            return res.status(502).json({ error: 'تعذر الوصول لخدمة الذكاء الاصطناعي حاليًا' });
+            return res.status(502).json({ error: 'تعذر الوصول لخدمة الذكاء الاصطناعي حاليًا، حاول بعد شوية' });
         }
 
         const data = await response.json();
