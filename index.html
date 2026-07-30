@@ -961,7 +961,7 @@
                         <div class="card-content">${sanitizeHTML(post.content)}${editedTag}</div>
                         ${imgHtml}
                         <div class="post-actions">
-                            <button class="action-btn" onclick="likePost('${postId}', ${post.likes || 0})">❤️ ${post.likes || 0}</button>
+                            <button class="action-btn" onclick="likePost('${postId}')">${(post.likedBy && post.likedBy.indexOf(authUid) !== -1) ? '❤️' : '🤍'} ${post.likes || 0}</button>
                             <button class="action-btn" onclick="toggleComments('comments-${postId}')">💬 تعليقات (${(post.comments||[]).length})</button>
                             <button class="action-btn share-post-btn" data-post-text="${escText}">🔗 مشاركة</button>
                             ${editBtn}
@@ -1030,7 +1030,26 @@
         }
 
         function deletePost(id) { if (confirm("حذف المنشور؟")) db.collection("posts").doc(id).delete(); }
-        function likePost(id, likes) { db.collection("posts").doc(id).update({ likes: likes + 1 }); }
+        function likePost(id) {
+            if (!authUid) { showError("لسه بيجهز الاتصال الآمن، حاول تاني بعد ثانية"); return; }
+            const postRef = db.collection("posts").doc(id);
+            postRef.get().then(doc => {
+                if (!doc.exists) return;
+                const likedBy = doc.data().likedBy || [];
+                const alreadyLiked = likedBy.indexOf(authUid) !== -1;
+                if (alreadyLiked) {
+                    postRef.update({
+                        likes: firebase.firestore.FieldValue.increment(-1),
+                        likedBy: firebase.firestore.FieldValue.arrayRemove(authUid)
+                    });
+                } else {
+                    postRef.update({
+                        likes: firebase.firestore.FieldValue.increment(1),
+                        likedBy: firebase.firestore.FieldValue.arrayUnion(authUid)
+                    });
+                }
+            }).catch(e => showError("خطأ في الإعجاب"));
+        }
         function toggleComments(id) { const el = document.getElementById(id); el.style.display = el.style.display === 'block' ? 'none' : 'block'; }
         function addComment(id) {
             const text = document.getElementById(`new-comment-${id}`).value.trim();
