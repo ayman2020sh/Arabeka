@@ -85,9 +85,9 @@
         .btn:active { transform: scale(0.98); }
         
         /* المتجر المحدث - عمود واحد */
-        .product-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .product-grid { display: grid; grid-template-columns: 1fr; gap: 15px; } /* تم تغييرها لتكون صف كامل */
         .product-card { background: var(--card-bg); padding: 12px; border-radius: 15px; text-align: center; border: 1px solid var(--border); position: relative; overflow: hidden; }
-        .prod-image { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 8px; background-color: #15161c; }
+        .prod-image { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 8px; background-color: #15161c; } /* زيادة ارتفاع الصورة */
         
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: var(--card-bg); padding: 20px; border-radius: 15px; width: 85%; text-align: center; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
@@ -159,7 +159,7 @@
         </div>
     </div>
 
-    <!-- نافذة تفاصيل المنتج -->
+    <!-- نافذة تفاصيل المنتج (الجديدة) -->
     <div id="productDetailsModal" class="modal">
         <div class="modal-content" style="text-align: right; position: relative;">
             <button onclick="closeProductDetails()" style="position: absolute; left: 15px; top: 15px; background: none; border: none; color: var(--text-muted); font-size: 20px;">✖</button>
@@ -172,7 +172,7 @@
         </div>
     </div>
 
-    <!-- نافذة تعديل المنتج للبائع -->
+    <!-- نافذة تعديل المنتج للبائع (الجديدة) -->
     <div id="editProductModal" class="modal">
         <div class="modal-content">
             <h4 style="color: var(--gold);">✏️ تعديل بيانات المنتج</h4>
@@ -231,7 +231,9 @@
             </div>
         </div>
 
-        <!-- صفحة التسوق -->
+        <!-- ==============================================
+             صفحة التسوق
+        =============================================== -->
         <div id="page-store" class="page">
             <div class="container">
                 
@@ -250,7 +252,7 @@
                     <button class="btn" id="add-prod-btn" onclick="addNewProduct()">عرض للبيع</button>
                 </div>
                 
-                <!-- شريط التصنيفات -->
+                <!-- شريط التصنيفات (تم نقله هنا ليكون أسفل الإضافة وفوق المنتجات) -->
                 <div class="categories-wrapper">
                     <button class="category-btn active" onclick="filterStoreProducts('all')">🌐 الكل</button>
                     <button class="category-btn" onclick="filterStoreProducts('tech')">💻 تقني</button>
@@ -262,7 +264,7 @@
                 <h3 style="color: var(--text-color); margin-bottom: 15px;">أحدث المنتجات</h3>
                 <div class="product-grid" id="store-products"></div>
 
-                <!-- أيقونات الحسابات الرسمية المحدثة -->
+                <!-- أيقونات الحسابات الرسمية المحدثة (FontAwesome) -->
                 <div class="social-links" style="display: flex; justify-content: center; gap: 25px; margin-top: 35px; margin-bottom: 25px;">
                     <a href="https://x.com/arabekaio" target="_blank" style="color: var(--text-muted); font-size: 28px; text-decoration: none;"><i class="fa-brands fa-x-twitter"></i></a>
                     <a href="https://www.facebook.com/share/185iYyEhq2/" target="_blank" style="color: #1877F2; font-size: 28px; text-decoration: none;"><i class="fa-brands fa-facebook"></i></a>
@@ -272,34 +274,18 @@
             </div>
         </div>
 
-        <!-- صفحة الملف الشخصي (محدثة لدعم تغيير الصورة وشارة الإدارة) -->
+        <!-- صفحة الملف الشخصي -->
         <div id="page-profile" class="page">
             <div class="container">
-                <div class="card" style="text-align: center; background: linear-gradient(145deg, #1e1e1e, #2a1b3d); border-top: 4px solid var(--primary);">
-                    
-                    <!-- حاوية الصورة مع زر التغيير -->
-                    <div style="width: 80px; height: 80px; background-color: #6a1b9a; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 36px; font-weight: bold; margin: 0 auto 15px auto; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
-                        <img id="profilePic" src="" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: none;">
-                        <span id="profileInitial">A</span>
-                        
-                        <!-- زر تغيير الصورة الشخصية -->
-                        <button onclick="changeProfilePic()" style="position: absolute; bottom: -5px; right: -5px; background-color: var(--gold); border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">📷</button>
-                    </div>
-
-                    <h2 id="user-name" style="margin: 5px 0; color: var(--text-color);">العربي</h2>
-                    <p id="user-role-badge" style="color: var(--gold); font-size: 13px; margin: 2px 0; font-weight: bold;"></p>
-                    <p id="user-loyalty-badge" style="color: var(--gold); font-size: 13px; margin: 2px 0; font-weight: bold;"></p>
-                    <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">🎗        🎗       🎗</p>
-                </div>
-                
+                <div class="card" style="text-align: center; background: linear-gradient(145deg, #1e1e1e, #2a1b3d); border-top: 4px solid var(--primary);"><div style="width: 80px; height: 80px; background-color: #6a1b9a; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 36px; font-weight: bold; margin: 0 auto 15px auto; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">A<div style="position: absolute; bottom: -5px; right: -5px; background-color: #1da1f2; width: 28px; height: 28px; border-radius: 50%; font-size: 14px; display: flex; justify-content: center; align-items: center; border: 3px solid var(--card-bg); font-weight: bold;">P</div></div><h2 id="user-name" style="margin: 5px 0; color: var(--text-color);"> العربي </h2><p id="user-loyalty-badge" style="color: var(--gold); font-size: 13px; margin: 2px 0; font-weight: bold;"></p><p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">🎗        🎗       🎗</p></div>
                 <div class="card"><div style="text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px;"><p style="color: var(--text-muted); font-size: 14px; margin: 5px 0;">نبذه 🫆 <span id="user-bio" style="color: var(--text-color);">user-unknown</span></p><p style="color: var(--text-muted); font-size: 14px; margin: 5px 0;">تاريخ الانضمام: 2024</p></div><div style="display: flex; justify-content: space-around; text-align: center; padding-top: 5px;"><div class="stat-block" onclick="showFollowing()"><div class="stat-number" id="following-count">0</div><div class="stat-label">متابعة</div></div><div class="stat-block" onclick="showFollowers()"><div class="stat-number" id="followers-count">0</div><div class="stat-label">المتابعين</div></div><div class="stat-block" onclick="showMyPosts()"><div class="stat-number" id="posts-count">0</div><div class="stat-label">المنشورات</div></div></div></div>
                 <div class="card"><p style="color: var(--text-muted); font-size: 13px; margin: 0 0 8px 0; font-weight: bold;">المهام 🎯</p><div id="tasks-list" style="font-size: 13px; color: var(--text-color); display: flex; flex-direction: column; gap: 4px;"></div></div>
-                <div class="card" style="padding: 5px 15px;"><div class="settings-row" onclick="editBio()"><div class="row-left"><span class="icon">🫆</span><span class="label">تعديل نبذه</span></div><span class="row-arrow">›</span></div><a href="/chat.html" class="settings-row"><div class="row-left"><span class="icon">🤖</span><span class="label">مساعد غبي (Omni)</span></div><span class="row-arrow">›</span></a><div class="settings-row" onclick="switchPage('settings')"><div class="row-left"><span class="icon">⚙️</span><span class="label">الإعدادات</span></div><span class="row-arrow">›</span></div><a href="contact.html" class="settings-row"><div class="row-left"><span class="icon">🎧</span><span class="label">الدعم</span></div><span class="row-arrow">›</span></div></div>
+                <div class="card" style="padding: 5px 15px;"><div class="settings-row" onclick="editBio()"><div class="row-left"><span class="icon">🫆</span><span class="label">تعديل نبذه</span></div><span class="row-arrow">›</span></div><a href="/chat.html" class="settings-row"><div class="row-left"><span class="icon">🤖</span><span class="label">مساعد غبي (Omni)</span></div><span class="row-arrow">›</span></a><div class="settings-row" onclick="switchPage('settings')"><div class="row-left"><span class="icon">⚙️</span><span class="label">الإعدادات</span></div><span class="row-arrow">›</span></div><a href="contact.html" class="settings-row"><div class="row-left"><span class="icon">🎧</span><span class="label">الدعم</span></div><span class="row-arrow">›</span></a></div>
             </div>
         </div>
 
         <!-- صفحة الإعدادات -->
-        <div id="page-settings" class="page"><div class="container"><div class="back-row"><button class="back-btn" onclick="switchPage('profile')" aria-label="رجوع">→</button><h2 style="margin:0; color: var(--text-color);">الإعدادات</h2></div><div class="card"><h4 style="margin-top:0; color:var(--primary);">👤 إعدادات الحساب</h4><div class="settings-row" onclick="editBio()"><div class="row-left"><span class="icon">🫆</span><span class="label">تعديل / النبذة</span></div><span class="row-arrow">›</span></div><div class="settings-row" style="cursor: default;"><div class="row-left"><span class="icon">🆔</span><span class="label"> مُعرف Pi</span></div><span class="row-arrow" id="settings-username" style="color: var(--text-muted); font-size: 14px;">-</span></div></div><div class="card"><h4 style="margin-top:0; color:var(--primary);">📄 السياسات والقوانين</h4><a href="privacy.html" class="settings-row"><div class="row-left"><span class="icon">🔒</span><span class="label">سياسة الخصوصية</span></div><span class="row-arrow">›</span></div><a href="terms.html" class="settings-row"><div class="row-left"><span class="icon">📜</span><span class="label">الشروط والأحكام</span></div><span class="row-arrow">›</span></div><a href="contact.html" class="settings-row"><div class="row-left"><span class="icon">🎧</span><span class="label">تواصل مع الدعم</span></div><span class="row-arrow">›</span></div></div><div class="card" style="border: 1px solid var(--danger);"><h4 style="margin-top:0; color:var(--danger);">هنستناك ياحبيبنا 🫡</h4><button class="btn" style="background-color: var(--danger);" onclick="logout()">🚪 تسجيل الخروج</button></div></div></div>
+        <div id="page-settings" class="page"><div class="container"><div class="back-row"><button class="back-btn" onclick="switchPage('profile')" aria-label="رجوع">→</button><h2 style="margin:0; color: var(--text-color);">الإعدادات</h2></div><div class="card"><h4 style="margin-top:0; color:var(--primary);">👤 إعدادات الحساب</h4><div class="settings-row" onclick="editBio()"><div class="row-left"><span class="icon">🫆</span><span class="label">تعديل / النبذة</span></div><span class="row-arrow">›</span></div><div class="settings-row" style="cursor: default;"><div class="row-left"><span class="icon">🆔</span><span class="label"> مُعرف Pi</span></div><span class="row-arrow" id="settings-username" style="color: var(--text-muted); font-size: 14px;">-</span></div></div><div class="card"><h4 style="margin-top:0; color:var(--primary);">📄 السياسات والقوانين</h4><a href="privacy.html" class="settings-row"><div class="row-left"><span class="icon">🔒</span><span class="label">سياسة الخصوصية</span></div><span class="row-arrow">›</span></a><a href="terms.html" class="settings-row"><div class="row-left"><span class="icon">📜</span><span class="label">الشروط والأحكام</span></div><span class="row-arrow">›</span></a><a href="contact.html" class="settings-row"><div class="row-left"><span class="icon">🎧</span><span class="label">تواصل مع الدعم</span></div><span class="row-arrow">›</span></a></div><div class="card" style="border: 1px solid var(--danger);"><h4 style="margin-top:0; color:var(--danger);">هنستناك ياحبيبنا 🫡</h4><button class="btn" style="background-color: var(--danger);" onclick="logout()">🚪 تسجيل الخروج</button></div></div></div>
 
         <!-- شريط التنقل السفلي -->
         <div class="bottom-nav"><button class="nav-item active" data-page="feed" onclick="switchPage('feed')"><span style="font-size: 24px;">🏠</span> الرئيسية</button><button class="nav-item" data-page="store" onclick="switchPage('store')"><span style="font-size: 24px;">🛒</span> التسوق</button><button class="nav-item" data-page="profile" onclick="switchPage('profile')"><span style="font-size: 24px;">👤</span> الملف الشخصي</button></div>
@@ -344,102 +330,14 @@
             Pi.authenticate(['username', 'payments'], onIncompletePaymentFound).then(auth => loginSuccess(auth.user.username)).catch(error => showError("خطأ تسجيل الدخول: " + error.message));
         }
         function loginSuccess(username) {
-            currentUser = username; 
-            document.getElementById('login-view').classList.remove('active'); 
-            document.getElementById('main-app').classList.add('active'); 
-            document.getElementById('settings-username').innerText = sanitizeHTML(username); 
-            
-            // تحديث الحرف الأول في الصورة الافتراضية للملف الشخصي
-            const initialEl = document.getElementById('profileInitial');
-            if(initialEl && username) { initialEl.innerText = username.charAt(0).toUpperCase(); }
-
-            cleanupListeners(); 
-            showOnlyMyPosts = false; 
-            document.getElementById('posts-filter-banner').style.display = 'none'; 
-            loadUserProfileData(); // تحميل بيانات الحساب (النبذة، الصورة، وصلاحية الإدارة)
-            loadPosts(); 
-            loadProducts(); 
-            loadProfileStats(); 
-            switchPage('feed');
+            currentUser = username; document.getElementById('login-view').classList.remove('active'); document.getElementById('main-app').classList.add('active'); document.getElementById('user-name').innerText = sanitizeHTML(username); document.getElementById('settings-username').innerText = sanitizeHTML(username); cleanupListeners(); showOnlyMyPosts = false; document.getElementById('posts-filter-banner').style.display = 'none'; loadUserBio(); loadPosts(); loadProducts(); loadProfileStats(); switchPage('feed');
         }
         function logout() { if (!confirm("هل تريد تسجيل الخروج؟")) return; cleanupListeners(); currentUser = null; document.getElementById('main-app').classList.remove('active'); document.getElementById('login-view').classList.add('active'); switchPage('feed'); }
 
         // الملف الشخصي، المجتمع والمتابعة
         const TASKS_LIST = [{ key: 'completeBio', label: 'أكمل نبذتك الشخصية', points: 5 }, { key: 'firstPost', label: 'انشر أول منشور', points: 10 }, { key: 'firstFollow', label: 'تابع أول شخص', points: 5 }];
         function renderTasksList(tasksCompleted) { const el = document.getElementById('tasks-list'); if (!el) return; const done = tasksCompleted || {}; el.innerHTML = TASKS_LIST.map(function (t) { const isDone = !!done[t.key]; const icon = isDone ? '✅' : '⬜'; const style = isDone ? 'color: var(--text-muted); text-decoration: line-through;' : ''; return '<div style="' + style + '">' + icon + ' ' + sanitizeHTML(t.label) + ' (+' + t.points + ')</div>'; }).join(''); }
-        
-        // --- دالة تحميل بيانات المستخدم الشاملة (النبذة، النقاط، الصورة، وصلاحية الإدارة) ---
-        function loadUserProfileData() {
-            const unsubscribe = db.collection("users").doc(currentUser).onSnapshot(doc => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    
-                    // 1. تحديث النبذة
-                    if (data.bio) {
-                        document.getElementById('user-bio').innerText = sanitizeHTML(data.bio);
-                    }
-                    
-                    // 2. تحديث نقاط الولاء والشارة
-                    const points = data.loyaltyPoints || 0;
-                    const badge = getLoyaltyBadge(points);
-                    const badgeEl = document.getElementById('user-loyalty-badge');
-                    if (badgeEl) badgeEl.innerText = badge ? (badge + ' · ' + points + ' نقطة') : (points + ' نقطة');
-                    
-                    // 3. التحقق من صلاحية الإدارة (Admin) وإظهار شارة التوثيق الرسمية
-                    const roleBadgeEl = document.getElementById('user-role-badge');
-                    const nameEl = document.getElementById('user-name');
-                    if (data.isAdmin === true) {
-                        // --- هذا هو التعديل الوحيد الذي تم ---
-                        if(nameEl) nameEl.innerHTML = `Arabeka <span style="color: #00d2ff;" title="حساب موثق">✔️</span>`;
-                        if(roleBadgeEl) roleBadgeEl.innerText = "👑 الحساب الرسمي للمنصة";
-                    } else {
-                        if(nameEl) nameEl.innerText = sanitizeHTML(currentUser);
-                        if(roleBadgeEl) roleBadgeEl.innerText = "عضو مميز 🏅";
-                    }
-
-                    // 4. تحميل الصورة الشخصية المحفوظة
-                    const picEl = document.getElementById('profilePic');
-                    const initialEl = document.getElementById('profileInitial');
-                    if (data.photoURL && picEl) {
-                        picEl.src = sanitizeURL(data.photoURL);
-                        picEl.style.display = 'block';
-                        if(initialEl) initialEl.style.display = 'none';
-                    }
-
-                    renderTasksList(data.tasksCompleted);
-                }
-            });
-            unsubscribeFunctions.push(unsubscribe);
-        }
-
-        // --- دالة تغيير الصورة الشخصية (مؤقتة عبر إدخال رابط URL) ---
-        async function changeProfilePic() {
-            const newPicUrl = prompt("الرجاء إدخال رابط الصورة الجديدة (URL):");
-            if (newPicUrl && newPicUrl.trim() !== "") {
-                try {
-                    const picEl = document.getElementById('profilePic');
-                    const initialEl = document.getElementById('profileInitial');
-                    
-                    if(picEl) {
-                        picEl.src = sanitizeURL(newPicUrl);
-                        picEl.style.display = 'block';
-                    }
-                    if(initialEl) initialEl.style.display = 'none';
-
-                    // حفظ الرابط في Firestore
-                    await db.collection("users").doc(currentUser).set({
-                        photoURL: newPicUrl,
-                        ownerUid: authUid
-                    }, { merge: true });
-                    
-                    alert("تم تحديث الصورة الشخصية بنجاح!");
-                } catch (error) {
-                    console.error("خطأ أثناء حفظ الصورة:", error);
-                    showError("حدث خطأ أثناء حفظ الصورة، يرجى المحاولة لاحقاً.");
-                }
-            }
-        }
-
+        function loadUserBio() { const unsubscribe = db.collection("users").doc(currentUser).onSnapshot(doc => { if (doc.exists && doc.data().bio) { document.getElementById('user-bio').innerText = sanitizeHTML(doc.data().bio); } const points = doc.exists ? (doc.data().loyaltyPoints || 0) : 0; const badge = getLoyaltyBadge(points); const badgeEl = document.getElementById('user-loyalty-badge'); if (badgeEl) badgeEl.innerText = badge ? (badge + ' · ' + points + ' نقطة') : (points + ' نقطة'); renderTasksList(doc.exists ? doc.data().tasksCompleted : null); }); unsubscribeFunctions.push(unsubscribe); }
         let activeCallback = null;
         function openCustomModal(title, val1, val2, showSecond, cb) { document.getElementById('modal-title').innerText = sanitizeHTML(title); document.getElementById('modal-input-1').value = val1; document.getElementById('custom-modal').style.display = 'flex'; activeCallback = cb; }
         function closeModal() { document.getElementById('custom-modal').style.display = 'none'; activeCallback = null; }
@@ -470,11 +368,12 @@
         function addComment(id) { const text = document.getElementById(`new-comment-${id}`).value.trim(); if (text) db.collection("posts").doc(id).update({ comments: firebase.firestore.FieldValue.arrayUnion({ user: currentUser, text: text }) }); }
 
         // ==============================================
-        // نظام المتجر، الفلترة والتعديل
+        // نظام المتجر، الفلترة والتعديل (محدث)
         // ==============================================
+        
         window.currentCategoryFilter = 'all';
-        window.productsMap = {}; 
-        let editingStoreProdId = null; 
+        window.productsMap = {}; // خريطة لتخزين بيانات المنتجات محلياً للوصول السريع
+        let editingStoreProdId = null; // ID المنتج الجاري تعديله
 
         function filterStoreProducts(category) {
             window.currentCategoryFilter = category;
@@ -531,11 +430,11 @@
 
             const unsubscribe = db.collection("products").orderBy("timestamp", "desc").limit(30).onSnapshot(snapshot => {
                 const store = document.getElementById('store-products'); const fragments = [];
-                window.productsMap = {}; 
+                window.productsMap = {}; // تفريغ الخريطة عند كل تحديث
 
                 snapshot.forEach(doc => {
                     const prod = doc.data(); const prodId = doc.id;
-                    window.productsMap[prodId] = { ...prod, id: prodId }; 
+                    window.productsMap[prodId] = { ...prod, id: prodId }; // حفظ البيانات
                     
                     const safeImg = sanitizeURL(prod.imageUrl);
                     const prodCategory = prod.category || 'tech';
@@ -545,6 +444,7 @@
                     const isOfficial = officialAccounts.includes(prod.owner);
                     const badgeHtml = isOfficial ? `<span class="official-badge">✔️ منصة أرابيكا</span>` : '';
                     
+                    // أزرار التحكم لصاحب المنتج (تعديل وحذف)
                     const ownerBtns = prod.owner === currentUser ? `
                         <button class="btn" onclick="openEditProductModal('${prodId}')" style="background-color: #eab308; color: black; padding: 8px; flex: 1; font-size: 13px; margin: 0;">تعديل</button>
                         <button class="btn" onclick="deleteProduct('${prodId}')" style="background-color: var(--danger); padding: 8px; flex: 1; font-size: 13px; margin: 0;">حذف</button>
@@ -560,6 +460,7 @@
                             </p>
                             <p style="color: var(--primary); font-weight: bold; font-size: 16px; margin: 5px 0;">${prod.price} Pi</p>
                             
+                            <!-- مجموعة الأزرار -->
                             <div style="display: flex; gap: 5px; margin-top: 10px; width: 100%;">
                                 <button class="btn" onclick="openProductDetails('${prodId}')" style="background: #3b82f6; padding: 8px; flex: 1.5; font-size: 13px; margin: 0;">تفاصيل</button>
                                 <button class="btn" onclick="buyProduct('${escapeAttr(prod.name)}', ${prod.price})" style="background: linear-gradient(90deg, #4a148c, var(--primary)); padding: 8px; flex: 1.5; font-size: 13px; margin: 0;">شراء</button>
@@ -574,6 +475,7 @@
             unsubscribeFunctions.push(unsubscribe);
         }
 
+        // دالة فتح تفاصيل المنتج
         function openProductDetails(id) {
             const p = window.productsMap[id];
             if(!p) return;
@@ -591,6 +493,7 @@
         }
         function closeProductDetails() { document.getElementById('productDetailsModal').style.display = 'none'; }
 
+        // دوال تعديل المنتج
         function openEditProductModal(id) {
             const p = window.productsMap[id];
             if(!p) return;
