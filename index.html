@@ -347,7 +347,6 @@
             currentUser = username; 
             document.getElementById('login-view').classList.remove('active'); 
             document.getElementById('main-app').classList.add('active'); 
-            document.getElementById('user-name').innerText = sanitizeHTML(username); 
             document.getElementById('settings-username').innerText = sanitizeHTML(username); 
             
             // تحديث الحرف الأول في الصورة الافتراضية للملف الشخصي
@@ -390,6 +389,7 @@
                     const roleBadgeEl = document.getElementById('user-role-badge');
                     const nameEl = document.getElementById('user-name');
                     if (data.isAdmin === true) {
+                        // --- هذا هو التعديل الوحيد الذي تم ---
                         if(nameEl) nameEl.innerHTML = `Arabeka <span style="color: #00d2ff;" title="حساب موثق">✔️</span>`;
                         if(roleBadgeEl) roleBadgeEl.innerText = "👑 الحساب الرسمي للمنصة";
                     } else {
@@ -667,4 +667,3 @@
     </script>
 </body>
 </html>
-
