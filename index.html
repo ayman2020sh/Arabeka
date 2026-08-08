@@ -318,9 +318,9 @@
         let piReady = false;
         window.addEventListener('load', initializePiSDK);
         function initializePiSDK(attemptsLeft) {
-            if (attemptsLeft === undefined) attemptsLeft = 10;
+            if (attemptsLeft === undefined) attemptsLeft = 30;
             try { if (typeof Pi !== 'undefined') { Pi.init({ version: "2.0", sandbox: false }); piReady = true; return; } } catch (error) { console.error("Pi SDK Error:", error); }
-            if (attemptsLeft > 0) { setTimeout(function () { initializePiSDK(attemptsLeft - 1); }, 300); }
+            if (attemptsLeft > 0) { setTimeout(function () { initializePiSDK(attemptsLeft - 1); }, 500); }
         }
 
         document.getElementById('login-btn').addEventListener('click', handleLogin);
@@ -337,7 +337,12 @@
         function onIncompletePaymentFound(payment) { fetch('/api/complete', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ paymentId: payment.identifier, txid: payment.transaction?.txid || '' }) }).catch(err => console.error(err)); }
         function handleLogin() {
             if (typeof Pi === 'undefined') { showError("الرجاء فتح التطبيق من متصفح Pi"); return; }
-            if (!piReady) { showError("لسه بيجهز الاتصال بـ Pi، حاول تاني بعد ثانية"); return; }
+            if (!piReady) {
+                showError("لسه بيجهز الاتصال بـ Pi، بنحاول تاني تلقائياً...");
+                initializePiSDK(10); // محاولة تجهيز فورية إضافية بدل الانتظار السلبي
+                setTimeout(() => { if (piReady) handleLogin(); }, 1600); // لو جهز خلال ثانية ونص، كمّل تسجيل الدخول تلقائياً
+                return;
+            }
             Pi.authenticate(['username', 'payments'], onIncompletePaymentFound).then(auth => loginSuccess(auth.user.username)).catch(error => showError("خطأ تسجيل الدخول: " + error.message));
         }
         function loginSuccess(username) {
