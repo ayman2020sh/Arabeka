@@ -462,7 +462,9 @@
 
         // تهيئة Pi Network
         let piReady = false;
-        window.addEventListener('load', initializePiSDK);
+        
+        // التعديل هنا: استدعاء التهيئة فوراً وعدم انتظار اكتمال تحميل الصفحة (الذي كان يؤخر التهيئة ويسبب الخطأ)
+        initializePiSDK();
         
         function initializePiSDK(attemptsLeft) {
             if (attemptsLeft === undefined) attemptsLeft = 30;
@@ -1197,6 +1199,18 @@
                 showError("نظام Pi غير متاح هنا"); 
                 return; 
             }
+            
+            // التعديل هنا: التأكد من التهيئة قبل استدعاء الدفع
+            if (!piReady) {
+                try {
+                    Pi.init({ version: "2.0", sandbox: false });
+                    piReady = true;
+                } catch (e) {
+                    showError("جاري الاتصال بشبكة Pi، يرجى المحاولة بعد ثانية...");
+                    return;
+                }
+            }
+
             try {
                 Pi.createPayment({ amount: price, memo: `شراء ${name}`, metadata: { productName: name } }, {
                     onReadyForServerApproval: function(paymentId) {
