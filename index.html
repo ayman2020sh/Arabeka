@@ -120,6 +120,22 @@
         .category-btn.active { background: linear-gradient(90deg, #4a148c, var(--primary)); border-color: transparent; font-weight: bold; }
         .product-category-tag { position: absolute; top: -1px; right: -1px; background: rgba(138, 43, 226, 0.9); padding: 4px 10px; border-bottom-left-radius: 10px; font-size: 11px; font-weight: bold; color: white; z-index: 2; }
         .official-badge { color: #00d2ff; font-size: 10px; background-color: rgba(0, 210, 255, 0.1); padding: 2px 6px; border-radius: 4px; margin-right: 5px; display: inline-block; margin-top: 3px; border: 1px solid rgba(0, 210, 255, 0.3); }
+
+        /* --- [أنا Claude #1] — 2026-08-13: صورة المستخدم بجانب الاسم + الملف الشخصي العام + الأصدقاء --- */
+        .post-author-link { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .post-avatar-circle { width: 34px; height: 34px; border-radius: 50%; background-color: #6a1b9a; color: white; display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; flex-shrink: 0; background-size: cover; background-position: center; border: 1px solid var(--border); }
+        .search-bar-row { display: flex; gap: 8px; align-items: center; margin-bottom: 15px; }
+        .search-bar-row input { margin-bottom: 0; }
+        .user-result-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+        .user-result-row:last-child { border-bottom: none; }
+        .user-result-avatar { width: 42px; height: 42px; border-radius: 50%; background-color: #6a1b9a; color: white; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: bold; flex-shrink: 0; background-size: cover; background-position: center; cursor: pointer; }
+        .user-result-name { flex: 1; font-size: 15px; cursor: pointer; }
+        .small-action-btn { background: linear-gradient(90deg, #4a148c, var(--primary)); color: white; border: none; padding: 7px 14px; border-radius: 16px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .small-action-btn.outline { background: none; border: 1px solid var(--border); color: var(--text-muted); }
+        .small-action-btn.pending { background: #444; }
+        .small-action-btn.accept { background: var(--success); }
+        .friend-request-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+        .friend-request-row:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
@@ -348,6 +364,9 @@
                     <div class="settings-row" onclick="editBio()">
                         <div class="row-left"><span class="icon">🫆</span><span class="label">تعديل نبذه</span></div><span class="row-arrow">›</span>
                     </div>
+                    <div class="settings-row" onclick="switchPage('search')">
+                        <div class="row-left"><span class="icon">🔎</span><span class="label">البحث عن أصدقاء / دعوة</span></div><span class="row-arrow" id="incoming-requests-badge">›</span>
+                    </div>
                     <a href="/chat.html" class="settings-row">
                         <div class="row-left"><span class="icon">🤖</span><span class="label">مساعد غبي (Omni)</span></div><span class="row-arrow">›</span>
                     </a>
@@ -358,6 +377,63 @@
                         <div class="row-left"><span class="icon">🎧</span><span class="label">الدعم</span></div><span class="row-arrow">›</span>
                     </a>
                 </div>
+            </div>
+        </div>
+
+        <!-- صفحة الملف الشخصي العام (لأي مستخدم تاني) -->
+        <div id="page-user-profile" class="page">
+            <div class="container">
+                <div class="back-row">
+                    <button class="back-btn" onclick="closeUserProfile()" aria-label="رجوع">→</button>
+                    <h2 style="margin:0; color: var(--text-color);">الملف الشخصي</h2>
+                </div>
+
+                <div class="card" style="text-align: center; background: linear-gradient(145deg, #1e1e1e, #2a1b3d); border-top: 4px solid var(--primary);">
+                    <div id="uprofile-avatar" style="width: 80px; height: 80px; background-color: #6a1b9a; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 36px; font-weight: bold; margin: 0 auto 15px auto; background-size: cover; background-position: center;">A</div>
+                    <h2 id="uprofile-name" style="margin: 5px 0; display: inline-flex; align-items: center; gap: 4px; justify-content: center;">
+                        <span id="uprofile-name-text"></span>
+                        <span id="uprofile-verified-badge" style="display:none;" class="official-badge">⚜️ ارابيكا</span>
+                    </h2>
+                    <p id="uprofile-loyalty-badge" style="color: var(--gold); font-size: 13px; margin: 2px 0; font-weight: bold;"></p>
+                    <p style="color: var(--text-muted); font-size: 14px; margin-top: 8px;" id="uprofile-bio">—</p>
+                </div>
+
+                <div class="card">
+                    <div style="display: flex; justify-content: space-around; text-align: center;">
+                        <div class="stat-block"><div class="stat-number" id="uprofile-following-count">0</div><div class="stat-label">متابعة</div></div>
+                        <div class="stat-block"><div class="stat-number" id="uprofile-followers-count">0</div><div class="stat-label">المتابعين</div></div>
+                        <div class="stat-block"><div class="stat-number" id="uprofile-posts-count">0</div><div class="stat-label">المنشورات</div></div>
+                    </div>
+                </div>
+
+                <div class="card" style="display: flex; gap: 10px;">
+                    <button id="uprofile-follow-btn" class="btn" style="margin:0; flex:1;" onclick="uprofileToggleFollow()">➕ متابعة</button>
+                    <button id="uprofile-friend-btn" class="btn" style="margin:0; flex:1; background: linear-gradient(90deg, #4a148c, var(--primary));" onclick="uprofileHandleFriendAction()">🤝 إضافة صديق</button>
+                </div>
+
+                <h3 style="color: var(--text-color);">منشورات المستخدم</h3>
+                <div id="uprofile-posts"></div>
+            </div>
+        </div>
+
+        <!-- صفحة البحث عن الأصدقاء -->
+        <div id="page-search" class="page">
+            <div class="container">
+                <div class="back-row">
+                    <button class="back-btn" onclick="switchPage('profile')" aria-label="رجوع">→</button>
+                    <h2 style="margin:0; color: var(--text-color);">البحث والأصدقاء</h2>
+                </div>
+
+                <div class="search-bar-row">
+                    <input type="text" id="user-search-input" placeholder="ابحث باسم المستخدم...">
+                    <button class="small-action-btn" style="padding: 12px 16px;" onclick="searchUsers()">🔍</button>
+                </div>
+                <button class="btn" style="background: linear-gradient(90deg, #4a148c, var(--primary));" onclick="inviteFriends()">📨 ادعُ أصدقاءك لأرابيكا</button>
+
+                <div id="search-results" class="card" style="display:none;"></div>
+
+                <h3 style="color: var(--text-color); margin-top: 20px;">طلبات الصداقة الواردة</h3>
+                <div id="incoming-requests-list" class="card"><p style="color: var(--text-muted); font-size:13px; text-align:center; margin:0;">لا توجد طلبات حالياً</p></div>
             </div>
         </div>
 
@@ -447,6 +523,27 @@
                 adminStatusCache[username] = doc.exists && doc.data().isAdmin === true;
                 if (adminStatusCache[username] && typeof onResult === 'function') onResult();
             }).catch(e => console.error("Admin status check error:", e));
+        }
+
+        // --- [أنا Claude #1] — 2026-08-13: كاش صور المستخدمين لعرضها بجانب اسمهم في المنشورات ---
+        let avatarCache = {};
+
+        function fetchAvatarAndRerender(username, onResult) {
+            if (!username || avatarCache.hasOwnProperty(username)) return;
+            db.collection("users").doc(username).get().then(doc => {
+                avatarCache[username] = (doc.exists && doc.data().avatarUrl) ? doc.data().avatarUrl : null;
+                if (typeof onResult === 'function') onResult();
+            }).catch(e => console.error("Avatar fetch error:", e));
+        }
+
+        function avatarStyleFor(username) {
+            const url = avatarCache[username];
+            const safe = url ? sanitizeURL(url) : '';
+            return safe ? `background-image:url('${safe}');` : '';
+        }
+
+        function avatarInitialFor(username) {
+            return avatarCache[username] ? '' : (username ? sanitizeHTML(username.charAt(0).toUpperCase()) : '?');
         }
         
         // --- حماية واسترجاع الجلسة عند إعادة تحميل الصفحة ---
@@ -603,6 +700,7 @@
             loadPosts(); 
             loadProducts(); 
             loadProfileStats(); 
+            loadIncomingFriendRequests();
             switchPage('feed');
         }
         
@@ -735,6 +833,204 @@
             }); 
             unsubscribeFunctions.push(unsubFollowing, unsubFollowers, unsubPostsCount); 
         }
+
+        // ================= [أنا Claude #1] — 2026-08-13: نظام الملف الشخصي العام + الأصدقاء ================= //
+        let viewedProfileUser = null;
+        let previousPageBeforeProfile = 'feed';
+
+        function friendRequestId(userA, userB) {
+            // ترتيب أبجدي ثابت عشان الـ id يبقى نفسه في الاتجاهين
+            return [userA, userB].sort().join('__');
+        }
+
+        function viewUserProfile(username) {
+            if (!username || username === currentUser) { switchPage('profile'); return; }
+            viewedProfileUser = username;
+            const navActive = document.querySelector('.nav-item.active');
+            previousPageBeforeProfile = navActive ? navActive.getAttribute('data-page') : 'feed';
+
+            document.getElementById('uprofile-name-text').innerText = sanitizeHTML(username);
+            document.getElementById('uprofile-avatar').style.backgroundImage = 'none';
+            document.getElementById('uprofile-avatar').innerText = username.charAt(0).toUpperCase();
+            document.getElementById('uprofile-bio').innerText = '—';
+            document.getElementById('uprofile-loyalty-badge').innerText = '';
+            document.getElementById('uprofile-verified-badge').style.display = 'none';
+            document.getElementById('uprofile-posts').innerHTML = '';
+
+            db.collection('users').doc(username).get().then(doc => {
+                if (doc.exists) {
+                    const d = doc.data();
+                    if (d.avatarUrl) {
+                        const safe = sanitizeURL(d.avatarUrl);
+                        if (safe) { document.getElementById('uprofile-avatar').style.backgroundImage = `url('${safe}')`; document.getElementById('uprofile-avatar').innerText = ''; }
+                    }
+                    if (d.bio) document.getElementById('uprofile-bio').innerText = sanitizeHTML(d.bio);
+                    const points = d.loyaltyPoints || 0;
+                    const badge = getLoyaltyBadge(points);
+                    document.getElementById('uprofile-loyalty-badge').innerText = badge ? (badge + ' · ' + points + ' نقطة') : (points + ' نقطة');
+                    if (d.isAdmin === true) document.getElementById('uprofile-verified-badge').style.display = 'inline-block';
+                }
+            }).catch(() => {});
+
+            db.collection('follows').where('follower', '==', username).get().then(s => document.getElementById('uprofile-following-count').innerText = s.size);
+            db.collection('follows').where('target', '==', username).get().then(s => document.getElementById('uprofile-followers-count').innerText = s.size);
+            db.collection('posts').where('author', '==', username).get().then(s => {
+                document.getElementById('uprofile-posts-count').innerText = s.size;
+                const frags = [];
+                s.forEach(d => {
+                    const p = d.data();
+                    const safeImg = sanitizeURL(p.imageUrl);
+                    frags.push(`<div class="card"><div class="card-content">${sanitizeHTML(p.content || '')}</div>${safeImg ? `<img src="${safeImg}" class="post-image" onerror="this.style.display='none'">` : ''}</div>`);
+                });
+                document.getElementById('uprofile-posts').innerHTML = frags.join('') || '<p style="color:var(--text-muted); text-align:center;">لا توجد منشورات بعد</p>';
+            });
+
+            // زر المتابعة
+            db.collection('follows').doc(`${currentUser}_${username}`).get().then(doc => {
+                document.getElementById('uprofile-follow-btn').innerText = doc.exists ? '✓ متابَع' : '➕ متابعة';
+            });
+
+            refreshFriendButtonState();
+
+            document.getElementById('main-app').querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-user-profile').classList.add('active');
+        }
+
+        function closeUserProfile() {
+            viewedProfileUser = null;
+            switchPage(previousPageBeforeProfile || 'feed');
+        }
+
+        function uprofileToggleFollow() {
+            if (!viewedProfileUser) return;
+            toggleFollow(viewedProfileUser, null);
+            setTimeout(() => {
+                db.collection('follows').doc(`${currentUser}_${viewedProfileUser}`).get().then(doc => {
+                    document.getElementById('uprofile-follow-btn').innerText = doc.exists ? '✓ متابَع' : '➕ متابعة';
+                });
+            }, 400);
+        }
+
+        function refreshFriendButtonState() {
+            if (!viewedProfileUser) return;
+            const btn = document.getElementById('uprofile-friend-btn');
+            const reqId = friendRequestId(currentUser, viewedProfileUser);
+            db.collection('friendRequests').doc(reqId).get().then(doc => {
+                if (!doc.exists) {
+                    btn.innerText = '🤝 إضافة صديق';
+                    btn.onclick = uprofileHandleFriendAction;
+                    btn.className = 'btn';
+                    return;
+                }
+                const d = doc.data();
+                if (d.status === 'accepted') {
+                    btn.innerText = '✅ أصدقاء';
+                    btn.className = 'btn';
+                    btn.style.background = 'var(--success)';
+                    btn.onclick = null;
+                } else if (d.status === 'pending' && d.from === currentUser) {
+                    btn.innerText = '⏳ تم إرسال الطلب';
+                    btn.style.background = '#444';
+                    btn.onclick = () => { db.collection('friendRequests').doc(reqId).delete().then(refreshFriendButtonState); };
+                } else if (d.status === 'pending' && d.to === currentUser) {
+                    btn.innerText = '✔️ قبول طلب الصداقة';
+                    btn.style.background = 'var(--success)';
+                    btn.onclick = () => { db.collection('friendRequests').doc(reqId).update({ status: 'accepted' }).then(refreshFriendButtonState); };
+                }
+            });
+        }
+
+        function uprofileHandleFriendAction() {
+            if (!viewedProfileUser || !authUid) return;
+            const reqId = friendRequestId(currentUser, viewedProfileUser);
+            db.collection('friendRequests').doc(reqId).set({
+                from: currentUser,
+                to: viewedProfileUser,
+                fromUid: authUid,
+                status: 'pending',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(refreshFriendButtonState).catch(() => showError('تعذر إرسال طلب الصداقة'));
+        }
+
+        // --- طلبات الصداقة الواردة ---
+        function loadIncomingFriendRequests() {
+            if (isGuest()) return;
+            const unsub = db.collection('friendRequests').where('to', '==', currentUser).where('status', '==', 'pending').onSnapshot(snap => {
+                const list = document.getElementById('incoming-requests-list');
+                const badge = document.getElementById('incoming-requests-badge');
+                if (!list) return;
+                if (snap.empty) {
+                    list.innerHTML = '<p style="color: var(--text-muted); font-size:13px; text-align:center; margin:0;">لا توجد طلبات حالياً</p>';
+                    if (badge) badge.innerText = '›';
+                    return;
+                }
+                if (badge) badge.innerText = snap.size;
+                const frags = [];
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    frags.push(`
+                        <div class="friend-request-row">
+                            <span style="flex:1; cursor:pointer;" onclick="viewUserProfile('${escapeAttr(d.from)}')">${sanitizeHTML(d.from)}</span>
+                            <button class="small-action-btn accept" onclick="db.collection('friendRequests').doc('${doc.id}').update({status:'accepted'})">قبول</button>
+                            <button class="small-action-btn outline" onclick="db.collection('friendRequests').doc('${doc.id}').delete()">رفض</button>
+                        </div>
+                    `);
+                });
+                list.innerHTML = frags.join('');
+            });
+            unsubscribeFunctions.push(unsub);
+        }
+
+        // --- البحث عن مستخدمين ---
+        function searchUsers() {
+            const term = document.getElementById('user-search-input').value.trim();
+            const resultsEl = document.getElementById('search-results');
+            if (!term) { resultsEl.style.display = 'none'; return; }
+            db.collection('users')
+                .orderBy(firebase.firestore.FieldPath.documentId())
+                .startAt(term)
+                .endAt(term + '\uf8ff')
+                .limit(20)
+                .get()
+                .then(snap => {
+                    resultsEl.style.display = 'block';
+                    if (snap.empty) {
+                        resultsEl.innerHTML = '<p style="color: var(--text-muted); text-align:center; margin:0;">لا يوجد نتائج</p>';
+                        return;
+                    }
+                    const frags = [];
+                    snap.forEach(doc => {
+                        if (doc.id === currentUser) return;
+                        const d = doc.data();
+                        const safeAvatar = d.avatarUrl ? sanitizeURL(d.avatarUrl) : '';
+                        const avatarStyle = safeAvatar ? `background-image:url('${safeAvatar}');` : '';
+                        const initial = safeAvatar ? '' : doc.id.charAt(0).toUpperCase();
+                        frags.push(`
+                            <div class="user-result-row">
+                                <div class="user-result-avatar" style="${avatarStyle}" onclick="viewUserProfile('${escapeAttr(doc.id)}')">${initial}</div>
+                                <span class="user-result-name" onclick="viewUserProfile('${escapeAttr(doc.id)}')">${sanitizeHTML(doc.id)}</span>
+                                <button class="small-action-btn" onclick="viewUserProfile('${escapeAttr(doc.id)}')">عرض الملف</button>
+                            </div>
+                        `);
+                    });
+                    resultsEl.innerHTML = frags.join('') || '<p style="color: var(--text-muted); text-align:center; margin:0;">لا يوجد نتائج</p>';
+                })
+                .catch(() => showError('تعذر البحث حالياً'));
+        }
+
+        // --- دعوة الأصدقاء ---
+        function inviteFriends() {
+            const shareText = `انضم لي على أرابيكا 🎗 — مجتمع تجارة وتواصل عبر شبكة Pi Network`;
+            const shareUrl = window.location.origin;
+            if (navigator.share) {
+                navigator.share({ title: 'أرابيكا', text: shareText, url: shareUrl }).catch(() => {});
+            } else if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareText + '\n' + shareUrl).then(() => alert('تم نسخ رابط الدعوة!')).catch(() => showError('تعذر النسخ'));
+            } else {
+                showError('المشاركة غير مدعومة على هذا المتصفح');
+            }
+        }
+        // ================= نهاية نظام الملف الشخصي والأصدقاء ================= //
 
         function toggleFollow(author, btnEl) { 
             if (!author || author === currentUser) return; 
@@ -895,12 +1191,22 @@
                 const guestBadge = authorIsGuest ? ' <span style="background:#0088cc; color:#fff; font-size:10px; padding:2px 6px; border-radius:8px;">TG</span>' : ''; 
                 const authorVerifiedBadge = (!authorIsGuest && isKnownAdmin(post.author)) ? ' <span class="official-badge">⚜️ ارابيكا</span>' : ''; 
                 
-                if (!authorIsGuest) fetchAdminStatusAndRerender(post.author, () => renderPostsFeed()); 
+                if (!authorIsGuest) { 
+                    fetchAdminStatusAndRerender(post.author, () => renderPostsFeed()); 
+                    fetchAvatarAndRerender(post.author, () => renderPostsFeed()); 
+                }
+                const authorAvatarHtml = authorIsGuest 
+                    ? `<div class="post-avatar-circle">🫥</div>` 
+                    : `<div class="post-avatar-circle" style="${avatarStyleFor(post.author)}">${avatarInitialFor(post.author)}</div>`;
+                const authorClickAttr = authorIsGuest ? '' : ` onclick="viewUserProfile('${escapeAttr(post.author)}')"`;
                 
                 fragments.push(`
                     <div class="card">
                         <div class="post-header">
-                            <span class="post-author">${sanitizeHTML(authorDisplay)}${guestBadge}${authorVerifiedBadge}</span>
+                            <span class="post-author-link"${authorClickAttr}>
+                                ${authorAvatarHtml}
+                                <span class="post-author">${sanitizeHTML(authorDisplay)}${guestBadge}${authorVerifiedBadge}</span>
+                            </span>
                             <div style="display:flex; gap:8px; align-items:center;">${followBtn}${delBtn}</div>
                         </div>
                         <div class="card-content">${sanitizeHTML(post.content)}${editedTag}</div>
@@ -1279,7 +1585,7 @@
                 if (fallback) fallback.classList.add('active'); 
             }
             
-            var navPage = (page === 'settings') ? 'profile' : page;
+            var navPage = (page === 'settings' || page === 'search' || page === 'user-profile') ? 'profile' : page;
             var navItems = document.querySelectorAll('.nav-item');
             for (var j = 0; j < navItems.length; j++) { 
                 navItems[j].classList.remove('active'); 
