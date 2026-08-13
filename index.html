@@ -456,6 +456,24 @@
                 const savedUsername = localStorage.getItem('arabeka_username');
                 if (savedUsername && !currentUser) {
                     loginSuccess(savedUsername); // استرجاع الجلسة تلقائياً بدون إعادة تسجيل الدخول
+
+                    // [أنا Claude #1] — 2026-08-12: إعادة توثيق صامتة مع Pi Browser
+                    // بدون هذه الخطوة، الـ SDK يفتكر إنه "مش متهيأ" لأي عملية دفع
+                    // رغم إن الجلسة عندنا (Firebase + localStorage) مسترجعة بنجاح
+                    const trySilentPiAuth = function (attemptsLeft) {
+                        if (attemptsLeft === undefined) attemptsLeft = 20;
+                        if (typeof Pi !== 'undefined' && piReady) {
+                            Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
+                                .catch(function (e) {
+                                    console.warn("إعادة توثيق صامتة مع Pi فشلت:", e);
+                                });
+                            return;
+                        }
+                        if (attemptsLeft > 0) {
+                            setTimeout(function () { trySilentPiAuth(attemptsLeft - 1); }, 500);
+                        }
+                    };
+                    trySilentPiAuth();
                 }
             } 
         });
