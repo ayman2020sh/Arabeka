@@ -1,0 +1,119 @@
+        :root { 
+            --primary: #8a2be2; 
+            --bg-color: #0f1015; 
+            --card-bg: #1c1d24;  
+            --text-color: #ffffff; 
+            --text-muted: #aaaaaa; 
+            --border: #2a2b36;     
+            --danger: #ff4444;     
+            --success: #00C851;    
+            --gold: #FFD700;       
+        }
+        
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { background-color: var(--bg-color); color: var(--text-color); margin: 0; padding-bottom: 80px; min-height: 100vh; }
+        
+        .header { background-color: var(--card-bg); color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .container { padding: 15px; }
+        .page { display: none; width: 100%; }
+        .page.active { display: block; }
+        
+        .card { background: var(--card-bg); border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); border: 1px solid var(--border); }
+
+        /* الكارت الرئيسي */
+        .main-card { background: linear-gradient(135deg, #0a1030 0%, #142a63 55%, #1e5fb8 100%); color: white; border-radius: 20px; padding: 22px 16px; margin-bottom: 15px; display: flex; flex-direction: row; align-items: center; gap: 12px; box-shadow: 0 18px 45px rgba(0, 0, 0, 0.5); }
+        .hero-text { flex: 1; display: flex; flex-direction: column; align-items: flex-start; text-align: right; min-width: 0; }
+        .card-title { font-size: 22px; font-weight: 800; margin-bottom: 2px; background: linear-gradient(90deg, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .card-subtitle { font-size: 12px; color: rgba(255, 255, 255, 0.8); margin-bottom: 10px; }
+        .card-features { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+        .card-features span { display: flex; align-items: center; gap: 5px; font-size: 11px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; }
+        .card-features span::before { content: '✓'; color: #4CAF50; font-weight: bold; }
+        .login-btn-card { width: 100%; background: linear-gradient(90deg, var(--gold), #ff8c00); border: none; padding: 9px 14px; border-radius: 22px; font-weight: bold; cursor: pointer; font-size: 13px; color: #1a1305; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 6px 15px rgba(255, 140, 0, 0.3); transition: transform 0.2s, box-shadow 0.2s; }
+        .login-btn-icon { background: linear-gradient(135deg, var(--primary), #6a1b9a); color: #fff; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0; }
+        .login-btn-card:hover { transform: scale(1.02); box-shadow: 0 6px 30px rgba(255, 215, 0, 0.4); }
+        .login-btn-card:active { transform: scale(0.97); }
+
+        .card-image-wrap { flex-shrink: 0; width: 61%; max-width: 205px; position: relative; }
+        .card-image-wrap img { width: 100%; height: auto; display: block; filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.45)); position: relative; z-index: 1; }
+        .deco-diamond { position: absolute; z-index: 2; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)); pointer-events: none; line-height: 1; }
+        .deco-diamond.d1 { font-size: 42px; top: -14px; right: 8px; transform: rotate(-8deg); }
+        .deco-diamond.d2 { font-size: 24px; top: 6px; right: -6px; transform: rotate(10deg); }
+        .deco-diamond.d3 { font-size: 22px; bottom: -6px; right: 30px; transform: rotate(-6deg); }
+
+        .promo-card-purple { background: linear-gradient(135deg, #4a148c, #7b1fa2); color: white; border-radius: 15px; padding: 25px 20px; margin-bottom: 15px; text-align: center; }
+        .promo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .promo-card-pink { background: linear-gradient(135deg, #ff4081, #f50057); color: white; border-radius: 15px; padding: 20px 10px; text-align: center; }
+        .promo-card-cyan { background: linear-gradient(135deg, #00bcd4, #00acc1); color: white; border-radius: 15px; padding: 20px 10px; text-align: center; }
+        
+        .post-header { display: flex; align-items: center; margin-bottom: 10px; justify-content: space-between; }
+        .post-author { font-weight: bold; color: var(--primary); }
+        .card-content { font-size: 15px; margin-bottom: 10px; line-height: 1.5; word-break: break-word; }
+        .post-image { max-width: 100%; border-radius: 8px; margin-bottom: 10px; display: block; max-height: 300px; object-fit: cover; }
+        .post-actions { display: flex; gap: 12px; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; flex-wrap: wrap; }
+        .action-btn { background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .action-btn:hover { color: var(--primary); }
+        .action-btn.danger { color: var(--danger); }
+        .comments-section { margin-top: 10px; background: #15161c; padding: 10px; border-radius: 8px; display: none; border: 1px solid var(--border); }
+        .comment { font-size: 13px; border-bottom: 1px solid var(--border); padding: 5px 0; }
+        .comment strong { color: var(--primary); }
+        
+        input, textarea, select { width: 100%; padding: 12px; background-color: #15161c; color: var(--text-color); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); }
+        ::placeholder { color: #666666; }
+        
+        .btn { background-color: var(--primary); color: white; border: none; padding: 12px; border-radius: 20px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 10px; transition: opacity 0.2s; }
+        .btn:active { transform: scale(0.98); }
+        
+        /* المتجر المحدث - عمود واحد */
+        .product-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .product-card { background: var(--card-bg); padding: 12px; border-radius: 15px; text-align: center; border: 1px solid var(--border); position: relative; overflow: hidden; }
+        .prod-image { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 8px; background-color: #15161c; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--card-bg); padding: 20px; border-radius: 15px; width: 85%; text-align: center; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; background-color: var(--card-bg); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--border); z-index: 100; }
+        .nav-item { text-align: center; color: var(--text-muted); cursor: pointer; flex: 1; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: color 0.3s; padding: 5px 0; background: transparent; border: none; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+        
+        .error-message { background-color: rgba(255, 68, 68, 0.2); border: 1px solid var(--danger); color: #ff8888; padding: 12px; border-radius: 8px; margin-bottom: 10px; position: fixed; top: 60px; left: 15px; right: 15px; z-index: 1000; }
+        .chat-button { display: inline-block; background: linear-gradient(45deg, var(--primary), #4169e1); color: white; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; margin-top: 15px; }
+        
+        .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--border); cursor: pointer; text-decoration: none; }
+        .settings-row:last-child { border-bottom: none; }
+        .settings-row .row-left { display: flex; align-items: center; }
+        .settings-row .row-left span.icon { font-size: 20px; margin-left: 15px; color: var(--primary); }
+        .settings-row .row-left span.label { font-size: 16px; color: var(--text-color); }
+        .settings-row .row-arrow { color: var(--text-muted); font-size: 18px; }
+        .back-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .back-btn { background: none; border: none; color: var(--primary); font-size: 22px; cursor: pointer; padding: 5px; line-height: 1; }
+
+        .stat-block { cursor: pointer; padding: 6px 10px; border-radius: 10px; transition: background 0.2s; }
+        .stat-block:hover { background: rgba(138, 43, 226, 0.1); }
+        .stat-number { font-size: 22px; font-weight: bold; color: var(--primary); }
+        .stat-label { color: var(--text-color); font-size: 13px; margin-top: 3px; }
+        .filter-banner { display: none; align-items: center; justify-content: space-between; flex-direction: row; padding: 12px 15px; }
+        
+        .categories-wrapper { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none; }
+        .categories-wrapper::-webkit-scrollbar { display: none; }
+        .category-btn { background-color: var(--card-bg); color: var(--text-color); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 14px; cursor: pointer; white-space: nowrap; transition: 0.3s; }
+        .category-btn.active { background: linear-gradient(90deg, #4a148c, var(--primary)); border-color: transparent; font-weight: bold; }
+        .product-category-tag { position: absolute; top: -1px; right: -1px; background: rgba(138, 43, 226, 0.9); padding: 4px 10px; border-bottom-left-radius: 10px; font-size: 11px; font-weight: bold; color: white; z-index: 2; }
+        .official-badge { color: #00d2ff; font-size: 10px; background-color: rgba(0, 210, 255, 0.1); padding: 2px 6px; border-radius: 4px; margin-right: 5px; display: inline-block; margin-top: 3px; border: 1px solid rgba(0, 210, 255, 0.3); }
+
+        /* --- [أنا Claude #1] — 2026-08-13: صورة المستخدم بجانب الاسم + الملف الشخصي العام + الأصدقاء --- */
+        .post-author-link { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .post-avatar-circle { width: 34px; height: 34px; border-radius: 50%; background-color: #6a1b9a; color: white; display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; flex-shrink: 0; background-size: cover; background-position: center; border: 1px solid var(--border); }
+        .search-bar-row { display: flex; gap: 8px; align-items: center; margin-bottom: 15px; }
+        .search-bar-row input { margin-bottom: 0; }
+        .user-result-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+        .user-result-row:last-child { border-bottom: none; }
+        .user-result-avatar { width: 42px; height: 42px; border-radius: 50%; background-color: #6a1b9a; color: white; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: bold; flex-shrink: 0; background-size: cover; background-position: center; cursor: pointer; }
+        .user-result-name { flex: 1; font-size: 15px; cursor: pointer; }
+        .small-action-btn { background: linear-gradient(90deg, #4a148c, var(--primary)); color: white; border: none; padding: 7px 14px; border-radius: 16px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .small-action-btn.outline { background: none; border: 1px solid var(--border); color: var(--text-muted); }
+        .small-action-btn.pending { background: #444; }
+        .small-action-btn.accept { background: var(--success); }
+        .friend-request-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+        .friend-request-row:last-child { border-bottom: none; }
