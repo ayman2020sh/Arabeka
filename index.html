@@ -216,7 +216,7 @@
                         <div style="position: absolute; bottom: -5px; right: -5px; background-color: #1da1f2; width: 28px; height: 28px; border-radius: 50%; font-size: 14px; display: flex; justify-content: center; align-items: center; border: 3px solid var(--card-bg); font-weight: bold;">P</div>
                     </div>
                     <h2 id="user-name" style="margin: 5px 0; color: var(--text-color); display: inline-flex; align-items: center; gap: 4px; justify-content: center;"> 
-                        العربي 
+            
                         <span id="user-verified-badge" style="display:none;" class="official-badge">⚜️ ارابيكا</span>
                     </h2>
                     <p id="user-loyalty-badge" style="color: var(--gold); font-size: 13px; margin: 2px 0; font-weight: bold;"></p>
@@ -256,9 +256,10 @@
                     <div class="settings-row" onclick="switchPage('search')">
                         <div class="row-left"><span class="icon">🔎</span><span class="label">البحث عن أصدقاء / دعوة</span></div><span class="row-arrow" id="incoming-requests-badge">›</span>
                     </div>
-                    <a href="/chat.html" class="settings-row">
-                        <div class="row-left"><span class="icon">🤖</span><span class="label">مساعد غبي (Omni)</span></div><span class="row-arrow">›</span>
+                    <a href="https://arabekavqet3465.pinet.com" target="_blank" class="settings-row">
+    <div class="row-left"><span class="icon">🤖</span><span class="label">اسأل مساعد أرابيكا</span></div><span class="row-arrow">›</span>
                     </a>
+                    
                     <div class="settings-row" onclick="switchPage('settings')">
                         <div class="row-left"><span class="icon">⚙️</span><span class="label">الإعدادات</span></div><span class="row-arrow">›</span>
                     </div>
@@ -1148,7 +1149,7 @@
             } else if (navigator.clipboard) { 
                 navigator.clipboard.writeText(shareText + '\n' + window.location.href).then(() => alert('تم نسخ المنشور')).catch(() => showError('تعذر النسخ')); 
             } else { 
-                showError('المشاركة مش مدعومة'); 
+                showError(' المشاركة مش مدعومة حاليا'); 
             } 
         }
 
