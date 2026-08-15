@@ -16,12 +16,13 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     
-    <link rel="stylesheet" href="style/theme.css">dy>
+    <link rel="stylesheet" href="style/theme.css">
 
     <!-- START: رأس الصفحة (Header) -->
     <div class="header">
+        <button onclick="comingSoon()" style="background:none; border:none; color: var(--text-color); font-size: 20px; cursor: pointer; padding: 0;">☰</button>
         <span>أرابيكا🎗</span>
-        <span style="font-size: 14px; color: var(--text-muted);">🫆Arabeka</span>
+        <button onclick="comingSoon()" style="background:none; border:none; color: var(--text-color); font-size: 18px; cursor: pointer; padding: 0; position: relative;">🔔</button>
     </div>
     
     <div id="login-error" style="display:none;" class="error-message"></div>
@@ -107,7 +108,7 @@
         <h2>مرحباً بك في مجتمع أرابيكا</h2>
         <p style="color: var(--text-muted);">انضم إلى مجتمعنا وابدأ التجارة الآن</p>
         <button class="btn" id="login-btn" style="background: linear-gradient(45deg, var(--gold), #ff8c00); color: black;">Pi sign.in</button>
-        <a href="/chat.html" class="chat-button">🦾مساعد غبي</a>
+        <a href="https://arabekavqet3465.pinet.com" target="_blank" class="chat-button">🤖 اسأل مساعد أرابيكا</a>
     </div>
 
     <!-- التطبيق الرئيسي -->
@@ -127,23 +128,37 @@
                     <div class="card-image-wrap"><span class="deco-diamond d1">💠</span><span class="deco-diamond d2">💠</span><span class="deco-diamond d3">💠</span><img src="arabeka_card.png" alt="كارت آرابيكا"></div>
                 </div>
                 
-                <div class="promo-card-purple">
-                    <div style="font-size: 50px; margin-bottom: 10px;">👥</div>
-                    <h2 style="margin: 0;">تواصل اجتماعي آمن</h2>
-                    <p style="font-size: 14px; opacity: 0.9;">شارك أفكارك مع مجتمع عربي نشط</p>
-                    <p style="font-size: 12px; opacity: 0.7;">تواصل مع آلاف المستخدمين، شارك منشوراتك، اكتسب متابعين</p>
-                </div>
-                
-                <div class="promo-grid">
-                    <div class="promo-card-pink">
-                        <div style="font-size: 30px; margin-bottom: 5px;">📦🛒</div>
-                        <h3 style="margin: 5px 0; font-size: 16px;">تسوق تجاري</h3>
-                        <p style="font-size: 11px; margin: 0; opacity: 0.9;">بيع منتجاتك وخدماتك بسهولة</p>
+                <!-- [أنا Claude #1] — 2026-08-14: كارت موحّد (روابط + سوشيال + اختصارات) بدل 3 كروت منفصلة -->
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <div style="display: flex; justify-content: space-around; align-items: center; padding: 16px 5px; border-bottom: 1px solid var(--border);">
+                        <a href="https://arabekavqet3465.pinet.com" target="_blank" style="text-decoration:none; color: var(--text-color); text-align:center; font-size:12px; display:flex; flex-direction:column; align-items:center; gap:6px;">
+                            <span style="font-size:24px;">🤖</span>مساعد أرابيكا
+                        </a>
+                        <div onclick="switchPage('search')" style="cursor:pointer; color: var(--text-color); text-align:center; font-size:12px; display:flex; flex-direction:column; align-items:center; gap:6px;">
+                            <span style="font-size:24px;">👥</span>أصدقاء
+                        </div>
+                        <a href="contact.html" style="text-decoration:none; color: var(--text-color); text-align:center; font-size:12px; display:flex; flex-direction:column; align-items:center; gap:6px;">
+                            <span style="font-size:24px;">🎧</span>الدعم
+                        </a>
                     </div>
-                    <div class="promo-card-cyan">
-                        <div style="font-size: 30px; margin-bottom: 5px;">📥📤</div>
-                        <h3 style="margin: 5px 0; font-size: 16px;">دفع آمن وسريع</h3>
-                        <p style="font-size: 11px; margin: 0; opacity: 0.9;">Pi wallet</p>
+                    <div style="display: flex; justify-content: space-around; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); background: #0a0a0a;">
+                        <a href="https://t.me/piwep3" target="_blank" style="color: #0088cc; font-size: 24px;"><i class="fa-brands fa-telegram"></i></a>
+                        <a href="https://x.com/arabekaio" target="_blank" style="color: var(--text-color); font-size: 22px;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        <a href="https://www.facebook.com/share/185iYyEhq2/" target="_blank" style="color: #1877F2; font-size: 24px;"><i class="fa-brands fa-facebook"></i></a>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border);">
+                        <div style="background: var(--card-bg); padding: 18px 8px; text-align: center;">
+                            <div style="font-size: 26px; margin-bottom: 6px;">📤📥</div>
+                            <div style="font-size: 13px; font-weight: bold;">ادفع واستلم أموالك</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">بـ Pi wallet</div>
+                        </div>
+                        <div onclick="switchPage('store')" style="cursor:pointer; background: var(--card-bg); padding: 18px 8px; text-align: center;">
+                            <div style="font-size: 26px; margin-bottom: 6px;">🛒</div>
+                            <div style="font-size: 13px; font-weight: bold;">بيع منتجاتك</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">وخدماتك بسهولة</div>
+                        </div>
                     </div>
                 </div>
                 
@@ -241,6 +256,10 @@
                             <div class="stat-number" id="posts-count">0</div>
                             <div class="stat-label">المنشورات</div>
                         </div>
+                        <div class="stat-block" onclick="switchPage('store')">
+                            <div class="stat-number" id="my-products-count">0</div>
+                            <div class="stat-label">عروض البيع</div>
+                        </div>
                     </div>
                 </div>
                 
@@ -256,8 +275,8 @@
                     <div class="settings-row" onclick="switchPage('search')">
                         <div class="row-left"><span class="icon">🔎</span><span class="label">البحث عن أصدقاء / دعوة</span></div><span class="row-arrow" id="incoming-requests-badge">›</span>
                     </div>
-                    <a href="/chat.html" class="settings-row">
-                        <div class="row-left"><span class="icon">🤖</span><span class="label">مساعد غبي (Omni)</span></div><span class="row-arrow">›</span>
+                    <a href="https://arabekavqet3465.pinet.com" target="_blank" class="settings-row">
+                        <div class="row-left"><span class="icon">🤖</span><span class="label">اسأل مساعد أرابيكا</span></div><span class="row-arrow">›</span>
                     </a>
                     <div class="settings-row" onclick="switchPage('settings')">
                         <div class="row-left"><span class="icon">⚙️</span><span class="label">الإعدادات</span></div><span class="row-arrow">›</span>
@@ -519,6 +538,11 @@
             } 
         }
 
+        // [أنا Claude #1] — 2026-08-14: عناصر شكلية لسه مش شغالة (القائمة ☰ والجرس 🔔)
+        function comingSoon() { 
+            alert('الإعداد قيد التطوير 🤌'); 
+        }
+
         function showError(message) { 
             const el = document.getElementById('login-error'); 
             if(el) { 
@@ -729,7 +753,11 @@
             const unsubPostsCount = db.collection('posts').where('author', '==', currentUser).onSnapshot(snap => {
                 document.getElementById('posts-count').innerText = snap.size;
             }); 
-            unsubscribeFunctions.push(unsubFollowing, unsubFollowers, unsubPostsCount); 
+            const unsubMyProducts = db.collection('products').where('owner', '==', currentUser).onSnapshot(snap => {
+                const el = document.getElementById('my-products-count'); 
+                if (el) el.innerText = snap.size;
+            }); 
+            unsubscribeFunctions.push(unsubFollowing, unsubFollowers, unsubPostsCount, unsubMyProducts); 
         }
 
         // ================= [أنا Claude #1] — 2026-08-13: نظام الملف الشخصي العام + الأصدقاء ================= //
