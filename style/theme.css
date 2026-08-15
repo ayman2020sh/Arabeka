@@ -1,13 +1,16 @@
+        /* --- [أنا Claude #1] — 2026-08-14: هوية بصرية جديدة (أسود + ذهبي)، بعيداً عن هوية Pi البنفسجية --- */
         :root { 
-            --primary: #8a2be2; 
-            --bg-color: #0f1015; 
-            --card-bg: #1c1d24;  
+            --primary: #C9A227; 
+            --primary-dark: #8a6d1a; 
+            --bg-color: #060607; 
+            --card-bg: #121212;  
             --text-color: #ffffff; 
-            --text-muted: #aaaaaa; 
-            --border: #2a2b36;     
+            --text-muted: #999999; 
+            --border: #2a2620;     
             --danger: #ff4444;     
             --success: #00C851;    
             --gold: #FFD700;       
+            --accent-purple: #6a1b9a;
         }
         
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -30,7 +33,7 @@
         .card-features span { display: flex; align-items: center; gap: 5px; font-size: 11px; color: rgba(255, 255, 255, 0.9); white-space: nowrap; }
         .card-features span::before { content: '✓'; color: #4CAF50; font-weight: bold; }
         .login-btn-card { width: 100%; background: linear-gradient(90deg, var(--gold), #ff8c00); border: none; padding: 9px 14px; border-radius: 22px; font-weight: bold; cursor: pointer; font-size: 13px; color: #1a1305; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 6px 15px rgba(255, 140, 0, 0.3); transition: transform 0.2s, box-shadow 0.2s; }
-        .login-btn-icon { background: linear-gradient(135deg, var(--primary), #6a1b9a); color: #fff; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0; }
+        .login-btn-icon { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0; }
         .login-btn-card:hover { transform: scale(1.02); box-shadow: 0 6px 30px rgba(255, 215, 0, 0.4); }
         .login-btn-card:active { transform: scale(0.97); }
 
@@ -41,7 +44,7 @@
         .deco-diamond.d2 { font-size: 24px; top: 6px; right: -6px; transform: rotate(10deg); }
         .deco-diamond.d3 { font-size: 22px; bottom: -6px; right: 30px; transform: rotate(-6deg); }
 
-        .promo-card-purple { background: linear-gradient(135deg, #4a148c, #7b1fa2); color: white; border-radius: 15px; padding: 25px 20px; margin-bottom: 15px; text-align: center; }
+        .promo-card-purple { background: linear-gradient(135deg, #1a1a1a, #2b2620); color: white; border-radius: 15px; padding: 25px 20px; margin-bottom: 15px; text-align: center; }
         .promo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         .promo-card-pink { background: linear-gradient(135deg, #ff4081, #f50057); color: white; border-radius: 15px; padding: 20px 10px; text-align: center; }
         .promo-card-cyan { background: linear-gradient(135deg, #00bcd4, #00acc1); color: white; border-radius: 15px; padding: 20px 10px; text-align: center; }
@@ -98,20 +101,20 @@
         .categories-wrapper { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none; }
         .categories-wrapper::-webkit-scrollbar { display: none; }
         .category-btn { background-color: var(--card-bg); color: var(--text-color); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 14px; cursor: pointer; white-space: nowrap; transition: 0.3s; }
-        .category-btn.active { background: linear-gradient(90deg, #4a148c, var(--primary)); border-color: transparent; font-weight: bold; }
+        .category-btn.active { background: linear-gradient(90deg, var(--primary-dark), var(--primary)); border-color: transparent; font-weight: bold; }
         .product-category-tag { position: absolute; top: -1px; right: -1px; background: rgba(138, 43, 226, 0.9); padding: 4px 10px; border-bottom-left-radius: 10px; font-size: 11px; font-weight: bold; color: white; z-index: 2; }
         .official-badge { color: #00d2ff; font-size: 10px; background-color: rgba(0, 210, 255, 0.1); padding: 2px 6px; border-radius: 4px; margin-right: 5px; display: inline-block; margin-top: 3px; border: 1px solid rgba(0, 210, 255, 0.3); }
 
         /* --- [أنا Claude #1] — 2026-08-13: صورة المستخدم بجانب الاسم + الملف الشخصي العام + الأصدقاء --- */
         .post-author-link { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-        .post-avatar-circle { width: 34px; height: 34px; border-radius: 50%; background-color: #6a1b9a; color: white; display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; flex-shrink: 0; background-size: cover; background-position: center; border: 1px solid var(--border); }
+        .post-avatar-circle { width: 34px; height: 34px; border-radius: 50%; background-color: var(--primary-dark); color: white; display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; flex-shrink: 0; background-size: cover; background-position: center; border: 1px solid var(--border); }
         .search-bar-row { display: flex; gap: 8px; align-items: center; margin-bottom: 15px; }
         .search-bar-row input { margin-bottom: 0; }
         .user-result-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
         .user-result-row:last-child { border-bottom: none; }
-        .user-result-avatar { width: 42px; height: 42px; border-radius: 50%; background-color: #6a1b9a; color: white; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: bold; flex-shrink: 0; background-size: cover; background-position: center; cursor: pointer; }
+        .user-result-avatar { width: 42px; height: 42px; border-radius: 50%; background-color: var(--primary-dark); color: white; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: bold; flex-shrink: 0; background-size: cover; background-position: center; cursor: pointer; }
         .user-result-name { flex: 1; font-size: 15px; cursor: pointer; }
-        .small-action-btn { background: linear-gradient(90deg, #4a148c, var(--primary)); color: white; border: none; padding: 7px 14px; border-radius: 16px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .small-action-btn { background: linear-gradient(90deg, var(--primary-dark), var(--primary)); color: white; border: none; padding: 7px 14px; border-radius: 16px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
         .small-action-btn.outline { background: none; border: 1px solid var(--border); color: var(--text-muted); }
         .small-action-btn.pending { background: #444; }
         .small-action-btn.accept { background: var(--success); }
