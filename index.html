@@ -167,8 +167,23 @@
                 <div class="card" style="background: linear-gradient(145deg, #1c1d24, #262833);">
                     <h4 style="margin-top: 0; color: var(--primary);"> ⚡️شارك رأيك</h4>
                     <textarea id="post-text" placeholder="هل تعجبك آربيكا؟ شارك تجربتك وآراءك..." rows="3"></textarea>
+                    <select id="post-category">
+                        <option value="general">💬 عام</option>
+                        <option value="educational">📖 تعليمي</option>
+                        <option value="personal">🙋 شخصي</option>
+                        <option value="tech">💻 تكنولوجيا</option>
+                        <option value="politics_economy">📊 سياسة واقتصاد</option>
+                    </select>
                     <input type="url" id="post-image-url" placeholder="🔗 رابط صورة (اختياري)">
                     <button class="btn" id="publish-btn" onclick="publishPost()" style="background: linear-gradient(90deg, var(--primary-dark), var(--primary));">✓ نشر الرأي</button>
+                </div>
+
+                <div class="categories-wrapper">
+                    <button class="category-btn active" onclick="filterFeedPosts('all')">🌐 الكل</button>
+                    <button class="category-btn" onclick="filterFeedPosts('educational')">📖 تعليمي</button>
+                    <button class="category-btn" onclick="filterFeedPosts('personal')">🙋 شخصي</button>
+                    <button class="category-btn" onclick="filterFeedPosts('tech')">💻 تكنولوجيا</button>
+                    <button class="category-btn" onclick="filterFeedPosts('politics_economy')">📊 سياسة واقتصاد</button>
                 </div>
                 
                 <div id="posts-filter-banner" class="card filter-banner">
@@ -208,15 +223,11 @@
                 </div>
 
                 <h3 style="color: var(--text-color); margin-bottom: 15px;">أحدث المنتجات</h3>
-                <div class="product-grid" id="store-products"></div>
-
-                <div class="social-links" style="display: flex; justify-content: center; gap: 25px; margin-top: 35px; margin-bottom: 25px;">
-                    <a href="https://x.com/arabekaio" target="_blank" style="color: var(--text-muted); font-size: 28px; text-decoration: none; display:inline-flex;">
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                    </a>
-                    <a href="https://www.facebook.com/share/185iYyEhq2/" target="_blank" style="color: #1877F2; font-size: 28px; text-decoration: none;"><i class="fa-brands fa-facebook"></i></a>
-                    <a href="https://t.me/piwep3" target="_blank" style="color: #0088cc; font-size: 28px; text-decoration: none;"><i class="fa-brands fa-telegram"></i></a>
+                <div id="store-filter-banner" class="card filter-banner">
+                    <span style="color: var(--text-color); font-size:14px;">📌 بتعرض منتجاتك بس</span>
+                    <button class="btn" style="width:auto; margin:0; padding:8px 16px; background-color:#444;" onclick="clearStoreFilter()">عرض الكل</button>
                 </div>
+                <div class="product-grid" id="store-products"></div>
             </div>
         </div>
 
@@ -256,7 +267,7 @@
                             <div class="stat-number" id="posts-count">0</div>
                             <div class="stat-label">المنشورات</div>
                         </div>
-                        <div class="stat-block" onclick="switchPage('store')">
+                        <div class="stat-block" onclick="showMyProducts()">
                             <div class="stat-number" id="my-products-count">0</div>
                             <div class="stat-label">عروض البيع</div>
                         </div>
@@ -272,18 +283,9 @@
                     <div class="settings-row" onclick="editBio()">
                         <div class="row-left"><span class="icon">🫆</span><span class="label">تعديل نبذه</span></div><span class="row-arrow">›</span>
                     </div>
-                    <div class="settings-row" onclick="switchPage('search')">
-                        <div class="row-left"><span class="icon">🔎</span><span class="label">البحث عن أصدقاء / دعوة</span></div><span class="row-arrow" id="incoming-requests-badge">›</span>
-                    </div>
-                    <a href="https://arabekavqet3465.pinet.com" target="_blank" class="settings-row">
-                        <div class="row-left"><span class="icon">🤖</span><span class="label">اسأل مساعد أرابيكا</span></div><span class="row-arrow">›</span>
-                    </a>
                     <div class="settings-row" onclick="switchPage('settings')">
                         <div class="row-left"><span class="icon">⚙️</span><span class="label">الإعدادات</span></div><span class="row-arrow">›</span>
                     </div>
-                    <a href="contact.html" class="settings-row">
-                        <div class="row-left"><span class="icon">🎧</span><span class="label">الدعم</span></div><span class="row-arrow">›</span>
-                    </a>
                 </div>
             </div>
         </div>
@@ -364,9 +366,6 @@
                     <div class="settings-row" onclick="editAvatar()">
                         <div class="row-left"><span class="icon">🖼️</span><span class="label">تغيير صورة الحساب</span></div><span class="row-arrow">›</span>
                     </div>
-                    <div class="settings-row" onclick="editBio()">
-                        <div class="row-left"><span class="icon">🫆</span><span class="label">تعديل / النبذة</span></div><span class="row-arrow">›</span>
-                    </div>
                     <div class="settings-row" style="cursor: default;">
                         <div class="row-left"><span class="icon">🆔</span><span class="label"> مُعرف Pi</span></div><span class="row-arrow" id="settings-username" style="color: var(--text-muted); font-size: 14px;">-</span>
                     </div>
@@ -379,9 +378,6 @@
                     </a>
                     <a href="terms.html" class="settings-row">
                         <div class="row-left"><span class="icon">📜</span><span class="label">الشروط والأحكام</span></div><span class="row-arrow">›</span>
-                    </a>
-                    <a href="contact.html" class="settings-row">
-                        <div class="row-left"><span class="icon">🎧</span><span class="label">تواصل مع الدعم</span></div><span class="row-arrow">›</span>
                     </a>
                 </div>
                 
@@ -396,9 +392,12 @@
         <!-- END: صفحة الإعدادات (Settings) -->
     <!-- START: شريط التنقل السفلي -->
         <div class="bottom-nav">
-            <button class="nav-item active" data-page="feed" onclick="switchPage('feed')"><span style="font-size: 24px;">🏠</span> الرئيسية</button>
-            <button class="nav-item" data-page="store" onclick="switchPage('store')"><span style="font-size: 24px;">🛒</span> التسوق</button>
-            <button class="nav-item" data-page="profile" onclick="switchPage('profile')"><span style="font-size: 24px;">👤</span> الملف الشخصي</button>
+            <button class="nav-item active" data-page="feed" onclick="switchPage('feed')"><span style="font-size: 24px;">🏠</span></button>
+            <button class="nav-item" onclick="handleAddButton()"><span style="font-size: 26px;">➕</span></button>
+            <button class="nav-item" data-page="store" onclick="switchPage('store')"><span style="font-size: 24px;">🛒</span></button>
+            <button class="nav-item" data-page="profile" onclick="switchPage('profile')">
+                <span id="nav-avatar-circle" style="width:26px; height:26px; border-radius:50%; background-color: var(--primary-dark); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold; background-size:cover; background-position:center; color:#fff;">A</span>
+            </button>
         </div>
         <!-- END: شريط التنقل السفلي -->
         </div>
@@ -426,6 +425,15 @@
         let unsubscribeFunctions = []; 
         let lastPostsSnapshot = null; 
         let showOnlyMyPosts = false; 
+        window.currentFeedCategoryFilter = 'all';
+
+        function filterFeedPosts(category) {
+            window.currentFeedCategoryFilter = category;
+            document.querySelectorAll('#page-feed .category-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`#page-feed .category-btn[onclick="filterFeedPosts('${category}')"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+            renderPostsFeed();
+        }
         let editingPostId = null; 
         let authUid = null;
         let adminStatusCache = {};
@@ -539,6 +547,20 @@
         }
 
         // [أنا Claude #1] — 2026-08-14: عناصر شكلية لسه مش شغالة (القائمة ☰ والجرس 🔔)
+        function handleAddButton() {
+            const activePage = document.querySelector('#main-app .page.active');
+            const pageId = activePage ? activePage.id : '';
+            if (pageId === 'page-store') {
+                switchPage('store', true);
+                const nameField = document.getElementById('new-prod-name');
+                if (nameField) { nameField.scrollIntoView({ behavior: 'smooth', block: 'center' }); nameField.focus(); }
+            } else {
+                switchPage('feed');
+                const postField = document.getElementById('post-text');
+                if (postField) { postField.scrollIntoView({ behavior: 'smooth', block: 'center' }); postField.focus(); }
+            }
+        }
+
         function comingSoon() { 
             alert('الإعداد قيد التطوير 🤌'); 
         }
@@ -662,6 +684,7 @@
                     document.getElementById('user-bio').innerText = sanitizeHTML(doc.data().bio); 
                 } 
                 applyAvatarToCircle(doc.exists ? doc.data().avatarUrl : null); 
+                applyNavAvatar(doc.exists ? doc.data().avatarUrl : null);
                 const points = doc.exists ? (doc.data().loyaltyPoints || 0) : 0; 
                 const badge = getLoyaltyBadge(points); 
                 const badgeEl = document.getElementById('user-loyalty-badge'); 
@@ -723,6 +746,19 @@
             } else { 
                 circle.style.backgroundImage = 'none'; 
                 circle.innerText = 'A'; 
+            } 
+        }
+
+        function applyNavAvatar(url) { 
+            const el = document.getElementById('nav-avatar-circle'); 
+            if (!el) return; 
+            const safeUrl = sanitizeURL(url); 
+            if (safeUrl) { 
+                el.style.backgroundImage = `url('${safeUrl}')`; 
+                el.innerText = ''; 
+            } else { 
+                el.style.backgroundImage = 'none'; 
+                el.innerText = currentUser ? currentUser.charAt(0).toUpperCase() : 'A'; 
             } 
         }
 
@@ -868,6 +904,10 @@
 
         function uprofileHandleFriendAction() {
             if (!viewedProfileUser || !authUid) return;
+            if (isGuest() || viewedProfileUser.indexOf('tg_') === 0) {
+                showError('تعذر إرسال طلب صداقة');
+                return;
+            }
             const reqId = friendRequestId(currentUser, viewedProfileUser);
             db.collection('friendRequests').doc(reqId).set({
                 from: currentUser,
@@ -1026,6 +1066,7 @@
             } 
             const text = document.getElementById('post-text').value.trim(); 
             const imageUrl = document.getElementById('post-image-url').value.trim(); 
+            const category = document.getElementById('post-category').value; 
             if (!text && !imageUrl) { 
                 showError("أضف نصاً أو صورة"); 
                 return; 
@@ -1037,6 +1078,7 @@
                 authorUid: authUid, 
                 content: text, 
                 imageUrl: imageUrl || null, 
+                category: category || 'general', 
                 likes: 0, 
                 comments: [], 
                 edited: false, 
@@ -1044,6 +1086,7 @@
             }).then(() => { 
                 document.getElementById('post-text').value = ""; 
                 document.getElementById('post-image-url').value = ""; 
+                document.getElementById('post-category').value = "general"; 
                 awardLoyaltyPoints(2); 
                 awardTaskOnce('firstPost', 10); 
             }).catch(e => showError("خطأ النشر"))
@@ -1100,6 +1143,7 @@
                 const postId = doc.id; 
                 
                 if (showOnlyMyPosts && post.author !== currentUser) return; 
+                if (window.currentFeedCategoryFilter && window.currentFeedCategoryFilter !== 'all' && (post.category || 'general') !== window.currentFeedCategoryFilter) return; 
                 
                 const safeImg = sanitizeURL(post.imageUrl); 
                 const imgHtml = safeImg ? `<img src="${safeImg}" class="post-image" onerror="this.style.display='none'">` : ''; 
@@ -1117,14 +1161,10 @@
                 const guestBadge = authorIsGuest ? ' <span style="background:#0088cc; color:#fff; font-size:10px; padding:2px 6px; border-radius:8px;">TG</span>' : ''; 
                 const authorVerifiedBadge = (!authorIsGuest && isKnownAdmin(post.author)) ? ' <span class="official-badge">⚜️ ارابيكا</span>' : ''; 
                 
-                if (!authorIsGuest) { 
-                    fetchAdminStatusAndRerender(post.author, () => renderPostsFeed()); 
-                    fetchAvatarAndRerender(post.author, () => renderPostsFeed()); 
-                }
-                const authorAvatarHtml = authorIsGuest 
-                    ? `<div class="post-avatar-circle">🫥</div>` 
-                    : `<div class="post-avatar-circle" style="${avatarStyleFor(post.author)}">${avatarInitialFor(post.author)}</div>`;
-                const authorClickAttr = authorIsGuest ? '' : ` onclick="viewUserProfile('${escapeAttr(post.author)}')"`;
+                fetchAdminStatusAndRerender(post.author, () => renderPostsFeed()); 
+                fetchAvatarAndRerender(post.author, () => renderPostsFeed()); 
+                const authorAvatarHtml = `<div class="post-avatar-circle" style="${avatarStyleFor(post.author)}">${authorIsGuest && !avatarCache[post.author] ? '🫥' : avatarInitialFor(post.author)}</div>`;
+                const authorClickAttr = ` onclick="viewUserProfile('${escapeAttr(post.author)}')"`;
                 
                 fragments.push(`
                     <div class="card">
@@ -1250,6 +1290,20 @@
         }
 
         window.currentCategoryFilter = 'all';
+        window.showOnlyMyProducts = false;
+
+        function showMyProducts() {
+            window.showOnlyMyProducts = true;
+            document.getElementById('store-filter-banner').style.display = 'flex';
+            switchPage('store', true);
+            filterStoreProducts(window.currentCategoryFilter);
+        }
+
+        function clearStoreFilter() {
+            window.showOnlyMyProducts = false;
+            document.getElementById('store-filter-banner').style.display = 'none';
+            filterStoreProducts(window.currentCategoryFilter);
+        }
         window.productsMap = {}; 
         let editingStoreProdId = null; 
 
@@ -1260,11 +1314,9 @@
             if(activeBtn) activeBtn.classList.add('active');
             const cards = document.querySelectorAll('#store-products .product-card');
             cards.forEach(card => {
-                if (category === 'all' || card.getAttribute('data-category') === category) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+                const categoryMatch = (category === 'all' || card.getAttribute('data-category') === category);
+                const ownerMatch = (!window.showOnlyMyProducts || card.getAttribute('data-owner') === currentUser);
+                card.style.display = (categoryMatch && ownerMatch) ? 'block' : 'none';
             });
         }
 
@@ -1355,7 +1407,7 @@
                     ` : '';
 
                     fragments.push(`
-                        <div class="product-card" data-category="${prodCategory}">
+                        <div class="product-card" data-category="${prodCategory}" data-owner="${escapeAttr(prod.owner)}">
                             <span class="product-category-tag">${catName}</span>
                             ${imgHtml}
                             <h4 style="margin: 10px 0 5px 0; font-size: 18px;">${sanitizeHTML(prod.name)}</h4>
@@ -1496,7 +1548,13 @@
             }
         }
 
-        function switchPage(page) {
+        function switchPage(page, keepStoreFilter) {
+            if (page === 'store' && !keepStoreFilter && window.showOnlyMyProducts) {
+                window.showOnlyMyProducts = false;
+                const banner = document.getElementById('store-filter-banner');
+                if (banner) banner.style.display = 'none';
+                if (typeof filterStoreProducts === 'function') filterStoreProducts(window.currentCategoryFilter || 'all');
+            }
             var mainApp = document.getElementById('main-app'); 
             var pages = mainApp.querySelectorAll('.page');
             for (var i = 0; i < pages.length; i++) { 
