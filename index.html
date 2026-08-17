@@ -796,7 +796,7 @@
             unsubscribeFunctions.push(unsubFollowing, unsubFollowers, unsubPostsCount, unsubMyProducts); 
         }
 
-        // ================= [أنا Claude #1] — 2026-08-13: نظام الملف الشخصي العام + الأصدقاء ================= //
+        // ================= ا ] — 2026-08-13: نظام الملف الشخصي العام + الأصدقاء ================= //
         let viewedProfileUser = null;
         let previousPageBeforeProfile = 'feed';
 
@@ -904,10 +904,6 @@
 
         function uprofileHandleFriendAction() {
             if (!viewedProfileUser || !authUid) return;
-            if (isGuest() || viewedProfileUser.indexOf('tg_') === 0) {
-                showError('تعذر إرسال طلب صداقة');
-                return;
-            }
             const reqId = friendRequestId(currentUser, viewedProfileUser);
             db.collection('friendRequests').doc(reqId).set({
                 from: currentUser,
@@ -920,7 +916,6 @@
 
         // --- طلبات الصداقة الواردة ---
         function loadIncomingFriendRequests() {
-            if (isGuest()) return;
             const unsub = db.collection('friendRequests').where('to', '==', currentUser).where('status', '==', 'pending').onSnapshot(snap => {
                 const list = document.getElementById('incoming-requests-list');
                 const badge = document.getElementById('incoming-requests-badge');
@@ -1093,24 +1088,28 @@
             .finally(() => btn.disabled = false); 
         }
 
+        // --- [أنا Claude] — 2026-08-16: زوار تليجرام بياخدوا نص النقاط (حافز للتسجيل بـ Pi الكامل) ---
         function awardLoyaltyPoints(amount) { 
-            if (isGuest() || !authUid || !currentUser) return; 
+            if (!authUid || !currentUser) return; 
+            const finalAmount = isGuest() ? Math.round(amount * 0.5) : amount;
+            if (finalAmount <= 0) return;
             db.collection("users").doc(currentUser).set({ 
-                loyaltyPoints: firebase.firestore.FieldValue.increment(amount), 
+                loyaltyPoints: firebase.firestore.FieldValue.increment(finalAmount), 
                 ownerUid: authUid 
             }, { merge: true })
             .catch(e => console.error("Loyalty points error:", e)); 
         }
 
         function awardTaskOnce(taskKey, points) { 
-            if (isGuest() || !authUid || !currentUser) return; 
+            if (!authUid || !currentUser) return; 
             const userRef = db.collection("users").doc(currentUser); 
             userRef.get().then(doc => { 
                 const alreadyDone = doc.exists && doc.data().tasksCompleted && doc.data().tasksCompleted[taskKey]; 
                 if (alreadyDone) return; 
+                const finalPoints = isGuest() ? Math.round(points * 0.5) : points;
                 const update = { 
                     ownerUid: authUid, 
-                    loyaltyPoints: firebase.firestore.FieldValue.increment(points) 
+                    loyaltyPoints: firebase.firestore.FieldValue.increment(finalPoints) 
                 }; 
                 update['tasksCompleted.' + taskKey] = true; 
                 userRef.set(update, { merge: true }).catch(e => console.error("Task award error:", e)); 
