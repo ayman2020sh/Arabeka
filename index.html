@@ -482,8 +482,27 @@
         // --- حماية واسترجاع الجلسة عند إعادة تحميل الصفحة ---
         firebase.auth().onAuthStateChanged(function (user) { 
             if (user) { 
-                authUid = user.uid; 
                 const savedUsername = localStorage.getItem('arabeka_username');
+                // --- [أنا Claude] 2026-08-19: إصلاح جذري لمشكلة authUid المتضارب ---
+                // نظام Custom Token يضمن uid = username دايمًا. لو الجلسة المسترجعة
+                // مش مطابقة (بقايا جلسة قديمة، زي Anonymous Auth كانت مفعّلة زمان)،
+                // لازم نرفضها ونجبر تسجيل دخول جديد بدل ما نستخدمها غلط بصمت.
+                if (savedUsername && user.uid !== savedUsername) {
+                    console.error('Auth mismatch detected! Cached session uid=' + user.uid + ' does not match saved username=' + savedUsername + '. Forcing fresh sign-in.');
+                    firebase.auth().signOut().then(function () {
+                        localStorage.removeItem('arabeka_username');
+                        authUid = null;
+                        currentUser = null;
+                        showError('انتهت صلاحية جلستك القديمة، برجاء تسجيل الدخول من جديد.');
+                    });
+                    return;
+                }
+                // --- [أنا Claude] 2026-08-19: زائر تليجرام ما يورّثش هوية جلسة Pi حقيقية قديمة على نفس الجهاز ---
+                if (window.__isTelegramGuestSession && currentUser && user.uid !== currentUser) {
+                    console.warn('Ignoring stale Firebase session for telegram guest. Stale uid=' + user.uid + ', guest=' + currentUser);
+                    return;
+                }
+                authUid = user.uid; 
                 if (savedUsername && !currentUser) {
                     loginSuccess(savedUsername); // استرجاع الجلسة تلقائياً بدون إعادة تسجيل الدخول
 
@@ -531,6 +550,65 @@
         }
 
         document.getElementById('login-btn').addEventListener('click', handleLogin);
+
+        // ============================================================
+        // --- [أنا Claude] — 2026-08-19: لوحة تشخيص مؤقتة على الشاشة ---
+        // بديل لـ Console غير المتاح على الموقع الحي بالموبايل.
+        // اضغط على الأيقونة 🐞 في الزاوية عشان تفتح/تقفل اللوحة.
+        // عشان تشيل اللوحة دي نهائياً بعد ما نخلص التشخيص، احذف من هنا
+        // لحد نهاية الكتلة المؤشّر عليها بـ "نهاية لوحة التشخيص" تحت.
+        // ============================================================
+        (function setupDebugPanel() {
+            const panel = document.createElement('div');
+            panel.id = 'debug-log-panel';
+            panel.style.cssText = 'display:none; position:fixed; bottom:60px; left:0; right:0; max-height:45vh; overflow-y:auto; background:#000; color:#0f0; font-family:monospace; font-size:11px; padding:10px; z-index:99999; border-top:2px solid #0f0; direction:ltr; text-align:left; white-space:pre-wrap;';
+            document.body.appendChild(panel);
+
+            const toggleBtn = document.createElement('button');
+            toggleBtn.innerText = '🐞';
+            toggleBtn.style.cssText = 'position:fixed; bottom:70px; right:10px; z-index:100000; width:40px; height:40px; border-radius:50%; background:#222; color:#0f0; border:1px solid #0f0; font-size:18px;';
+            toggleBtn.onclick = function () {
+                panel.style.display = (panel.style.display === 'none') ? 'block' : 'none';
+            };
+            document.body.appendChild(toggleBtn);
+
+            const clearBtn = document.createElement('button');
+            clearBtn.innerText = 'مسح';
+            clearBtn.style.cssText = 'position:fixed; bottom:118px; right:10px; z-index:100000; padding:6px 10px; border-radius:8px; background:#222; color:#f66; border:1px solid #f66; font-size:11px;';
+            clearBtn.onclick = function () { panel.innerHTML = ''; };
+            document.body.appendChild(clearBtn);
+
+            function addLine(prefix, color, args) {
+                const line = document.createElement('div');
+                line.style.color = color;
+                line.style.borderBottom = '1px solid #333';
+                line.style.paddingBottom = '4px';
+                line.style.marginBottom = '4px';
+                const time = new Date().toLocaleTimeString();
+                let text = args.map(a => {
+                    try { return typeof a === 'object' ? JSON.stringify(a) : String(a); }
+                    catch (e) { return String(a); }
+                }).join(' ');
+                line.innerText = `[${time}] ${prefix} ${text}`;
+                panel.appendChild(line);
+                panel.scrollTop = panel.scrollHeight;
+            }
+
+            const originalLog = console.log;
+            const originalError = console.error;
+            const originalWarn = console.warn;
+            console.log = function (...args) { addLine('LOG', '#0f0', args); originalLog.apply(console, args); };
+            console.error = function (...args) { addLine('ERROR', '#f44', args); originalError.apply(console, args); };
+            console.warn = function (...args) { addLine('WARN', '#fa0', args); originalWarn.apply(console, args); };
+
+            window.addEventListener('error', function (e) {
+                addLine('UNCAUGHT', '#f44', [e.message + ' @ ' + e.filename + ':' + e.lineno]);
+            });
+            window.addEventListener('unhandledrejection', function (e) {
+                addLine('UNHANDLED PROMISE', '#f44', [e.reason]);
+            });
+        })();
+        // --- نهاية لوحة التشخيص ---
 
         // --- [أنا Claude] — 2026-08-16: تكبير تلقائي لخانات الكتابة الطويلة (منشور/تعديل/وصف منتج) ---
         function autoResizeTextarea(el) {
@@ -1698,6 +1776,7 @@
                 const tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user;
                 if (tgUser && tgUser.id) {
                     const guestId = 'tg_' + tgUser.id; 
+                    window.__isTelegramGuestSession = true; // [أنا Claude] 2026-08-19: علامة لمنع استخدام أي جلسة Firebase قديمة غلط
                     loginSuccess(guestId); 
                     document.getElementById('user-name').innerText = "زائر تلجرام #" + tgUser.id;
                     const mainLoginBtn = document.getElementById('login-btn'); 
