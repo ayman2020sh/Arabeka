@@ -800,7 +800,7 @@
             const unsubFollowers = db.collection('follows').where('target', '==', currentUser).onSnapshot(snap => {
                 document.getElementById('followers-count').innerText = snap.size;
             }); 
-            const unsubPostsCount = db.collection('posts').where('author', '==', currentUser).orderBy('timestamp', 'desc').onSnapshot(snap => {
+            const unsubPostsCount = db.collection('posts').where('author', '==', currentUser).onSnapshot(snap => {
                 document.getElementById('posts-count').innerText = snap.size;
                 const listEl = document.getElementById('my-posts-list');
                 if (!listEl) return;
@@ -808,13 +808,23 @@
                     listEl.innerHTML = '<p style="color:var(--text-muted); text-align:center; margin:0;">لا توجد منشورات بعد</p>';
                     return;
                 }
+                // ترتيب أحدث أولاً في المتصفح (بدون orderBy في القاعدة، عشان محتاجش index مركّب جديد)
+                const docs = snap.docs.slice().sort((a, b) => {
+                    const ta = a.data().timestamp ? a.data().timestamp.toMillis() : 0;
+                    const tb = b.data().timestamp ? b.data().timestamp.toMillis() : 0;
+                    return tb - ta;
+                });
                 const frags = [];
-                snap.forEach(doc => {
+                docs.forEach(doc => {
                     const p = doc.data();
                     const safeImg = sanitizeURL(p.imageUrl);
                     frags.push(`<div class="card"><div class="card-content">${sanitizeHTML(p.content || '')}</div>${safeImg ? `<img src="${safeImg}" class="post-image" onerror="this.style.display='none'">` : ''}</div>`);
                 });
                 listEl.innerHTML = frags.join('');
+            }, (error) => {
+                console.error('my-posts listen error:', error);
+                const listEl = document.getElementById('my-posts-list');
+                if (listEl) listEl.innerHTML = `<p style="color: var(--danger); font-size:12px; text-align:center;">تعذر تحميل المنشورات (${error.code || error.message})</p>`;
             });
             const unsubMyProducts = db.collection('products').where('owner', '==', currentUser).onSnapshot(snap => {
                 const el = document.getElementById('my-products-count'); 
