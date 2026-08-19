@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <!-- استدعاء مكتبة Telegram WebApp -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
     <!-- مكتبة FontAwesome للأيقونات الرسمية (X, Facebook, Telegram) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
@@ -495,11 +492,6 @@
                         currentUser = null;
                         showError('انتهت صلاحية جلستك القديمة، برجاء تسجيل الدخول من جديد.');
                     });
-                    return;
-                }
-                // --- [أنا Claude] 2026-08-19: زائر تليجرام ما يورّثش هوية جلسة Pi حقيقية قديمة على نفس الجهاز ---
-                if (window.__isTelegramGuestSession && currentUser && user.uid !== currentUser) {
-                    console.warn('Ignoring stale Firebase session for telegram guest. Stale uid=' + user.uid + ', guest=' + currentUser);
                     return;
                 }
                 authUid = user.uid; 
@@ -1769,34 +1761,14 @@
             }
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            if (window.Telegram && window.Telegram.WebApp) {
-                const tg = window.Telegram.WebApp; 
-                tg.expand(); 
-                const tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user;
-                if (tgUser && tgUser.id) {
-                    const guestId = 'tg_' + tgUser.id; 
-                    window.__isTelegramGuestSession = true; // [أنا Claude] 2026-08-19: علامة لمنع استخدام أي جلسة Firebase قديمة غلط
-                    const mainLoginBtn = document.getElementById('login-btn'); 
-                    if (mainLoginBtn) mainLoginBtn.style.display = 'none';
-                    const cardLoginBtn = document.querySelector('.login-btn-card'); 
-                    if (cardLoginBtn) cardLoginBtn.style.display = 'none';
-
-                    // --- [أنا Claude] 2026-08-19: توثيق حقيقي لزوار تليجرام عبر /api/telegram-auth ---
-                    // بدل الدخول المباشر بدون توثيق (اللي كان يخلي authUid فاضي دايمًا)
-                    fetch('/api/telegram-auth', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ initData: tg.initData })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (!data.token) throw new Error(data.error || 'فشل التحقق من حساب تليجرام');
-                        return firebase.auth().signInWithCustomToken(data.token);
-                    })
-                    .then(() => {
-                        authUid = firebase.auth().currentUser.uid; // تأكيد فوري بدل انتظار onAuthStateChanged
-                        loginSuccess(guestId);
-                        document.getElementById('user-name').innerText = "زائر تلجرام #" + tgUser.id;
-                    })
-                    .catch(err => {
+        // --- [أنا Claude] 2026-08-19: تم حذف نظام "زائر تليجرام" بالكامل ---
+        // امتثالاً لشرط Pi Network: "تسجيل الدخول يجب أن يكون حصريًا عبر Pi SDK،
+        // وأي نظام دخول بديل (طرف ثالث) ممنوع منعًا باتًا" — سواء Testnet أو Mainnet.
+        // لو حد فتح الموقع من تليجرام دلوقتي، هيشوف شاشة تسجيل الدخول العادية،
+        // وزرار "Pi sign.in" هيديله تلقائيًا رسالة "الرجاء فتح التطبيق من متصفح Pi"
+        // (الرسالة دي موجودة أصلاً في handleLogin لما Pi SDK مش موجود).
+        // مفيش أي كود تاني مطلوب هنا — بوت تليجرام (Arabeka_bot) منفصل تمامًا
+        // وبيفضل شغال عادي لأنه مش نظام "دخول" للتطبيق، مجرد بوت معلومات.
+    </script>
+</body>
+</html>
