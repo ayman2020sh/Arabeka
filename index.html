@@ -283,6 +283,9 @@
                     <div id="tasks-list" style="font-size: 13px; color: var(--text-color); display: flex; flex-direction: column; gap: 4px;"></div>
                 </div>
                 
+                <h3 style="color: var(--text-color);">منشوراتي</h3>
+                <div id="my-posts-list"></div>
+                
                 <div class="card" style="padding: 5px 15px;">
                     <div class="settings-row" onclick="editBio()">
                         <div class="row-left"><span class="icon">🫆</span><span class="label">تعديل نبذه</span></div><span class="row-arrow">›</span>
@@ -318,7 +321,7 @@
                     <div style="display: flex; justify-content: space-around; text-align: center;">
                         <div class="stat-block" onclick="showUserFollowing()"><div class="stat-number" id="uprofile-following-count">0</div><div class="stat-label">متابعة</div></div>
                         <div class="stat-block" onclick="showUserFollowers()"><div class="stat-number" id="uprofile-followers-count">0</div><div class="stat-label">المتابعين</div></div>
-                        <div class="stat-block" onclick="switchPage('feed')"><div class="stat-number" id="uprofile-posts-count">0</div><div class="stat-label">المنشورات</div></div>
+                        <div class="stat-block" style="cursor:default;"><div class="stat-number" id="uprofile-posts-count">0</div><div class="stat-label">المنشورات</div></div>
                         <div class="stat-block" onclick="showUserProducts()"><div class="stat-number" id="uprofile-products-count">0</div><div class="stat-label">عروض البيع</div></div>
                     </div>
                 </div>
@@ -797,9 +800,22 @@
             const unsubFollowers = db.collection('follows').where('target', '==', currentUser).onSnapshot(snap => {
                 document.getElementById('followers-count').innerText = snap.size;
             }); 
-            const unsubPostsCount = db.collection('posts').where('author', '==', currentUser).onSnapshot(snap => {
+            const unsubPostsCount = db.collection('posts').where('author', '==', currentUser).orderBy('timestamp', 'desc').onSnapshot(snap => {
                 document.getElementById('posts-count').innerText = snap.size;
-            }); 
+                const listEl = document.getElementById('my-posts-list');
+                if (!listEl) return;
+                if (snap.empty) {
+                    listEl.innerHTML = '<p style="color:var(--text-muted); text-align:center; margin:0;">لا توجد منشورات بعد</p>';
+                    return;
+                }
+                const frags = [];
+                snap.forEach(doc => {
+                    const p = doc.data();
+                    const safeImg = sanitizeURL(p.imageUrl);
+                    frags.push(`<div class="card"><div class="card-content">${sanitizeHTML(p.content || '')}</div>${safeImg ? `<img src="${safeImg}" class="post-image" onerror="this.style.display='none'">` : ''}</div>`);
+                });
+                listEl.innerHTML = frags.join('');
+            });
             const unsubMyProducts = db.collection('products').where('owner', '==', currentUser).onSnapshot(snap => {
                 const el = document.getElementById('my-products-count'); 
                 if (el) el.innerText = snap.size;
@@ -862,7 +878,7 @@
             // زر المتابعة
             db.collection('follows').doc(`${currentUser}_${username}`).get().then(doc => {
                 document.getElementById('uprofile-follow-btn').innerText = doc.exists ? '✓ متابَع' : '➕ متابعة';
-            });
+            }).catch(e => console.error('follow-status read error:', e));
 
             refreshFriendButtonState();
 
@@ -876,7 +892,10 @@
         }
 
         function uprofileToggleFollow() {
-            if (!viewedProfileUser) return;
+            if (!viewedProfileUser) {
+                console.warn('uprofileToggleFollow blocked: viewedProfileUser is empty');
+                return;
+            }
             toggleFollow(viewedProfileUser, null, (isNowFollowing) => {
                 document.getElementById('uprofile-follow-btn').innerText = isNowFollowing ? '✓ متابَع' : '➕ متابعة';
             });
@@ -929,25 +948,37 @@
                 } else if (d.status === 'pending' && d.from === currentUser) {
                     btn.innerText = '⏳ تم إرسال الطلب';
                     btn.style.background = '#444';
-                    btn.onclick = () => { db.collection('friendRequests').doc(reqId).delete().then(refreshFriendButtonState); };
+                    btn.onclick = () => { db.collection('friendRequests').doc(reqId).delete().then(refreshFriendButtonState).catch(e => { console.error('cancel friend request error:', e); showError('تعذر إلغاء الطلب: ' + e.message); }); };
                 } else if (d.status === 'pending' && d.to === currentUser) {
                     btn.innerText = '✔️ قبول طلب الصداقة';
                     btn.style.background = 'var(--success)';
-                    btn.onclick = () => { db.collection('friendRequests').doc(reqId).update({ status: 'accepted' }).then(refreshFriendButtonState); };
+                    btn.onclick = () => { db.collection('friendRequests').doc(reqId).update({ status: 'accepted' }).then(refreshFriendButtonState).catch(e => { console.error('accept friend request error:', e); showError('تعذر قبول الطلب: ' + e.message); }); };
                 }
+            }).catch(e => {
+                // --- [أنا Claude] 2026-08-19: كشف خطأ صامت كان بيحصل هنا لو المستند لسه مش موجود (resource=null في القاعدة) ---
+                console.error('refreshFriendButtonState read error:', e);
+                if (btn) { btn.innerText = '🤝 إضافة صديق'; btn.onclick = uprofileHandleFriendAction; btn.className = 'btn'; }
             });
         }
 
         function uprofileHandleFriendAction() {
-            if (!viewedProfileUser || !authUid) return;
+            if (!viewedProfileUser || !authUid) {
+                console.warn('uprofileHandleFriendAction blocked: viewedProfileUser=', viewedProfileUser, 'authUid=', authUid);
+                showError('لسه بيجهز الاتصال الآمن، حاول تاني بعد ثانية');
+                return;
+            }
             const reqId = friendRequestId(currentUser, viewedProfileUser);
+            console.log('Sending friend request:', { from: currentUser, to: viewedProfileUser, authUid, reqId });
             db.collection('friendRequests').doc(reqId).set({
                 from: currentUser,
                 to: viewedProfileUser,
                 fromUid: authUid,
                 status: 'pending',
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(refreshFriendButtonState).catch(() => showError('تعذر إرسال طلب الصداقة'));
+            }).then(refreshFriendButtonState).catch(e => {
+                console.error('uprofileHandleFriendAction write error:', e);
+                showError('تعذر إرسال طلب الصداقة: ' + e.message);
+            });
         }
 
         // --- طلبات الصداقة الواردة ---
@@ -968,12 +999,17 @@
                     frags.push(`
                         <div class="friend-request-row">
                             <span style="flex:1; cursor:pointer;" onclick="viewUserProfile('${escapeAttr(d.from)}')">${sanitizeHTML(d.from)}</span>
-                            <button class="small-action-btn accept" onclick="db.collection('friendRequests').doc('${doc.id}').update({status:'accepted'})">قبول</button>
-                            <button class="small-action-btn outline" onclick="db.collection('friendRequests').doc('${doc.id}').delete()">رفض</button>
+                            <button class="small-action-btn accept" onclick="db.collection('friendRequests').doc('${doc.id}').update({status:'accepted'}).catch(e => { console.error('Accept friend request error:', e); showError('تعذر قبول الطلب: ' + e.message); })">قبول</button>
+                            <button class="small-action-btn outline" onclick="db.collection('friendRequests').doc('${doc.id}').delete().catch(e => { console.error('Reject friend request error:', e); showError('تعذر رفض الطلب: ' + e.message); })">رفض</button>
                         </div>
                     `);
                 });
                 list.innerHTML = frags.join('');
+            }, (error) => {
+                // --- [أنا Claude] 2026-08-19: كشف أخطاء صلاحيات Firestore الصامتة ---
+                console.error('loadIncomingFriendRequests permission/listen error:', error);
+                const list = document.getElementById('incoming-requests-list');
+                if (list) list.innerHTML = `<p style="color: var(--danger); font-size:12px; text-align:center; margin:0;">تعذر تحميل الطلبات (${error.code || error.message})</p>`;
             });
             unsubscribeFunctions.push(unsub);
         }
@@ -1030,10 +1066,15 @@
         // ================= نهاية نظام الملف الشخصي والأصدقاء ================= //
 
         function toggleFollow(author, btnEl, callback) {
-            if (!author || author === currentUser) return;
+            if (!author || author === currentUser) {
+                console.warn('toggleFollow blocked early:', { author, currentUser });
+                return;
+            }
             const docId = `${currentUser}_${author}`;
             const ref = db.collection('follows').doc(docId);
+            console.log('toggleFollow start:', { docId, authUid });
             ref.get().then(doc => {
+                console.log('toggleFollow current state:', { exists: doc.exists });
                 if (doc.exists) {
                     return ref.delete().then(() => false);
                 } else {
@@ -1045,9 +1086,13 @@
                     }).then(() => { awardTaskOnce('firstFollow', 5); return true; });
                 }
             }).then(isNowFollowing => {
+                console.log('toggleFollow success, isNowFollowing =', isNowFollowing);
                 if (btnEl) btnEl.innerText = isNowFollowing ? '✓ متابَع' : '➕ متابعة';
                 if (typeof callback === 'function') callback(isNowFollowing);
-            }).catch(e => showError('خطأ في المتابعة'));
+            }).catch(e => {
+                console.error('toggleFollow error:', e);
+                showError('خطأ في المتابعة: ' + e.message);
+            });
         }
 
         function openListModal(title, list) { 
