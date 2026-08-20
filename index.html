@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <!-- استدعاء مكتبة Telegram WebApp (لقب عرض بس، بدون أي نظام دخول أو توثيق) -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
     <!-- مكتبة FontAwesome للأيقونات الرسمية (X, Facebook, Telegram) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
@@ -91,16 +88,6 @@
             <textarea id="edit-prod-description" rows="3" maxlength="250" placeholder="وصف المنتج (اختياري، حتى 250 حرف)" oninput="autoResizeTextarea(this)"></textarea>
             <button class="btn" style="background-color: #eab308; color: black;" onclick="saveEditedProduct()">حفظ التعديلات</button>
             <button class="btn" style="background-color:#444;" onclick="closeEditProductModal()">إلغاء</button>
-        </div>
-    </div>
-
-    <!-- نافذة تنبيه تليجرام -->
-    <div id="telegramAlertModal" class="modal">
-        <div class="modal-content" style="border: 1px solid var(--primary);">
-            <div style="font-size: 40px; margin-bottom: 10px;">⚠️</div>
-            <h3 style="margin-top: 0; color: var(--gold);">تنبيه هام</h3>
-            <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6;">عذراً، عمليات البيع والشراء وإضافة المنتجات متاحة حصرياً ومؤمنة بالكامل من خلال متصفح <b>Pi Browser</b> فقط.</p>
-            <button class="btn" style="background: linear-gradient(90deg, var(--primary-dark), var(--primary)); margin-top: 15px;" onclick="document.getElementById('telegramAlertModal').style.display='none'">حسناً، فهمت</button>
         </div>
     </div>
 
@@ -668,10 +655,6 @@
             unsubscribeFunctions = []; 
         }
 
-        function isGuest() { 
-            return !!currentUser && currentUser.indexOf('tg_') === 0; 
-        }
-
         function onIncompletePaymentFound(payment) { 
             fetch('/api/complete', { 
                 method: 'POST', 
@@ -759,7 +742,7 @@
             const done = tasksCompleted || {}; 
             el.innerHTML = TASKS_LIST.map(function (t) { 
                 const isDone = !!done[t.key]; 
-                const icon = isDone ? '✅' : '🎉'; 
+                const icon = isDone ? '✅' : '⬜'; 
                 const style = isDone ? 'color: var(--text-muted); text-decoration: line-through;' : ''; 
                 return '<div style="' + style + '">' + icon + ' ' + sanitizeHTML(t.label) + ' (+' + t.points + ')</div>'; 
             }).join(''); 
@@ -1253,13 +1236,10 @@
             .finally(() => btn.disabled = false); 
         }
 
-        // زوار تليجرام بياخدوا نص النقاط (حافز للتسجيل بـ Pi الكامل)
         function awardLoyaltyPoints(amount) { 
             if (!authUid || !currentUser) return; 
-            const finalAmount = isGuest() ? Math.round(amount * 0.5) : amount;
-            if (finalAmount <= 0) return;
             db.collection("users").doc(currentUser).set({ 
-                loyaltyPoints: firebase.firestore.FieldValue.increment(finalAmount), 
+                loyaltyPoints: firebase.firestore.FieldValue.increment(amount), 
                 ownerUid: authUid 
             }, { merge: true })
             .catch(e => console.error("Loyalty points error:", e)); 
@@ -1271,10 +1251,9 @@
             userRef.get().then(doc => { 
                 const alreadyDone = doc.exists && doc.data().tasksCompleted && doc.data().tasksCompleted[taskKey]; 
                 if (alreadyDone) return; 
-                const finalPoints = isGuest() ? Math.round(points * 0.5) : points;
                 const update = { 
                     ownerUid: authUid, 
-                    loyaltyPoints: firebase.firestore.FieldValue.increment(finalPoints) 
+                    loyaltyPoints: firebase.firestore.FieldValue.increment(points) 
                 }; 
                 update['tasksCompleted.' + taskKey] = true; 
                 userRef.set(update, { merge: true }).catch(e => console.error("Task award error:", e)); 
@@ -1283,9 +1262,9 @@
 
         function getLoyaltyBadge(points) { 
             const p = points || 0; 
-            if (p >= 500) return '🌟 عضو أساسي'; 
-            if (p >= 200) return '🏅 عضو مميز'; 
-            if (p >= 50) return '☄️ عضو نشط'; 
+            if (p >= 500) return '🥇 عضو أساسي'; 
+            if (p >= 200) return '🥈 عضو مميز'; 
+            if (p >= 50) return '🥉 عضو نشط'; 
             return ''; 
         }
 
@@ -1500,10 +1479,6 @@
         }
 
         function addNewProduct() {
-            if (isGuest()) { 
-                document.getElementById('telegramAlertModal').style.display = 'flex'; 
-                return; 
-            }
             if (!authUid) { 
                 showError("لسه بيجهز الاتصال الآمن، حاول تاني بعد ثانية"); 
                 return; 
@@ -1675,10 +1650,6 @@
         }
 
         function buyProduct(name, price) {
-            if (isGuest()) { 
-                document.getElementById('telegramAlertModal').style.display = 'flex'; 
-                return; 
-            }
             if (typeof Pi === 'undefined') { 
                 showError("نظام Pi غير متاح هنا"); 
                 return; 
@@ -1764,28 +1735,6 @@
             }
         }
 
-        // (نسخة مبسّطة معتمدة): زائر تليجرام كلقب عرض بس
-        //  : مفيش أي نظام توثيق أو دخول حقيقي هنا —
-        // مجرد اكتشاف السياق (تليجرام) وعرض اسم مؤقت محلي، بدون Firebase Auth،
-        // بدون كلمة سر، بدون رمز موقّع. تسجيل الدخول الحقيقي الوحيد يفضل حصريًا
-        // عبر Pi SDK (زرار "Pi sign.in"). الاستخدام: تسهيل جمع مستخدمين مبدئيًا
-        // قبل ما ينتقلوا لحساب Pi حقيقي — مش بديل دائم لتسجيل الدخول.
-        document.addEventListener("DOMContentLoaded", function() {
-            if (window.Telegram && window.Telegram.WebApp) {
-                const tg = window.Telegram.WebApp; 
-                tg.expand(); 
-                const tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user;
-                if (tgUser && tgUser.id) {
-                    const guestId = 'tg_' + tgUser.id; 
-                    loginSuccess(guestId); 
-                    document.getElementById('user-name').innerText = "زائر تلجرام #" + tgUser.id;
-                    const mainLoginBtn = document.getElementById('login-btn'); 
-                    if (mainLoginBtn) mainLoginBtn.style.display = 'none';
-                    const cardLoginBtn = document.querySelector('.login-btn-card'); 
-                    if (cardLoginBtn) cardLoginBtn.style.display = 'none';
-                }
-            }
-        });
     </script>
 </body>
 </html>
