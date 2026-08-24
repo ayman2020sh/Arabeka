@@ -1,7 +1,7 @@
 {
   "name": "arabeka-pi-payment",
   "version": "1.0.0",
-  "dependencies": {
+  "dependencies": {"pi-backend": "*"
     "axios": "^1.6.0",
     "firebase-admin": "^11.11.0"
   }
