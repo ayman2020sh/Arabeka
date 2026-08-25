@@ -1,7 +1,79 @@
 const axios = require('axios');
+const admin = require('firebase-admin');
+
+if (!admin.apps.length) {
+    try {
+        const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+        admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+    } catch (error) {
+        console.error("Firebase Admin Initialization Error:", error);
+    }
+}
+const db = admin.apps.length ? admin.firestore() : null;
 
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// إنشاء سجل الطلب المحجوز بعد التأكد الفعلي من نجاح الدفعة
+async function createHeldOrder(paymentId, txid, API_KEY) {
+    if (!db) {
+        console.error('createHeldOrder: Firestore not initialized, skipping order creation');
+        return;
+    }
+    try {
+        const info = await axios.get(
+            `https://api.minepi.com/v2/payments/${paymentId}`,
+            { headers: { Authorization: `Key ${API_KEY}` } }
+        );
+        const payment = info.data;
+        const metadata = payment.metadata || {};
+        const { productId, sellerUsername, buyerUsername } = metadata;
+        const amount = payment.amount;
+
+        if (!productId || !sellerUsername || !buyerUsername) {
+            console.error('createHeldOrder: missing metadata, cannot create order', metadata);
+            return;
+        }
+
+        // التحقق من تطابق السعر مع سعر المنتج الفعلي الحالي (حماية من التلاعب)
+        let priceMismatch = false;
+        let expectedPrice = null;
+        try {
+            const productDoc = await db.collection('products').doc(productId).get();
+            if (productDoc.exists) {
+                expectedPrice = productDoc.data().price;
+                if (typeof expectedPrice === 'number' && Math.abs(expectedPrice - amount) > 0.0001) {
+                    priceMismatch = true;
+                    console.error(`createHeldOrder: PRICE MISMATCH! paid=${amount}, expected=${expectedPrice}, paymentId=${paymentId}`);
+                }
+            }
+        } catch (e) {
+            console.error('createHeldOrder: product price check failed:', e.message);
+        }
+
+        const releaseDeadline = admin.firestore.Timestamp.fromMillis(Date.now() + 48 * 60 * 60 * 1000);
+
+        await db.collection('orders').doc(paymentId).set({
+            productId,
+            productName: metadata.productName || '',
+            buyerUsername,
+            buyerUid: buyerUsername,
+            sellerUsername,
+            sellerUid: sellerUsername,
+            amount,
+            paymentId,
+            txid,
+            status: 'held',
+            priceMismatch,
+            expectedPrice,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            releaseDeadline
+        });
+        console.log('✅ Order created (held):', paymentId);
+    } catch (e) {
+        console.error('createHeldOrder failed:', e.response?.data || e.message);
+    }
 }
 
 module.exports = async (req, res) => {
@@ -36,6 +108,9 @@ module.exports = async (req, res) => {
                 { headers: { Authorization: `Key ${API_KEY}` } }
             );
             console.log('✅ [complete.js] Completed on attempt ' + attempt + ':', r.data);
+
+            await createHeldOrder(paymentId, txid, API_KEY);
+
             return res.status(200).json(r.data);
         } catch (e) {
             lastError = e.response?.data || e.message;
