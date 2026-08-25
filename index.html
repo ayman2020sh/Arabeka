@@ -422,6 +422,25 @@
 
     <!-- السكريبتات الأساسية -->
     <script>
+        // دالة التنقل بين الصفحات
+        function switchPage(pageId, noHistory) {
+            document.querySelectorAll('#main-app .page').forEach(page => {
+                page.classList.remove('active');
+            });
+            const activePage = document.getElementById('page-' + pageId);
+            if (activePage) {
+                activePage.classList.add('active');
+            }
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+                if (item.getAttribute('data-page') === pageId) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            window.scrollTo(0, 0);
+        }
+
         // إعدادات Firebase
         const firebaseConfig = { 
             apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo", 
@@ -468,7 +487,6 @@
             }).catch(e => console.error("Admin status check error:", e));
         }
 
-        // كاش صور المستخدمين لعرضها بجانب اسمهم في المنشورات
         let avatarCache = {};
 
         function fetchAvatarAndRerender(username, onResult) {
@@ -489,14 +507,9 @@
             return avatarCache[username] ? '' : (username ? sanitizeHTML(username.charAt(0).toUpperCase()) : '?');
         }
         
-        // --- حماية واسترجاع الجلسة عند إعادة تحميل الصفحة ---
         firebase.auth().onAuthStateChanged(function (user) { 
             if (user) { 
                 const savedUsername = localStorage.getItem('arabeka_username');
-                // إصلاح جذري لمشكلة authUid المتضارب
-                // نظام Custom Token يضمن uid = username دايمًا. لو الجلسة المسترجعة
-                // مش مطابقة (بقايا جلسة قديمة، زي Anonymous Auth كانت مفعّلة زمان)،
-                // لازم نرفضها ونجبر تسجيل دخول جديد بدل ما نستخدمها غلط بصمت.
                 if (savedUsername && user.uid !== savedUsername) {
                     console.error('Auth mismatch detected! Cached session uid=' + user.uid + ' does not match saved username=' + savedUsername + '. Forcing fresh sign-in.');
                     firebase.auth().signOut().then(function () {
@@ -509,11 +522,7 @@
                 }
                 authUid = user.uid; 
                 if (savedUsername && !currentUser) {
-                    loginSuccess(savedUsername); // استرجاع الجلسة تلقائياً بدون إعادة تسجيل الدخول
-
-                    // إعادة توثيق صامتة مع Pi Browser
-                    // بدون هذه الخطوة، الـ SDK يفتكر إنه "مش متهيأ" لأي عملية دفع
-                    // رغم إن الجلسة عندنا (Firebase + localStorage) مسترجعة بنجاح
+                    loginSuccess(savedUsername); 
                     const trySilentPiAuth = function (attemptsLeft) {
                         if (attemptsLeft === undefined) attemptsLeft = 20;
                         if (typeof Pi !== 'undefined' && piReady) {
@@ -532,10 +541,7 @@
             } 
         });
 
-        // تهيئة Pi Network
         let piReady = false;
-        
-        // التعديل هنا: استدعاء التهيئة فوراً وعدم انتظار اكتمال تحميل الصفحة (الذي كان يؤخر التهيئة ويسبب الخطأ)
         initializePiSDK();
         
         function initializePiSDK(attemptsLeft) {
@@ -556,13 +562,6 @@
 
         document.getElementById('login-btn').addEventListener('click', handleLogin);
 
-        // ============================================================
-        // لوحة تشخيص مؤقتة على الشاشة
-        // بديل لـ Console غير المتاح على الموقع الحي بالموبايل.
-        // اضغط على الأيقونة 🐞 في الزاوية عشان تفتح/تقفل اللوحة.
-        // عشان تشيل اللوحة دي نهائياً بعد ما نخلص التشخيص، احذف من هنا
-        // لحد نهاية الكتلة المؤشّر عليها بـ "نهاية لوحة التشخيص" تحت.
-        // ============================================================
         (function setupDebugPanel() {
             const panel = document.createElement('div');
             panel.id = 'debug-log-panel';
@@ -613,9 +612,7 @@
                 addLine('UNHANDLED PROMISE', '#f44', [e.reason]);
             });
         })();
-        // --- نهاية لوحة التشخيص ---
 
-        // تكبير تلقائي لخانات الكتابة الطويلة (منشور/تعديل/وصف منتج)
         function autoResizeTextarea(el) {
             el.style.height = 'auto';
             el.style.height = el.scrollHeight + 'px';
@@ -643,7 +640,6 @@
             } 
         }
 
-        // عناصر شكلية لسه مش شغالة (القائمة ☰ والجرس 🔔)
         function handleAddButton() {
             const activePage = document.querySelector('#main-app .page.active');
             const pageId = activePage ? activePage.id : '';
@@ -738,6 +734,7 @@
             loadProducts(); 
             loadProfileStats(); 
             loadIncomingFriendRequests();
+            loadMyOrders();
             switchPage('feed');
         }
         
@@ -887,7 +884,6 @@
                     listEl.innerHTML = '<p style="color:var(--text-muted); text-align:center; margin:0;">لا توجد منشورات بعد</p>';
                     return;
                 }
-                // ترتيب أحدث أولاً في المتصفح (بدون orderBy في القاعدة، عشان محتاجش index مركّب جديد)
                 const docs = snap.docs.slice().sort((a, b) => {
                     const ta = a.data().timestamp ? a.data().timestamp.toMillis() : 0;
                     const tb = b.data().timestamp ? b.data().timestamp.toMillis() : 0;
@@ -912,12 +908,10 @@
             unsubscribeFunctions.push(unsubFollowing, unsubFollowers, unsubPostsCount, unsubMyProducts); 
         }
 
-        // ============== نظام الملف الشخصي العام + الأصدقاء ==============
         let viewedProfileUser = null;
         let previousPageBeforeProfile = 'feed';
 
         function friendRequestId(userA, userB) {
-            // ترتيب أبجدي ثابت عشان الـ id يبقى نفسه في الاتجاهين
             return [userA, userB].sort().join('__');
         }
 
@@ -964,7 +958,6 @@
                 document.getElementById('uprofile-posts').innerHTML = frags.join('') || '<p style="color:var(--text-muted); text-align:center;">لا توجد منشورات بعد</p>';
             });
 
-            // زر المتابعة
             db.collection('follows').doc(`${currentUser}_${username}`).get().then(doc => {
                 document.getElementById('uprofile-follow-btn').innerText = doc.exists ? '✓ متابَع' : '➕ متابعة';
             }).catch(e => console.error('follow-status read error:', e));
@@ -981,10 +974,7 @@
         }
 
         function uprofileToggleFollow() {
-            if (!viewedProfileUser) {
-                console.warn('uprofileToggleFollow blocked: viewedProfileUser is empty');
-                return;
-            }
+            if (!viewedProfileUser) return;
             toggleFollow(viewedProfileUser, null, (isNowFollowing) => {
                 document.getElementById('uprofile-follow-btn').innerText = isNowFollowing ? '✓ متابَع' : '➕ متابعة';
             });
@@ -1044,7 +1034,6 @@
                     btn.onclick = () => { db.collection('friendRequests').doc(reqId).update({ status: 'accepted' }).then(refreshFriendButtonState).catch(e => { console.error('accept friend request error:', e); showError('تعذر قبول الطلب: ' + e.message); }); };
                 }
             }).catch(e => {
-                // كشف خطأ صامت كان بيحصل هنا لو المستند لسه مش موجود (resource=null في القاعدة)
                 console.error('refreshFriendButtonState read error:', e);
                 if (btn) { btn.innerText = '🤝 إضافة صديق'; btn.onclick = uprofileHandleFriendAction; btn.className = 'btn'; }
             });
@@ -1052,12 +1041,10 @@
 
         function uprofileHandleFriendAction() {
             if (!viewedProfileUser || !authUid) {
-                console.warn('uprofileHandleFriendAction blocked: viewedProfileUser=', viewedProfileUser, 'authUid=', authUid);
                 showError('لسه بيجهز الاتصال الآمن، حاول تاني بعد ثانية');
                 return;
             }
             const reqId = friendRequestId(currentUser, viewedProfileUser);
-            console.log('Sending friend request:', { from: currentUser, to: viewedProfileUser, authUid, reqId });
             db.collection('friendRequests').doc(reqId).set({
                 from: currentUser,
                 to: viewedProfileUser,
@@ -1070,7 +1057,6 @@
             });
         }
 
-        // --- طلبات الصداقة الواردة ---
         function loadIncomingFriendRequests() {
             const unsub = db.collection('friendRequests').where('to', '==', currentUser).where('status', '==', 'pending').onSnapshot(snap => {
                 const list = document.getElementById('incoming-requests-list');
@@ -1095,7 +1081,6 @@
                 });
                 list.innerHTML = frags.join('');
             }, (error) => {
-                // كشف أخطاء صلاحيات Firestore الصامتة
                 console.error('loadIncomingFriendRequests permission/listen error:', error);
                 const list = document.getElementById('incoming-requests-list');
                 if (list) list.innerHTML = `<p style="color: var(--danger); font-size:12px; text-align:center; margin:0;">تعذر تحميل الطلبات (${error.code || error.message})</p>`;
@@ -1103,7 +1088,6 @@
             unsubscribeFunctions.push(unsub);
         }
 
-        // --- البحث عن مستخدمين ---
         function searchUsers() {
             const term = document.getElementById('user-search-input').value.trim();
             const resultsEl = document.getElementById('search-results');
@@ -1140,7 +1124,6 @@
                 .catch(() => showError('تعذر البحث حالياً'));
         }
 
-        // --- دعوة الأصدقاء ---
         function inviteFriends() {
             const shareText = `انضم لي على أرابيكا 🎗 — مجتمع تجارة وتواصل عبر شبكة Pi Network`;
             const shareUrl = window.location.origin;
@@ -1152,18 +1135,12 @@
                 showError('المشاركة غير مدعومة على هذا المتصفح');
             }
         }
-        // ================= نهاية نظام الملف الشخصي والأصدقاء ================= //
 
         function toggleFollow(author, btnEl, callback) {
-            if (!author || author === currentUser) {
-                console.warn('toggleFollow blocked early:', { author, currentUser });
-                return;
-            }
+            if (!author || author === currentUser) return;
             const docId = `${currentUser}_${author}`;
             const ref = db.collection('follows').doc(docId);
-            console.log('toggleFollow start:', { docId, authUid });
             ref.get().then(doc => {
-                console.log('toggleFollow current state:', { exists: doc.exists });
                 if (doc.exists) {
                     return ref.delete().then(() => false);
                 } else {
@@ -1175,7 +1152,6 @@
                     }).then(() => { awardTaskOnce('firstFollow', 5); return true; });
                 }
             }).then(isNowFollowing => {
-                console.log('toggleFollow success, isNowFollowing =', isNowFollowing);
                 if (btnEl) btnEl.innerText = isNowFollowing ? '✓ متابَع' : '➕ متابعة';
                 if (typeof callback === 'function') callback(isNowFollowing);
             }).catch(e => {
@@ -1682,7 +1658,6 @@
                 return;
             }
             
-            // التعديل هنا: التأكد من التهيئة قبل استدعاء الدفع
             if (!piReady) {
                 try {
                     Pi.init({ version: "2.0", sandbox: false });
@@ -1732,7 +1707,6 @@
             }
         }
 
-        // ============== نظام الطلبات (مشتريات/مبيعات/تأكيد/نزاع) ==============
         function formatOrderStatus(status) {
             switch (status) {
                 case 'held': return { text: '⏳ محجوز - في انتظار التأكيد', color: 'var(--gold)' };
@@ -1802,12 +1776,13 @@
             });
         }
 
-                function confirmOrderReceipt(orderId) {
+        function confirmOrderReceipt(orderId) {
             if (!confirm('تأكيد إنك استلمت المنتج/الخدمة؟ الفلوس هتتحول للبائع فورًا وده إجراء نهائي.')) return;
-            
-            //  باقي الكود هنا بعدين
+        }
+
+        function openOrderDispute(orderId) {
+            alert("سيتم فتح نزاع للطلب: " + orderId + "\n(قيد التطوير 🤌)");
         }
     </script>
 </body>
 </html>
-
