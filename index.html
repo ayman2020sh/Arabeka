@@ -367,6 +367,13 @@
                 </div>
                 
                 <div class="card">
+                    <h4 style="margin-top:0; color:var(--primary);">🛍️ المشتريات والمبيعات</h4>
+                    <div class="settings-row" onclick="switchPage('orders')">
+                        <div class="row-left"><span class="icon">📦</span><span class="label">طلباتي</span></div><span class="row-arrow">›</span>
+                    </div>
+                </div>
+
+                <div class="card">
                     <h4 style="margin-top:0; color:var(--primary);">📄 السياسات والقوانين</h4>
                     <a href="privacy.html" class="settings-row">
                         <div class="row-left"><span class="icon">🔒</span><span class="label">سياسة الخصوصية</span></div><span class="row-arrow">›</span>
@@ -385,6 +392,22 @@
 
         <!-- شريط التنقل السفلي -->
         <!-- END: صفحة الإعدادات (Settings) -->
+    <!-- START: صفحة طلباتي (Orders) -->
+        <div id="page-orders" class="page">
+            <div class="container">
+                <div class="back-row">
+                    <button class="back-btn" onclick="switchPage('profile')" aria-label="رجوع">→</button>
+                    <h2 style="margin:0; color: var(--text-color);">طلباتي</h2>
+                </div>
+
+                <h3 style="color: var(--text-color);">🛍️ مشترياتي</h3>
+                <div id="my-purchases-list"></div>
+
+                <h3 style="color: var(--text-color); margin-top: 25px;">💰 مبيعاتي</h3>
+                <div id="my-sales-list"></div>
+            </div>
+        </div>
+    <!-- END: صفحة طلباتي (Orders) -->
     <!-- START: شريط التنقل السفلي -->
         <div class="bottom-nav">
             <button class="nav-item active" data-page="feed" onclick="switchPage('feed')"><span style="font-size: 24px;">🏠</span></button>
@@ -1565,7 +1588,7 @@
                             
                             <div style="display: flex; gap: 5px; margin-top: 10px; width: 100%;">
                                 <button class="btn" onclick="openProductDetails('${prodId}')" style="background: #3b82f6; padding: 8px; flex: 1.5; font-size: 13px; margin: 0;">تفاصيل</button>
-                                <button class="btn" onclick="buyProduct('${escapeAttr(prod.name)}', ${prod.price})" style="background: linear-gradient(90deg, var(--primary-dark), var(--primary)); padding: 8px; flex: 1.5; font-size: 13px; margin: 0;">شراء</button>
+                                <button class="btn" onclick="buyProduct('${prodId}', '${escapeAttr(prod.name)}', ${prod.price}, '${escapeAttr(prod.owner)}')" style="background: linear-gradient(90deg, var(--primary-dark), var(--primary)); padding: 8px; flex: 1.5; font-size: 13px; margin: 0;">شراء</button>
                                 ${ownerBtns}
                             </div>
                         </div>
@@ -1593,7 +1616,7 @@
             }
             
             const buyBtn = document.getElementById('det-buy-btn');
-            buyBtn.onclick = () => { closeProductDetails(); buyProduct(p.name, p.price); };
+            buyBtn.onclick = () => { closeProductDetails(); buyProduct(id, p.name, p.price, p.owner); };
             
             document.getElementById('productDetailsModal').style.display = 'flex';
         }
@@ -1649,10 +1672,14 @@
             }
         }
 
-        function buyProduct(name, price) {
+        function buyProduct(productId, name, price, sellerUsername) {
             if (typeof Pi === 'undefined') { 
                 showError("نظام Pi غير متاح هنا"); 
                 return; 
+            }
+            if (sellerUsername === currentUser) {
+                showError("مينفعش تشتري منتجك بنفسك");
+                return;
             }
             
             // التعديل هنا: التأكد من التهيئة قبل استدعاء الدفع
@@ -1667,7 +1694,11 @@
             }
 
             try {
-                Pi.createPayment({ amount: price, memo: `شراء ${name}`, metadata: { productName: name } }, {
+                Pi.createPayment({
+                    amount: price,
+                    memo: `شراء ${name}`,
+                    metadata: { productId, productName: name, sellerUsername, buyerUsername: currentUser }
+                }, {
                     onReadyForServerApproval: function(paymentId) {
                         fetch('/api/approve', { 
                             method: 'POST', 
@@ -1685,7 +1716,7 @@
                             body: JSON.stringify({ paymentId, txid }) 
                         })
                         .then(res => { 
-                            if(res.ok) alert("تم الشراء بنجاح!"); 
+                            if(res.ok) alert("تم الدفع بنجاح! الفلوس محجوزة لحد ما تأكد استلامك من صفحة \"طلباتي\"."); 
                             else showError("فشل التأكيد."); 
                         }).catch(e => showError("خطأ السيرفر"));
                     },
@@ -1701,40 +1732,76 @@
             }
         }
 
-        function switchPage(page, keepStoreFilter) {
-            if (page === 'store' && !keepStoreFilter && window.showOnlyMyProducts) {
-                window.showOnlyMyProducts = false;
-                window.storeFilterOwner = null;
-                const banner = document.getElementById('store-filter-banner');
-                if (banner) banner.style.display = 'none';
-                if (typeof filterStoreProducts === 'function') filterStoreProducts(window.currentCategoryFilter || 'all');
-            }
-            var mainApp = document.getElementById('main-app'); 
-            var pages = mainApp.querySelectorAll('.page');
-            for (var i = 0; i < pages.length; i++) { 
-                pages[i].classList.remove('active'); 
-            }
-            
-            var target = document.getElementById('page-' + page);
-            if (target) { 
-                target.classList.add('active'); 
-            } else { 
-                var fallback = document.getElementById('page-feed'); 
-                if (fallback) fallback.classList.add('active'); 
-            }
-            
-            var navPage = (page === 'settings' || page === 'search' || page === 'user-profile') ? 'profile' : page;
-            var navItems = document.querySelectorAll('.nav-item');
-            for (var j = 0; j < navItems.length; j++) { 
-                navItems[j].classList.remove('active'); 
-            }
-            
-            var activeNav = document.querySelector('.nav-item[data-page="' + navPage + '"]');
-            if (activeNav) { 
-                activeNav.classList.add('active'); 
+        // ============== نظام الطلبات (مشتريات/مبيعات/تأكيد/نزاع) ==============
+        function formatOrderStatus(status) {
+            switch (status) {
+                case 'held': return { text: '⏳ محجوز - في انتظار التأكيد', color: 'var(--gold)' };
+                case 'released': return { text: '✅ تم التحويل للبائع', color: 'var(--success)' };
+                case 'disputed': return { text: '⚠️ نزاع مفتوح', color: 'var(--danger)' };
+                default: return { text: status, color: 'var(--text-muted)' };
             }
         }
 
-    </script>
-</body>
-</html>
+        function renderOrderCard(order, orderId, isBuyer) {
+            const st = formatOrderStatus(order.status);
+            const otherParty = isBuyer ? order.sellerUsername : order.buyerUsername;
+            const otherLabel = isBuyer ? 'البائع' : 'المشتري';
+            let actionsHtml = '';
+            if (isBuyer && order.status === 'held') {
+                actionsHtml = `
+                    <div style="display:flex; gap:8px; margin-top:10px;">
+                        <button class="btn" style="margin:0; flex:1; background: var(--success);" onclick="confirmOrderReceipt('${orderId}')">✅ تأكيد الاستلام</button>
+                        <button class="btn" style="margin:0; flex:1; background:#444;" onclick="openOrderDispute('${orderId}')">⚠️ فتح نزاع</button>
+                    </div>`;
+            }
+            return `
+                <div class="card">
+                    <p style="margin:0 0 4px 0; font-weight:bold; color:var(--text-color);">${sanitizeHTML(order.productName || 'منتج')}</p>
+                    <p style="margin:0 0 4px 0; font-size:13px; color:var(--text-muted);">${otherLabel}: ${sanitizeHTML(otherParty || '—')}</p>
+                    <p style="margin:0 0 4px 0; font-size:13px; color:var(--primary); font-weight:bold;">${order.amount} Pi</p>
+                    <p style="margin:0; font-size:13px; color:${st.color}; font-weight:bold;">${st.text}</p>
+                    ${actionsHtml}
+                </div>`;
+        }
+
+        function loadMyOrders() {
+            const purchasesEl = document.getElementById('my-purchases-list');
+            const salesEl = document.getElementById('my-sales-list');
+            if (!purchasesEl || !salesEl) return;
+
+            db.collection('orders').where('buyerUsername', '==', currentUser).onSnapshot(snap => {
+                if (snap.empty) {
+                    purchasesEl.innerHTML = '<p style="color:var(--text-muted); text-align:center; margin:0;">لا توجد مشتريات بعد</p>';
+                    return;
+                }
+                const docs = snap.docs.slice().sort((a, b) => {
+                    const ta = a.data().createdAt ? a.data().createdAt.toMillis() : 0;
+                    const tb = b.data().createdAt ? b.data().createdAt.toMillis() : 0;
+                    return tb - ta;
+                });
+                purchasesEl.innerHTML = docs.map(d => renderOrderCard(d.data(), d.id, true)).join('');
+            }, e => {
+                console.error('loadMyOrders (purchases) error:', e);
+                purchasesEl.innerHTML = `<p style="color:var(--danger); font-size:12px; text-align:center;">تعذر تحميل المشتريات (${e.code || e.message})</p>`;
+            });
+
+            db.collection('orders').where('sellerUsername', '==', currentUser).onSnapshot(snap => {
+                if (snap.empty) {
+                    salesEl.innerHTML = '<p style="color:var(--text-muted); text-align:center; margin:0;">لا توجد مبيعات بعد</p>';
+                    return;
+                }
+                const docs = snap.docs.slice().sort((a, b) => {
+                    const ta = a.data().createdAt ? a.data().createdAt.toMillis() : 0;
+                    const tb = b.data().createdAt ? b.data().createdAt.toMillis() : 0;
+                    return tb - ta;
+                });
+                salesEl.innerHTML = docs.map(d => renderOrderCard(d.data(), d.id, false)).join('');
+            }, e => {
+                console.error('loadMyOrders (sales) error:', e);
+                salesEl.innerHTML = `<p style="color:var(--danger); font-size:12px; text-align:center;">تعذر تحميل المبيعات (${e.code || e.message})</p>`;
+            });
+        }
+
+        function confirmOrderReceipt(orderId) {
+            if (!confirm('تأكيد إنك استلمت المنتج/الخدمة؟ الفلوس هتتحول للبائع فورًا وده إجراء نهائي.')) return;
+            fetch(
