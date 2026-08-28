@@ -422,25 +422,6 @@
 
     <!-- السكريبتات الأساسية -->
     <script>
-        // دالة التنقل بين الصفحات
-        function switchPage(pageId, noHistory) {
-            document.querySelectorAll('#main-app .page').forEach(page => {
-                page.classList.remove('active');
-            });
-            const activePage = document.getElementById('page-' + pageId);
-            if (activePage) {
-                activePage.classList.add('active');
-            }
-            document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
-                if (item.getAttribute('data-page') === pageId) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-            window.scrollTo(0, 0);
-        }
-
         // إعدادات Firebase
         const firebaseConfig = { 
             apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo", 
@@ -688,7 +669,7 @@
                 return; 
             }
             if (!piReady) {
-                showError("لسه بيجهز الاتصال بـ Pi، بنحاول تاني تلقائياً...");
+                showError("لسه بيجهز الاتصال بـ Pi، بنحاول تاني تلقائياً..."); 
                 initializePiSDK(10);
                 setTimeout(() => { if (piReady) handleLogin(); }, 1600);
                 return;
@@ -1743,7 +1724,7 @@
             const salesEl = document.getElementById('my-sales-list');
             if (!purchasesEl || !salesEl) return;
 
-            db.collection('orders').where('buyerUsername', '==', currentUser).onSnapshot(snap => {
+            db.collection('orders').where('buyerUid', '==', currentUser).onSnapshot(snap => {
                 if (snap.empty) {
                     purchasesEl.innerHTML = '<p style="color:var(--text-muted); text-align:center; margin:0;">لا توجد مشتريات بعد</p>';
                     return;
@@ -1759,7 +1740,7 @@
                 purchasesEl.innerHTML = `<p style="color:var(--danger); font-size:12px; text-align:center;">تعذر تحميل المشتريات (${e.code || e.message})</p>`;
             });
 
-            db.collection('orders').where('sellerUsername', '==', currentUser).onSnapshot(snap => {
+            db.collection('orders').where('sellerUid', '==', currentUser).onSnapshot(snap => {
                 if (snap.empty) {
                     salesEl.innerHTML = '<p style="color:var(--text-muted); text-align:center; margin:0;">لا توجد مبيعات بعد</p>';
                     return;
@@ -1778,10 +1759,67 @@
 
         function confirmOrderReceipt(orderId) {
             if (!confirm('تأكيد إنك استلمت المنتج/الخدمة؟ الفلوس هتتحول للبائع فورًا وده إجراء نهائي.')) return;
+            fetch('/api/release-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId, buyerUsername: currentUser })
+            })
+            .then(res => res.json().then(data => ({ ok: res.ok, data })))
+            .then(({ ok, data }) => {
+                if (!ok) throw new Error(data.error || 'فشل التحرير');
+                alert('تم تأكيد الاستلام وتحويل الفلوس للبائع ✅');
+            })
+            .catch(e => {
+                console.error('confirmOrderReceipt error:', e);
+                showError('تعذر إتمام العملية: ' + e.message);
+            });
         }
 
         function openOrderDispute(orderId) {
-            alert("سيتم فتح نزاع للطلب: " + orderId + "\n(قيد التطوير 🤌)");
+            const reason = prompt('اكتب سبب فتح النزاع بإيجاز:');
+            if (!reason || !reason.trim()) return;
+            db.collection('orders').doc(orderId).update({
+                status: 'disputed',
+                disputeReason: reason.trim(),
+                disputedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                alert('تم فتح النزاع، هيتم مراجعته من فريق الدعم.');
+            }).catch(e => {
+                console.error('openOrderDispute error:', e);
+                showError('تعذر فتح النزاع: ' + e.message);
+            });
+        }
+
+        function switchPage(pageId, keepStoreFilter) {
+            if (pageId === 'orders') {
+                loadMyOrders();
+            }
+            if (pageId === 'store' && !keepStoreFilter && window.showOnlyMyProducts) {
+                window.showOnlyMyProducts = false;
+                window.storeFilterOwner = null;
+                const banner = document.getElementById('store-filter-banner');
+                if (banner) banner.style.display = 'none';
+                if (typeof filterStoreProducts === 'function') filterStoreProducts(window.currentCategoryFilter || 'all');
+            }
+            document.querySelectorAll('#main-app .page').forEach(page => {
+                page.classList.remove('active');
+            });
+            const activePage = document.getElementById('page-' + pageId);
+            if (activePage) {
+                activePage.classList.add('active');
+            } else {
+                const fallback = document.getElementById('page-feed');
+                if (fallback) fallback.classList.add('active');
+            }
+            const navPage = (pageId === 'settings' || pageId === 'search' || pageId === 'user-profile' || pageId === 'orders') ? 'profile' : pageId;
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+                if (item.getAttribute('data-page') === navPage) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            window.scrollTo(0, 0);
         }
     </script>
 </body>
