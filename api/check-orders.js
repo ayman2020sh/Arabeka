@@ -61,6 +61,9 @@ module.exports = async (req, res) => {
                 released++;
             } catch (orderError) {
                 console.error(`check-orders: failed to release order ${doc.id}:`, orderError.message);
+                if (orderError.response?.data) {
+                    console.error(`check-orders: Pi API response details for ${doc.id}:`, JSON.stringify(orderError.response.data));
+                }
                 failed++;
             }
         }
