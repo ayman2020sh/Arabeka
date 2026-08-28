@@ -76,7 +76,15 @@ module.exports = async (req, res) => {
         console.log('✅ Order released:', orderId, result);
         return res.status(200).json({ success: true, ...result });
     } catch (e) {
+        // تسجيل تفصيلي: لو الخطأ جاي من Pi API، نطبع محتوى الرد الفعلي مش رسالة axios العامة بس
+        const piErrorDetails = e.response?.data;
         console.error('❌ release-payment error:', e.message);
-        return res.status(400).json({ error: e.message });
+        if (piErrorDetails) {
+            console.error('❌ Pi API response details:', JSON.stringify(piErrorDetails));
+        }
+        return res.status(400).json({
+            error: e.message,
+            piApiError: piErrorDetails || null
+        });
     }
 };
