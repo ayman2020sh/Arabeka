@@ -571,6 +571,9 @@
                 line.style.marginBottom = '4px';
                 const time = new Date().toLocaleTimeString();
                 let text = args.map(a => {
+                    if (a instanceof Error) {
+                        return a.message + (a.stack ? ' | ' + a.stack.split('\n')[0] : '');
+                    }
                     try { return typeof a === 'object' ? JSON.stringify(a) : String(a); }
                     catch (e) { return String(a); }
                 }).join(' ');
@@ -1766,7 +1769,11 @@
             })
             .then(res => res.json().then(data => ({ ok: res.ok, data })))
             .then(({ ok, data }) => {
-                if (!ok) throw new Error(data.error || 'فشل التحرير');
+                if (!ok) {
+                    const details = data.piApiError ? JSON.stringify(data.piApiError) : '';
+                    console.error('release-payment full response:', data);
+                    throw new Error((data.error || 'فشل التحرير') + (details ? ' — تفاصيل: ' + details : ''));
+                }
                 alert('تم تأكيد الاستلام وتحويل الفلوس للبائع ✅');
             })
             .catch(e => {
@@ -1812,15 +1819,4 @@
                 if (fallback) fallback.classList.add('active');
             }
             const navPage = (pageId === 'settings' || pageId === 'search' || pageId === 'user-profile' || pageId === 'orders') ? 'profile' : pageId;
-            document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
-                if (item.getAttribute('data-page') === navPage) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-            window.scrollTo(0, 0);
-        }
-    </script>
-</body>
-</html>
+   
