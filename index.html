@@ -920,6 +920,8 @@
                         const safe = sanitizeURL(d.avatarUrl);
                         if (safe) { document.getElementById('uprofile-avatar').style.backgroundImage = `url('${safe}')`; document.getElementById('uprofile-avatar').innerText = ''; }
                     }
+                    document.getElementById('wallet-address-display').innerText = formatWalletAddress(d.wallet_address);
+
                     if (d.bio) document.getElementById('uprofile-bio').innerText = sanitizeHTML(d.bio);
                     const points = d.loyaltyPoints || 0;
                     const badge = getLoyaltyBadge(points);
@@ -1824,6 +1826,12 @@
             });
             window.scrollTo(0, 0);
         }
-    </script>
+    <script>
+function formatWalletAddress(address) {
+    if (!address) return "لا يوجد عنوان محفظة";
+    return address.substring(0, 6) + "...." + address.substring(address.length - 4);
+}
+</script>
+
 </body>
 </html>
