@@ -98,7 +98,6 @@
         <h2>مرحباً بك في مجتمع أرابيكا</h2>
         <p style="color: var(--text-muted);">انضم إلى مجتمعنا وابدأ التجارة الآن</p>
         <button class="btn" id="login-btn" style="background: linear-gradient(45deg, var(--gold), #ff8c00); color: black;">Pi sign.in</button>
-        <a href="https://arabekavqet3465.pinet.com" target="_blank" class="chat-button">🤖 اسأل مساعد أرابيكا</a>
     </div>
 
     <!-- التطبيق الرئيسي -->
@@ -121,9 +120,6 @@
                 <!-- كارت موحّد (روابط + سوشيال + اختصارات) بدل 3 كروت منفصلة -->
                 <div class="card" style="padding: 0; overflow: hidden;">
                     <div style="display: flex; justify-content: space-around; align-items: center; padding: 16px 5px; border-bottom: 1px solid var(--border);">
-                        <a href="https://arabekavqet3465.pinet.com" target="_blank" style="text-decoration:none; color: var(--text-color); text-align:center; font-size:12px; display:flex; flex-direction:column; align-items:center; gap:6px;">
-                            <span style="font-size:24px;">🤖</span>مساعد أرابيكا
-                        </a>
                         <div onclick="switchPage('search')" style="cursor:pointer; color: var(--text-color); text-align:center; font-size:12px; display:flex; flex-direction:column; align-items:center; gap:6px;">
                             <span style="font-size:24px;">👥</span>أصدقاء
                         </div>
@@ -233,7 +229,7 @@
                         <div style="position: absolute; bottom: -5px; right: -5px; background-color: #1da1f2; width: 28px; height: 28px; border-radius: 50%; font-size: 14px; display: flex; justify-content: center; align-items: center; border: 3px solid var(--card-bg); font-weight: bold;">P</div>
                     </div>
                     <h2 id="user-name" style="margin: 5px 0; color: var(--text-color); display: inline-flex; align-items: center; gap: 4px; justify-content: center;"> 
-                    
+                        العربي 
                         <span id="user-verified-badge" style="display:none;" class="official-badge">⚜️ ارابيكا</span>
                     </h2>
                     <p id="user-loyalty-badge" style="color: var(--gold); font-size: 13px; margin: 2px 0; font-weight: bold;"></p>
@@ -243,10 +239,7 @@
                 <div class="card">
                     <div style="text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px;">
                         <p style="color: var(--text-muted); font-size: 14px; margin: 5px 0;">نبذه 🫆 <span id="user-bio" style="color: var(--text-color);">user-unknown</span></p>
-                        <p style="color: var(--text-muted); font-size: 13px; margin: 5px 0; word-break: break-all;">
-    <p style="color: var(--text-muted); font-size: 13px; margin: 5px 0; word-break: break-all;">عنوان المحفظة: <span id="wallet-address-display">جاري التحميل...</span></p>
-
-
+                        <p style="color: var(--text-muted); font-size: 13px; margin: 5px 0; word-break: break-all;">عنوان المحفظة: <span id="wallet-address-display">جاري التحميل...</span></p>
                     </div>
                     <div style="display: flex; justify-content: space-around; text-align: center; padding-top: 5px;">
                         <div class="stat-block" onclick="showFollowing()">
@@ -510,7 +503,7 @@
                     const trySilentPiAuth = function (attemptsLeft) {
                         if (attemptsLeft === undefined) attemptsLeft = 20;
                         if (typeof Pi !== 'undefined' && piReady) {
-                            Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
+                            Pi.authenticate(['username', 'payments', 'wallet_address'], onIncompletePaymentFound)
                                 .catch(function (e) {
                                     console.warn("إعادة توثيق صامتة مع Pi فشلت:", e);
                                 });
@@ -756,7 +749,14 @@
             const unsubscribe = db.collection("users").doc(currentUser).onSnapshot(doc => { 
                 if (doc.exists && doc.data().bio) { 
                     document.getElementById('user-bio').innerText = sanitizeHTML(doc.data().bio); 
-                } 
+                }
+                
+                if (doc.exists) {
+                    const d = doc.data();
+                    const wDisplay = document.getElementById('wallet-address-display');
+                    if (wDisplay) wDisplay.innerText = formatWalletAddress(d.wallet_address);
+                }
+                
                 applyAvatarToCircle(doc.exists ? doc.data().avatarUrl : null); 
                 applyNavAvatar(doc.exists ? doc.data().avatarUrl : null);
                 const points = doc.exists ? (doc.data().loyaltyPoints || 0) : 0; 
@@ -920,8 +920,6 @@
                         const safe = sanitizeURL(d.avatarUrl);
                         if (safe) { document.getElementById('uprofile-avatar').style.backgroundImage = `url('${safe}')`; document.getElementById('uprofile-avatar').innerText = ''; }
                     }
-                    document.getElementById('wallet-address-display').innerText = formatWalletAddress(d.wallet_address);
-
                     if (d.bio) document.getElementById('uprofile-bio').innerText = sanitizeHTML(d.bio);
                     const points = d.loyaltyPoints || 0;
                     const badge = getLoyaltyBadge(points);
@@ -1826,22 +1824,12 @@
             });
             window.scrollTo(0, 0);
         }
-                        document.getElementById('wallet-address-display').innerText = formatWalletAddress(d.wallet_address);
 
-                    if (d.bio) document.getElementById('uprofile-bio').innerText = sanitizeHTML(d.bio)
-
-            window.scrollTo(0, 0);
-        }
-
-        // الدالة توضع هنا مباشرة بدون أوسمة HTML إضافية
+        // الدالة الخاصة باختصار المحفظة
         function formatWalletAddress(address) {
             if (!address) return "لا يوجد عنوان محفظة";
             return address.substring(0, 6) + "...." + address.substring(address.length - 4);
         }
-
     </script>
-</body>
-</html>
-
 </body>
 </html>
