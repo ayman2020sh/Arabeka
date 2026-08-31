@@ -1826,12 +1826,23 @@
             });
             window.scrollTo(0, 0);
         }
-    <script>
-function formatWalletAddress(address) {
-    if (!address) return "لا يوجد عنوان محفظة";
-    return address.substring(0, 6) + "...." + address.substring(address.length - 4);
-}
-</script>
+                        document.getElementById('wallet-address-display').innerText = formatWalletAddress(d.wallet_address);
+
+                    if (d.bio) document.getElementById('uprofile-bio').innerText = sanitizeHTML(d.bio)
+
+            window.scrollTo(0, 0);
+        }
+
+        // الدالة توضع هنا مباشرة بدون أوسمة HTML إضافية
+        function formatWalletAddress(address) {
+            if (!address) return "لا يوجد عنوان محفظة";
+            return address.substring(0, 6) + "...." + address.substring(address.length - 4);
+        }
+
+    </script>
+</body>
+</html>
+
 
 </body>
 </html>
