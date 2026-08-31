@@ -115,7 +115,7 @@
                         <div class="card-features"><span>تواصل آمن</span><span>بياناتك مشفرة</span></div>
                         <button class="login-btn-card" onclick="handleLogin()"><span class="login-btn-icon">➜</span><span>pi sign.in</span></button>
                     </div>
-                    <div class="card-image-wrap"><span class="deco-diamond d1">💠</span><span class="deco-diamond d2">💠</span><span class="deco-diamond d3">💠</span><img src="arabeka_card.png" style="max-width:100%; height:auto;"></div>
+                    <div class="card-image-wrap"><span class="deco-diamond d1">💠</span><span class="deco-diamond d2">💠</span><span class="deco-diamond d3">💠</span><img src="arabeka_card.png" alt="كارت آرابيكا"></div>
                 </div>
                 
                 <!-- كارت موحّد (روابط + سوشيال + اختصارات) بدل 3 كروت منفصلة -->
@@ -134,7 +134,7 @@
                     <div style="display: flex; justify-content: space-around; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); background: #0a0a0a;">
                         <a href="https://t.me/piwep3" target="_blank" style="color: #0088cc; font-size: 24px;"><i class="fa-brands fa-telegram"></i></a>
                         <a href="https://x.com/arabekaio" target="_blank" style="color: var(--text-color); font-size: 22px;">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H4.57l4.808 6.34L17.887 2.25z"/></svg>
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                         </a>
                         <a href="https://www.facebook.com/share/185iYyEhq2/" target="_blank" style="color: #1877F2; font-size: 24px;"><i class="fa-brands fa-facebook"></i></a>
                     </div>
@@ -228,12 +228,12 @@
         <div id="page-profile" class="page">
             <div class="container">
                 <div class="card" style="text-align: center; background: linear-gradient(145deg, #1e1e1e, #2a1b3d); border-top: 4px solid var(--primary);">
-                    <div id="user-avatar-circle" onclick="editAvatar()" style="width: 80px; height: 80px; background-color: var(--primary-dark); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; font-weight: bold; cursor: pointer; position: relative;">
+                    <div id="user-avatar-circle" onclick="editAvatar()" style="width: 80px; height: 80px; background-color: var(--primary-dark); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 36px; font-weight: bold; margin: 0 auto 15px auto; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: pointer; overflow: hidden; background-size: cover; background-position: center;">
                         A
-                        <div style="position: absolute; bottom: -5px; right: -5px; background-color: #1da1f2; width: 28px; height: 28px; border-radius: 50%; font-size: 14px; display: flex; justify-content: center; align-items: center;">🎧</div>
+                        <div style="position: absolute; bottom: -5px; right: -5px; background-color: #1da1f2; width: 28px; height: 28px; border-radius: 50%; font-size: 14px; display: flex; justify-content: center; align-items: center; border: 3px solid var(--card-bg); font-weight: bold;">P</div>
                     </div>
                     <h2 id="user-name" style="margin: 5px 0; color: var(--text-color); display: inline-flex; align-items: center; gap: 4px; justify-content: center;"> 
-                    
+                        العربي 
                         <span id="user-verified-badge" style="display:none;" class="official-badge">⚜️ ارابيكا</span>
                     </h2>
                     <p id="user-loyalty-badge" style="color: var(--gold); font-size: 13px; margin: 2px 0; font-weight: bold;"></p>
@@ -243,7 +243,7 @@
                 <div class="card">
                     <div style="text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px;">
                         <p style="color: var(--text-muted); font-size: 14px; margin: 5px 0;">نبذه 🫆 <span id="user-bio" style="color: var(--text-color);">user-unknown</span></p>
-                        <p style="color: var(--text-muted); font-size: 13px; margin: 5px 0; word-break: break-all;">عنوان المحفظة: <span id="wallet-address-display">جاري التحميل...</span></p>
+                        <p style="color: var(--text-muted); font-size: 14px; margin: 5px 0;">تاريخ الانضمام: 2024</p>
                     </div>
                     <div style="display: flex; justify-content: space-around; text-align: center; padding-top: 5px;">
                         <div class="stat-block" onclick="showFollowing()">
@@ -295,7 +295,7 @@
                 </div>
 
                 <div class="card" style="text-align: center; background: linear-gradient(145deg, #1e1e1e, #2a1b3d); border-top: 4px solid var(--primary);">
-                    <div id="uprofile-avatar" style="width: 80px; height: 80px; background-color: var(--primary-dark); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; font-weight: bold;"></div>
+                    <div id="uprofile-avatar" style="width: 80px; height: 80px; background-color: var(--primary-dark); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 36px; font-weight: bold; margin: 0 auto 15px auto; background-size: cover; background-position: center;">A</div>
                     <h2 id="uprofile-name" style="margin: 5px 0; display: inline-flex; align-items: center; gap: 4px; justify-content: center;">
                         <span id="uprofile-name-text"></span>
                         <span id="uprofile-verified-badge" style="display:none;" class="official-badge">⚜️ ارابيكا</span>
@@ -362,7 +362,7 @@
                         <div class="row-left"><span class="icon">🖼️</span><span class="label">تغيير صورة الحساب</span></div><span class="row-arrow">›</span>
                     </div>
                     <div class="settings-row" style="cursor: default;">
-                        <div class="row-left"><span class="icon">🆔</span><span class="label"> مُعرف Pi</span></div><span class="row-arrow" id="settings-username" style="color: var(--text-muted);">—</span>
+                        <div class="row-left"><span class="icon">🆔</span><span class="label"> مُعرف Pi</span></div><span class="row-arrow" id="settings-username" style="color: var(--text-muted); font-size: 14px;">-</span>
                     </div>
                 </div>
                 
@@ -414,7 +414,7 @@
             <button class="nav-item" onclick="handleAddButton()"><span style="font-size: 26px;">➕</span></button>
             <button class="nav-item" data-page="store" onclick="switchPage('store')"><span style="font-size: 24px;">🛒</span></button>
             <button class="nav-item" data-page="profile" onclick="switchPage('profile')">
-                <span id="nav-avatar-circle" style="width:26px; height:26px; border-radius:50%; background-color: var(--primary-dark); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold;">A</span>
+                <span id="nav-avatar-circle" style="width:26px; height:26px; border-radius:50%; background-color: var(--primary-dark); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold; background-size:cover; background-position:center; color:#fff;">A</span>
             </button>
         </div>
         <!-- END: شريط التنقل السفلي -->
@@ -422,7 +422,7 @@
 
     <!-- السكريبتات الأساسية -->
     <script>
-        // ============ إعدادات Firebase ============
+        // إعدادات Firebase
         const firebaseConfig = { 
             apiKey: "AIzaSyARAFggPUeoPr7dmzpi_R_HLVeqobGclzo", 
             authDomain: "arabeka-3336c.firebaseapp.com", 
@@ -444,9 +444,7 @@
         let lastPostsSnapshot = null; 
         let showOnlyMyPosts = false; 
         window.currentFeedCategoryFilter = 'all';
-        window.allProducts = [];
 
-        // ============ دوال الفلترة ============
         function filterFeedPosts(category) {
             window.currentFeedCategoryFilter = category;
             document.querySelectorAll('#page-feed .category-btn').forEach(btn => btn.classList.remove('active'));
@@ -454,12 +452,10 @@
             if (activeBtn) activeBtn.classList.add('active');
             renderPostsFeed();
         }
-
         let editingPostId = null; 
         let authUid = null;
         let adminStatusCache = {};
 
-        // ============ دوال الفحص ============
         function isKnownAdmin(username) { 
             return adminStatusCache[username] === true; 
         }
@@ -492,7 +488,6 @@
             return avatarCache[username] ? '' : (username ? sanitizeHTML(username.charAt(0).toUpperCase()) : '?');
         }
         
-        // ============ مراقب مصادقة Firebase ============
         firebase.auth().onAuthStateChanged(function (user) { 
             if (user) { 
                 const savedUsername = localStorage.getItem('arabeka_username');
@@ -512,7 +507,7 @@
                     const trySilentPiAuth = function (attemptsLeft) {
                         if (attemptsLeft === undefined) attemptsLeft = 20;
                         if (typeof Pi !== 'undefined' && piReady) {
-                            Pi.authenticate(['username', 'payments', 'wallet_address'], onIncompletePaymentFound)
+                            Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
                                 .catch(function (e) {
                                     console.warn("إعادة توثيق صامتة مع Pi فشلت:", e);
                                 });
@@ -551,12 +546,12 @@
         (function setupDebugPanel() {
             const panel = document.createElement('div');
             panel.id = 'debug-log-panel';
-            panel.style.cssText = 'display:none; position:fixed; bottom:60px; left:0; right:0; max-height:45vh; overflow-y:auto; background:#000; color:#0f0; font-family:monospace; font-size:11px; padding:10px; z-index:99999; border-top:2px solid #0f0;';
+            panel.style.cssText = 'display:none; position:fixed; bottom:60px; left:0; right:0; max-height:45vh; overflow-y:auto; background:#000; color:#0f0; font-family:monospace; font-size:11px; padding:10px; z-index:99999; border-top:2px solid #0f0; direction:ltr; text-align:left; white-space:pre-wrap;';
             document.body.appendChild(panel);
 
             const toggleBtn = document.createElement('button');
             toggleBtn.innerText = '🐞';
-            toggleBtn.style.cssText = 'position:fixed; bottom:70px; right:10px; z-index:100000; width:40px; height:40px; border-radius:50%; background:#222; color:#0f0; border:1px solid #0f0; font-size:18px; cursor:pointer;';
+            toggleBtn.style.cssText = 'position:fixed; bottom:70px; right:10px; z-index:100000; width:40px; height:40px; border-radius:50%; background:#222; color:#0f0; border:1px solid #0f0; font-size:18px;';
             toggleBtn.onclick = function () {
                 panel.style.display = (panel.style.display === 'none') ? 'block' : 'none';
             };
@@ -564,7 +559,7 @@
 
             const clearBtn = document.createElement('button');
             clearBtn.innerText = 'مسح';
-            clearBtn.style.cssText = 'position:fixed; bottom:118px; right:10px; z-index:100000; padding:6px 10px; border-radius:8px; background:#222; color:#f66; border:1px solid #f66; font-size:11px; cursor:pointer;';
+            clearBtn.style.cssText = 'position:fixed; bottom:118px; right:10px; z-index:100000; padding:6px 10px; border-radius:8px; background:#222; color:#f66; border:1px solid #f66; font-size:11px;';
             clearBtn.onclick = function () { panel.innerHTML = ''; };
             document.body.appendChild(clearBtn);
 
@@ -599,7 +594,6 @@
             });
         })();
 
-        // ============ دوال المساعدة ============
         function autoResizeTextarea(el) {
             el.style.height = 'auto';
             el.style.height = el.scrollHeight + 'px';
@@ -625,33 +619,6 @@
             } catch (e) { 
                 return ''; 
             } 
-        }
-
-        function formatWalletAddress(addr) {
-            if (!addr) return 'لم يتم تعيين';
-            if (addr.length <= 16) return addr;
-            return addr.substring(0, 8) + '...' + addr.substring(addr.length - 8);
-        }
-
-        function getLoyaltyBadge(points) {
-            if (points >= 500) return '🏆 ماسي';
-            if (points >= 300) return '💎 ذهبي';
-            if (points >= 100) return '🥈 فضي';
-            if (points >= 50) return '🥉 برونزي';
-            if (points >= 10) return '⭐ نجم';
-            return '';
-        }
-
-        function switchPage(pageName, skipNavUpdate) {
-            document.querySelectorAll('#main-app .page').forEach(p => p.classList.remove('active'));
-            const page = document.getElementById('page-' + pageName);
-            if (page) page.classList.add('active');
-            
-            if (!skipNavUpdate) {
-                document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-                const navBtn = document.querySelector(`.nav-item[data-page="${pageName}"]`);
-                if (navBtn) navBtn.classList.add('active');
-            }
         }
 
         function handleAddButton() {
@@ -696,7 +663,6 @@
             }).catch(err => console.error(err)); 
         }
         
-        // ============ تسجيل الدخول ============
         function handleLogin() {
             if (typeof Pi === 'undefined') { 
                 showError("الرجاء فتح التطبيق من متصفح Pi"); 
@@ -709,7 +675,7 @@
                 return;
             }
             
-            Pi.authenticate(['username', 'payments', 'wallet_address'], onIncompletePaymentFound)
+            Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
                 .then(auth => {
                     const username = auth.user.username;
                     const accessToken = auth.accessToken; 
@@ -765,7 +731,6 @@
             });
         }
 
-        // ============ المهام والنقاط ============
         const TASKS_LIST = [
             { key: 'completeBio', label: 'أكمل نبذتك الشخصية', points: 5 }, 
             { key: 'firstPost', label: 'انشر أول منشور', points: 10 }, 
@@ -784,34 +749,11 @@
             }).join(''); 
         }
 
-        function awardTaskOnce(taskKey, points) {
-            db.collection('users').doc(currentUser).get().then(doc => {
-                const tasks = (doc.exists ? doc.data().tasksCompleted : {}) || {};
-                if (!tasks[taskKey]) {
-                    tasks[taskKey] = true;
-                    const loyaltyPoints = (doc.exists ? doc.data().loyaltyPoints : 0) || 0;
-                    db.collection('users').doc(currentUser).set({
-                        tasksCompleted: tasks,
-                        loyaltyPoints: loyaltyPoints + points,
-                        ownerUid: authUid
-                    }, { merge: true });
-                }
-            });
-        }
-
-        // ============ تحميل بيانات المستخدم ============
         function loadUserBio() { 
             const unsubscribe = db.collection("users").doc(currentUser).onSnapshot(doc => { 
                 if (doc.exists && doc.data().bio) { 
                     document.getElementById('user-bio').innerText = sanitizeHTML(doc.data().bio); 
-                }
-                
-                if (doc.exists) {
-                    const d = doc.data();
-                    const wDisplay = document.getElementById('wallet-address-display');
-                    if (wDisplay) wDisplay.innerText = formatWalletAddress(d.wallet_address);
-                }
-                
+                } 
                 applyAvatarToCircle(doc.exists ? doc.data().avatarUrl : null); 
                 applyNavAvatar(doc.exists ? doc.data().avatarUrl : null);
                 const points = doc.exists ? (doc.data().loyaltyPoints || 0) : 0; 
@@ -908,7 +850,6 @@
             }); 
         }
 
-        // ============ إحصائيات الملف الشخصي ============
         function loadProfileStats() { 
             const unsubFollowing = db.collection('follows').where('follower', '==', currentUser).onSnapshot(snap => {
                 document.getElementById('following-count').innerText = snap.size;
@@ -933,7 +874,7 @@
                 docs.forEach(doc => {
                     const p = doc.data();
                     const safeImg = sanitizeURL(p.imageUrl);
-                    frags.push(`<div class="card"><div class="card-content">${sanitizeHTML(p.content || '')}</div>${safeImg ? `<img src="${safeImg}" class="post-image" style="width:100%; border-radius:8px; margin:8px 0;" onerror="this.style.display='none';">` : ''}</div>`);
+                    frags.push(`<div class="card"><div class="card-content">${sanitizeHTML(p.content || '')}</div>${safeImg ? `<img src="${safeImg}" class="post-image" onerror="this.style.display='none'">` : ''}</div>`);
                 });
                 listEl.innerHTML = frags.join('');
             }, (error) => {
@@ -948,264 +889,6 @@
             unsubscribeFunctions.push(unsubFollowing, unsubFollowers, unsubPostsCount, unsubMyProducts); 
         }
 
-        // ============ المنشورات ============
-        function loadPosts() {
-            const unsubscribe = db.collection('posts').orderBy('timestamp', 'desc').onSnapshot(snap => {
-                lastPostsSnapshot = snap;
-                renderPostsFeed();
-            }, error => {
-                console.error('loadPosts error:', error);
-            });
-            unsubscribeFunctions.push(unsubscribe);
-        }
-
-        function renderPostsFeed() {
-            const el = document.getElementById('posts-feed');
-            if (!el || !lastPostsSnapshot) return;
-            
-            let docs = lastPostsSnapshot.docs;
-            
-            // تطبيق فلتر التصنيف
-            if (window.currentFeedCategoryFilter !== 'all') {
-                docs = docs.filter(d => d.data().category === window.currentFeedCategoryFilter);
-            }
-            
-            // تطبيق فلتر "منشوراتي فقط"
-            if (showOnlyMyPosts) {
-                docs = docs.filter(d => d.data().author === currentUser);
-            }
-            
-            if (docs.length === 0) {
-                el.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px;">لا توجد منشورات</p>';
-                return;
-            }
-            
-            const frags = [];
-            docs.forEach(doc => {
-                const p = doc.data();
-                const safeImg = sanitizeURL(p.imageUrl);
-                const isAuthor = p.author === currentUser;
-                const adminIcon = isKnownAdmin(p.author) ? ' ⚜️' : '';
-                
-                frags.push(`
-                    <div class="card">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <div style="cursor:pointer;" onclick="viewUserProfile('${escapeAttr(p.author)}')">
-                                <strong style="color:var(--primary);">${sanitizeHTML(p.author)}${adminIcon}</strong>
-                            </div>
-                            ${isAuthor ? `<button class="small-btn" style="background:none; border:none; cursor:pointer; font-size:18px;" onclick="deletePost('${doc.id}')">🗑️</button>` : ''}
-                        </div>
-                        <div class="card-content">${sanitizeHTML(p.content || '')}</div>
-                        ${safeImg ? `<img src="${safeImg}" class="post-image" style="width:100%; border-radius:8px; margin:8px 0;" onerror="this.style.display='none';">` : ''}
-                        <div style="font-size:12px; color:var(--text-muted); margin-top:8px;">
-                            ${p.timestamp ? new Date(p.timestamp.toMillis()).toLocaleDateString('ar') : 'حديث'}
-                        </div>
-                    </div>
-                `);
-            });
-            
-            el.innerHTML = frags.join('');
-        }
-
-        function publishPost() {
-            const content = document.getElementById('post-text').value.trim();
-            const category = document.getElementById('post-category').value;
-            const imageUrl = document.getElementById('post-image-url').value.trim();
-            
-            if (!content) {
-                showError('الرجاء كتابة المنشور');
-                return;
-            }
-            
-            const safeImage = imageUrl ? sanitizeURL(imageUrl) : '';
-            
-            db.collection('posts').add({
-                author: currentUser,
-                content: content,
-                category: category,
-                imageUrl: safeImage,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                ownerUid: authUid
-            }).then(() => {
-                document.getElementById('post-text').value = '';
-                document.getElementById('post-image-url').value = '';
-                document.getElementById('post-category').value = 'general';
-                showError('✓ تم نشر المنشور');
-                awardTaskOnce('firstPost', 10);
-            }).catch(e => showError('خطأ: ' + e.message));
-        }
-
-        function deletePost(postId) {
-            if (!confirm('هل متأكد من حذف المنشور؟')) return;
-            db.collection('posts').doc(postId).delete()
-                .catch(e => showError('خطأ بالحذف'));
-        }
-
-        function clearPostsFilter() {
-            showOnlyMyPosts = false;
-            document.getElementById('posts-filter-banner').style.display = 'none';
-            renderPostsFeed();
-        }
-
-        // ============ المنتجات ============
-        function loadProducts() {
-            const unsubscribe = db.collection('products').onSnapshot(snap => {
-                window.allProducts = snap.docs;
-                renderStoreProducts('all');
-            }, error => console.error('loadProducts error:', error));
-            unsubscribeFunctions.push(unsubscribe);
-        }
-
-        function renderStoreProducts(category) {
-            const el = document.getElementById('store-products');
-            if (!el) return;
-            
-            let docs = window.allProducts || [];
-            
-            if (category !== 'all') {
-                docs = docs.filter(d => d.data().category === category);
-            }
-            
-            if (window.showOnlyMyProducts) {
-                docs = docs.filter(d => d.data().owner === window.storeFilterOwner);
-            }
-            
-            if (docs.length === 0) {
-                el.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--text-muted);">لا توجد منتجات</p>';
-                return;
-            }
-            
-            const frags = [];
-            docs.forEach(doc => {
-                const p = doc.data();
-                const safeImg = sanitizeURL(p.imageUrl);
-                const isOwner = p.owner === currentUser;
-                
-                frags.push(`
-                    <div class="product-card" style="cursor:pointer; padding:12px; border-radius:8px; background:var(--card-bg); border:1px solid var(--border); text-align:right;" onclick="showProductDetails('${doc.id}', '${escapeAttr(p.name)}', '${escapeAttr(p.price)}', '${escapeAttr(p.category)}', '${escapeAttr(p.owner)}', '${safeImg}', '${escapeAttr(p.description)}')">
-                        <div class="product-image" style="background-image: url('${safeImg}'); background-size: cover; background-position: center; width:100%; height:120px; border-radius:8px; margin-bottom:8px;"></div>
-                        <h4 style="margin:8px 0; color:var(--text-color);">${sanitizeHTML(p.name)}</h4>
-                        <p style="margin:0; color:var(--gold); font-weight:bold;">${p.price} Pi</p>
-                        <p style="margin:4px 0; font-size:12px; color:var(--text-muted);">${sanitizeHTML(p.owner)}</p>
-                        ${isOwner ? `<button class="small-btn" style="background:none; border:none; cursor:pointer; font-size:16px; margin-top:4px;" onclick="event.stopPropagation(); editProduct('${doc.id}')">✏️</button>` : ''}
-                    </div>
-                `);
-            });
-            
-            el.innerHTML = frags.join('');
-        }
-
-        function filterStoreProducts(category) {
-            window.currentCategoryFilter = category;
-            document.querySelectorAll('#page-store .category-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtn = document.querySelector(`#page-store .category-btn[onclick="filterStoreProducts('${category}')"]`);
-            if (activeBtn) activeBtn.classList.add('active');
-            renderStoreProducts(category);
-        }
-
-        function addNewProduct() {
-            const name = document.getElementById('new-prod-name').value.trim();
-            const price = parseFloat(document.getElementById('new-prod-price').value);
-            const category = document.getElementById('new-prod-category').value;
-            const image = document.getElementById('new-prod-image').value.trim();
-            const description = document.getElementById('new-prod-description').value.trim();
-            
-            if (!name || !price || price <= 0) {
-                showError('الرجاء ملء البيانات المطلوبة');
-                return;
-            }
-            
-            const safeImage = image ? sanitizeURL(image) : '';
-            
-            db.collection('products').add({
-                owner: currentUser,
-                name: name,
-                price: price,
-                category: category,
-                imageUrl: safeImage,
-                description: description,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                ownerUid: authUid
-            }).then(() => {
-                document.getElementById('new-prod-name').value = '';
-                document.getElementById('new-prod-price').value = '';
-                document.getElementById('new-prod-category').value = 'tech';
-                document.getElementById('new-prod-image').value = '';
-                document.getElementById('new-prod-description').value = '';
-                showError('✓ تم إضافة المنتج');
-            }).catch(e => showError('خطأ: ' + e.message));
-        }
-
-        function showProductDetails(id, name, price, category, owner, img, desc) {
-            document.getElementById('det-name').innerText = name;
-            document.getElementById('det-img').src = img || '';
-            document.getElementById('det-price').innerText = price + ' Pi';
-            document.getElementById('det-cat').innerText = category;
-            document.getElementById('det-owner').innerText = owner;
-            document.getElementById('det-buy-btn').innerText = currentUser === owner ? 'هذا منتجك' : 'إتمام الشراء';
-            document.getElementById('det-buy-btn').style.pointerEvents = currentUser === owner ? 'none' : 'auto';
-            
-            if (desc) {
-                document.getElementById('det-desc').innerText = desc;
-                document.getElementById('det-desc-wrap').style.display = 'block';
-            } else {
-                document.getElementById('det-desc-wrap').style.display = 'none';
-            }
-            
-            document.getElementById('productDetailsModal').style.display = 'flex';
-        }
-
-        function closeProductDetails() {
-            document.getElementById('productDetailsModal').style.display = 'none';
-        }
-
-        function editProduct(productId) {
-            db.collection('products').doc(productId).get().then(doc => {
-                if (!doc.exists) return;
-                const p = doc.data();
-                document.getElementById('edit-prod-name').value = p.name;
-                document.getElementById('edit-prod-price').value = p.price;
-                document.getElementById('edit-prod-category').value = p.category;
-                document.getElementById('edit-prod-image').value = p.imageUrl || '';
-                document.getElementById('edit-prod-description').value = p.description || '';
-                window.editingProductId = productId;
-                document.getElementById('editProductModal').style.display = 'flex';
-            });
-        }
-
-        function saveEditedProduct() {
-            const name = document.getElementById('edit-prod-name').value.trim();
-            const price = parseFloat(document.getElementById('edit-prod-price').value);
-            const category = document.getElementById('edit-prod-category').value;
-            const image = document.getElementById('edit-prod-image').value.trim();
-            const description = document.getElementById('edit-prod-description').value.trim();
-            
-            if (!name || !price || price <= 0) {
-                showError('البيانات غير صحيحة');
-                return;
-            }
-            
-            db.collection('products').doc(window.editingProductId).update({
-                name, price, category, imageUrl: image, description
-            }).then(() => {
-                showError('✓ تم تحديث المنتج');
-                closeEditProductModal();
-            }).catch(e => showError('خطأ: ' + e.message));
-        }
-
-        function closeEditProductModal() {
-            document.getElementById('editProductModal').style.display = 'none';
-            window.editingProductId = null;
-        }
-
-        function clearStoreFilter() {
-            window.showOnlyMyProducts = false;
-            const banner = document.getElementById('store-filter-banner');
-            if (banner) banner.style.display = 'none';
-            renderStoreProducts(window.currentCategoryFilter || 'all');
-        }
-
-        // ============ الملفات الشخصية ============
         let viewedProfileUser = null;
         let previousPageBeforeProfile = 'feed';
 
@@ -1251,7 +934,7 @@
                 s.forEach(d => {
                     const p = d.data();
                     const safeImg = sanitizeURL(p.imageUrl);
-                    frags.push(`<div class="card"><div class="card-content">${sanitizeHTML(p.content || '')}</div>${safeImg ? `<img src="${safeImg}" class="post-image" style="width:100%; border-radius:8px; margin:8px 0;" onerror="this.style.display='none';">` : ''}</div>`);
+                    frags.push(`<div class="card"><div class="card-content">${sanitizeHTML(p.content || '')}</div>${safeImg ? `<img src="${safeImg}" class="post-image" onerror="this.style.display='none'">` : ''}</div>`);
                 });
                 document.getElementById('uprofile-posts').innerHTML = frags.join('') || '<p style="color:var(--text-muted); text-align:center;">لا توجد منشورات بعد</p>';
             });
@@ -1312,187 +995,833 @@
             db.collection('friendRequests').doc(reqId).get().then(doc => {
                 if (!doc.exists) {
                     btn.innerText = '🤝 إضافة صديق';
-                } else if (doc.data().status === 'pending') {
-                    btn.innerText = '⏳ قيد الانتظار';
-                } else if (doc.data().status === 'accepted') {
-                    btn.innerText = '✓ صديق';
+                    btn.onclick = uprofileHandleFriendAction;
+                    btn.className = 'btn';
+                    return;
                 }
+                const d = doc.data();
+                if (d.status === 'accepted') {
+                    btn.innerText = '✅ أصدقاء';
+                    btn.className = 'btn';
+                    btn.style.background = 'var(--success)';
+                    btn.onclick = null;
+                } else if (d.status === 'pending' && d.from === currentUser) {
+                    btn.innerText = '⏳ تم إرسال الطلب';
+                    btn.style.background = '#444';
+                    btn.onclick = () => { db.collection('friendRequests').doc(reqId).delete().then(refreshFriendButtonState).catch(e => { console.error('cancel friend request error:', e); showError('تعذر إلغاء الطلب: ' + e.message); }); };
+                } else if (d.status === 'pending' && d.to === currentUser) {
+                    btn.innerText = '✔️ قبول طلب الصداقة';
+                    btn.style.background = 'var(--success)';
+                    btn.onclick = () => { db.collection('friendRequests').doc(reqId).update({ status: 'accepted' }).then(refreshFriendButtonState).catch(e => { console.error('accept friend request error:', e); showError('تعذر قبول الطلب: ' + e.message); }); };
+                }
+            }).catch(e => {
+                console.error('refreshFriendButtonState read error:', e);
+                if (btn) { btn.innerText = '🤝 إضافة صديق'; btn.onclick = uprofileHandleFriendAction; btn.className = 'btn'; }
             });
         }
 
         function uprofileHandleFriendAction() {
-            if (!viewedProfileUser) return;
+            if (!viewedProfileUser || !authUid) {
+                showError('لسه بيجهز الاتصال الآمن، حاول تاني بعد ثانية');
+                return;
+            }
             const reqId = friendRequestId(currentUser, viewedProfileUser);
-            db.collection('friendRequests').doc(reqId).get().then(doc => {
-                if (!doc.exists) {
-                    sendFriendRequest(viewedProfileUser);
-                }
+            db.collection('friendRequests').doc(reqId).set({
+                from: currentUser,
+                to: viewedProfileUser,
+                fromUid: authUid,
+                status: 'pending',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(refreshFriendButtonState).catch(e => {
+                console.error('uprofileHandleFriendAction write error:', e);
+                showError('تعذر إرسال طلب الصداقة: ' + e.message);
             });
         }
 
-        // ============ البحث والأصدقاء ============
+        function loadIncomingFriendRequests() {
+            const unsub = db.collection('friendRequests').where('to', '==', currentUser).where('status', '==', 'pending').onSnapshot(snap => {
+                const list = document.getElementById('incoming-requests-list');
+                const badge = document.getElementById('incoming-requests-badge');
+                if (!list) return;
+                if (snap.empty) {
+                    list.innerHTML = '<p style="color: var(--text-muted); font-size:13px; text-align:center; margin:0;">لا توجد طلبات حالياً</p>';
+                    if (badge) badge.innerText = '›';
+                    return;
+                }
+                if (badge) badge.innerText = snap.size;
+                const frags = [];
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    frags.push(`
+                        <div class="friend-request-row">
+                            <span style="flex:1; cursor:pointer;" onclick="viewUserProfile('${escapeAttr(d.from)}')">${sanitizeHTML(d.from)}</span>
+                            <button class="small-action-btn accept" onclick="db.collection('friendRequests').doc('${doc.id}').update({status:'accepted'}).catch(e => { console.error('Accept friend request error:', e); showError('تعذر قبول الطلب: ' + e.message); })">قبول</button>
+                            <button class="small-action-btn outline" onclick="db.collection('friendRequests').doc('${doc.id}').delete().catch(e => { console.error('Reject friend request error:', e); showError('تعذر رفض الطلب: ' + e.message); })">رفض</button>
+                        </div>
+                    `);
+                });
+                list.innerHTML = frags.join('');
+            }, (error) => {
+                console.error('loadIncomingFriendRequests permission/listen error:', error);
+                const list = document.getElementById('incoming-requests-list');
+                if (list) list.innerHTML = `<p style="color: var(--danger); font-size:12px; text-align:center; margin:0;">تعذر تحميل الطلبات (${error.code || error.message})</p>`;
+            });
+            unsubscribeFunctions.push(unsub);
+        }
+
         function searchUsers() {
-            const input = document.getElementById('user-search-input').value.trim();
-            if (!input) {
-                document.getElementById('search-results').style.display = 'none';
-                return;
-            }
-            
-            db.collection('users').orderBy('__name__').startAt(input).endAt(input + '\uf8ff').limit(10).get()
+            const term = document.getElementById('user-search-input').value.trim();
+            const resultsEl = document.getElementById('search-results');
+            if (!term) { resultsEl.style.display = 'none'; return; }
+            db.collection('users')
+                .orderBy(firebase.firestore.FieldPath.documentId())
+                .startAt(term)
+                .endAt(term + '\uf8ff')
+                .limit(20)
+                .get()
                 .then(snap => {
-                    const resultsEl = document.getElementById('search-results');
+                    resultsEl.style.display = 'block';
                     if (snap.empty) {
-                        resultsEl.innerHTML = '<p style="color:var(--text-muted);">لا توجد نتائج</p>';
-                        resultsEl.style.display = 'block';
+                        resultsEl.innerHTML = '<p style="color: var(--text-muted); text-align:center; margin:0;">لا يوجد نتائج</p>';
                         return;
                     }
-                    
                     const frags = [];
                     snap.forEach(doc => {
-                        const u = doc.id;
+                        if (doc.id === currentUser) return;
+                        const d = doc.data();
+                        const safeAvatar = d.avatarUrl ? sanitizeURL(d.avatarUrl) : '';
+                        const avatarStyle = safeAvatar ? `background-image:url('${safeAvatar}');` : '';
+                        const initial = safeAvatar ? '' : doc.id.charAt(0).toUpperCase();
                         frags.push(`
-                            <div style="padding:12px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-                                <div onclick="viewUserProfile('${escapeAttr(u)}')" style="cursor:pointer; flex:1;">
-                                    <strong style="color:var(--primary);">${sanitizeHTML(u)}</strong>
-                                </div>
-                                <button class="small-btn" style="background:none; border:none; cursor:pointer; font-size:18px;" onclick="sendFriendRequest('${escapeAttr(u)}')">➕</button>
+                            <div class="user-result-row">
+                                <div class="user-result-avatar" style="${avatarStyle}" onclick="viewUserProfile('${escapeAttr(doc.id)}')">${initial}</div>
+                                <span class="user-result-name" onclick="viewUserProfile('${escapeAttr(doc.id)}')">${sanitizeHTML(doc.id)}</span>
+                                <button class="small-action-btn" onclick="viewUserProfile('${escapeAttr(doc.id)}')">عرض الملف</button>
                             </div>
                         `);
                     });
-                    resultsEl.innerHTML = frags.join('');
-                    resultsEl.style.display = 'block';
+                    resultsEl.innerHTML = frags.join('') || '<p style="color: var(--text-muted); text-align:center; margin:0;">لا يوجد نتائج</p>';
                 })
-                .catch(e => showError('خطأ بالبحث'));
-        }
-
-        function sendFriendRequest(recipient) {
-            if (recipient === currentUser) {
-                showError('لا يمكنك إضافة نفسك');
-                return;
-            }
-            
-            const reqId = friendRequestId(currentUser, recipient);
-            db.collection('friendRequests').doc(reqId).set({
-                sender: currentUser,
-                recipient: recipient,
-                status: 'pending',
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                showError('✓ تم إرسال طلب الصداقة');
-            }).catch(e => showError('خطأ: ' + e.message));
+                .catch(() => showError('تعذر البحث حالياً'));
         }
 
         function inviteFriends() {
-            const link = window.location.href;
-            const text = `انضم معي على أرابيكا - مجتمع التجارة الرقمية! ${link}`;
-            
+            const shareText = `انضم لي على أرابيكا 🎗 — مجتمع تجارة وتواصل عبر شبكة Pi Network`;
+            const shareUrl = window.location.origin;
             if (navigator.share) {
-                navigator.share({ title: 'أرابيكا', text });
+                navigator.share({ title: 'أرابيكا', text: shareText, url: shareUrl }).catch(() => {});
+            } else if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareText + '\n' + shareUrl).then(() => alert('تم نسخ رابط الدعوة!')).catch(() => showError('تعذر النسخ'));
             } else {
-                alert('رابط الدعوة:\n' + link);
+                showError('المشاركة غير مدعومة على هذا المتصفح');
             }
         }
 
-        function loadIncomingFriendRequests() {
-            const unsubscribe = db.collection('friendRequests')
-                .where('recipient', '==', currentUser)
-                .where('status', '==', 'pending')
-                .onSnapshot(snap => {
-                    const listEl = document.getElementById('incoming-requests-list');
-                    if (!listEl) return;
-                    
-                    if (snap.empty) {
-                        listEl.innerHTML = '<p style="color: var(--text-muted); font-size:13px; text-align:center; margin:0;">لا توجد طلبات حالياً</p>';
-                        return;
-                    }
-                    
-                    const frags = [];
-                    snap.forEach(doc => {
-                        const req = doc.data();
-                        frags.push(`
-                            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border);">
-                                <span onclick="viewUserProfile('${escapeAttr(req.sender)}')" style="cursor:pointer; color:var(--primary);">${sanitizeHTML(req.sender)}</span>
-                                <div style="gap:8px; display:flex;">
-                                    <button class="small-btn" style="background:none; border:none; cursor:pointer; font-size:16px;" onclick="respondFriendRequest('${doc.id}', 'accept')">✓</button>
-                                    <button class="small-btn" style="background:none; border:none; cursor:pointer; font-size:16px;" onclick="respondFriendRequest('${doc.id}', 'reject')">✗</button>
-                                </div>
-                            </div>
-                        `);
-                    });
-                    listEl.innerHTML = frags.join('');
-                });
-            
-            unsubscribeFunctions.push(unsubscribe);
+        function toggleFollow(author, btnEl, callback) {
+            if (!author || author === currentUser) return;
+            const docId = `${currentUser}_${author}`;
+            const ref = db.collection('follows').doc(docId);
+            ref.get().then(doc => {
+                if (doc.exists) {
+                    return ref.delete().then(() => false);
+                } else {
+                    return ref.set({
+                        follower: currentUser,
+                        followerUid: authUid,
+                        target: author,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    }).then(() => { awardTaskOnce('firstFollow', 5); return true; });
+                }
+            }).then(isNowFollowing => {
+                if (btnEl) btnEl.innerText = isNowFollowing ? '✓ متابَع' : '➕ متابعة';
+                if (typeof callback === 'function') callback(isNowFollowing);
+            }).catch(e => {
+                console.error('toggleFollow error:', e);
+                showError('خطأ في المتابعة: ' + e.message);
+            });
         }
 
-        function respondFriendRequest(reqId, response) {
-            const status = response === 'accept' ? 'accepted' : 'rejected';
-            db.collection('friendRequests').doc(reqId).update({ status })
-                .catch(e => showError('خطأ: ' + e.message));
+        function openListModal(title, list) { 
+            document.getElementById('list-modal-title').innerText = title; 
+            const body = document.getElementById('list-modal-body'); 
+            if (list.length === 0) { 
+                body.innerHTML = '<p style="color: var(--text-muted); text-align:center;">لا يوجد بيانات بعد</p>'; 
+            } else { 
+                body.innerHTML = list.map(u => `<div class="comment">${sanitizeHTML(u)}</div>`).join(''); 
+            } 
+            document.getElementById('list-modal').style.display = 'flex'; 
         }
 
-        function showFollowers() {
-            db.collection('follows').where('target', '==', currentUser).get()
-                .then(snap => openListModal('المتابعين', snap.docs.map(d => d.data().follower)))
-                .catch(() => showError('خطأ بالتحميل'));
+        function closeListModal() { 
+            document.getElementById('list-modal').style.display = 'none'; 
         }
 
-        function showFollowing() {
+        function showFollowing() { 
             db.collection('follows').where('follower', '==', currentUser).get()
-                .then(snap => openListModal('الحسابات اللي بتتابعها', snap.docs.map(d => d.data().target)))
-                .catch(() => showError('خطأ بالتحميل'));
+            .then(snap => openListModal('الحسابات اللي بتتابعها', snap.docs.map(d => d.data().target)))
+            .catch(() => showError('تعذر تحميل القائمة')); 
         }
+
+        function showFollowers() { 
+            db.collection('follows').where('target', '==', currentUser).get()
+            .then(snap => openListModal('المتابعين', snap.docs.map(d => d.data().follower)))
+            .catch(() => showError('تعذر تحميل القائمة')); 
+        }
+
+        function showMyPosts() { 
+            showOnlyMyPosts = true; 
+            document.getElementById('posts-filter-banner').style.display = 'flex'; 
+            switchPage('feed'); 
+            renderPostsFeed(); 
+        }
+
+        function clearPostsFilter() { 
+            showOnlyMyPosts = false; 
+            document.getElementById('posts-filter-banner').style.display = 'none'; 
+            renderPostsFeed(); 
+        }
+
+        function publishPost() { 
+            if (!authUid) { 
+                showError("لسه بيجهز الاتصال الآمن، حاول تاني بعد ثانية"); 
+                return; 
+            } 
+            const text = document.getElementById('post-text').value.trim(); 
+            const imageUrl = document.getElementById('post-image-url').value.trim(); 
+            const category = document.getElementById('post-category').value; 
+            if (!text && !imageUrl) { 
+                showError("أضف نصاً أو صورة"); 
+                return; 
+            } 
+            const btn = document.getElementById('publish-btn'); 
+            btn.disabled = true; 
+            db.collection("posts").add({ 
+                author: currentUser, 
+                authorUid: authUid, 
+                content: text, 
+                imageUrl: imageUrl || null, 
+                category: category || 'general', 
+                likes: 0, 
+                comments: [], 
+                edited: false, 
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+            }).then(() => { 
+                document.getElementById('post-text').value = ""; 
+                document.getElementById('post-text').style.height = 'auto'; 
+                document.getElementById('post-image-url').value = ""; 
+                document.getElementById('post-category').value = "general"; 
+                awardLoyaltyPoints(2); 
+                awardTaskOnce('firstPost', 10); 
+            }).catch(e => showError("خطأ النشر"))
+            .finally(() => btn.disabled = false); 
+        }
+
+        function awardLoyaltyPoints(amount) { 
+            if (!authUid || !currentUser) return; 
+            db.collection("users").doc(currentUser).set({ 
+                loyaltyPoints: firebase.firestore.FieldValue.increment(amount), 
+                ownerUid: authUid 
+            }, { merge: true })
+            .catch(e => console.error("Loyalty points error:", e)); 
+        }
+
+        function awardTaskOnce(taskKey, points) { 
+            if (!authUid || !currentUser) return; 
+            const userRef = db.collection("users").doc(currentUser); 
+            userRef.get().then(doc => { 
+                const alreadyDone = doc.exists && doc.data().tasksCompleted && doc.data().tasksCompleted[taskKey]; 
+                if (alreadyDone) return; 
+                const update = { 
+                    ownerUid: authUid, 
+                    loyaltyPoints: firebase.firestore.FieldValue.increment(points) 
+                }; 
+                update['tasksCompleted.' + taskKey] = true; 
+                userRef.set(update, { merge: true }).catch(e => console.error("Task award error:", e)); 
+            }); 
+        }
+
+        function getLoyaltyBadge(points) { 
+            const p = points || 0; 
+            if (p >= 500) return '🥇 عضو أساسي'; 
+            if (p >= 200) return '🥈 عضو مميز'; 
+            if (p >= 50) return '🥉 عضو نشط'; 
+            return ''; 
+        }
+
+        function loadPosts() { 
+            const unsubscribe = db.collection("posts").orderBy("timestamp", "desc").limit(30).onSnapshot(snapshot => { 
+                lastPostsSnapshot = snapshot; 
+                renderPostsFeed(); 
+            }); 
+            unsubscribeFunctions.push(unsubscribe); 
+        }
+
+        function renderPostsFeed() { 
+            if (!lastPostsSnapshot) return; 
+            const feed = document.getElementById('posts-feed'); 
+            const fragments = []; 
+            
+            lastPostsSnapshot.forEach(doc => { 
+                const post = doc.data(); 
+                const postId = doc.id; 
+                
+                if (showOnlyMyPosts && post.author !== currentUser) return; 
+                if (window.currentFeedCategoryFilter && window.currentFeedCategoryFilter !== 'all' && (post.category || 'general') !== window.currentFeedCategoryFilter) return; 
+                
+                const safeImg = sanitizeURL(post.imageUrl); 
+                const imgHtml = safeImg ? `<img src="${safeImg}" class="post-image" onerror="this.style.display='none'">` : ''; 
+                const commentsHtml = (post.comments || []).map(c => `<div class="comment"><strong>${sanitizeHTML(c.user)}:</strong> ${sanitizeHTML(c.text)}</div>`).join(''); 
+                
+                const delBtn = post.author === currentUser ? `<button class="action-btn danger" onclick="deletePost('${postId}')">🗑️</button>` : ''; 
+                const followBtn = post.author && post.author !== currentUser ? `<button class="action-btn follow-author-btn" data-author="${escapeAttr(post.author)}">➕ متابعة</button>` : ''; 
+                const escText = escapeAttr(post.content || ''); 
+                const escImg = escapeAttr(post.imageUrl || ''); 
+                const editBtn = post.author === currentUser ? `<button class="action-btn edit-post-btn" data-post-id="${postId}" data-post-text="${escText}" data-post-image="${escImg}">✏️ تعديل</button>` : ''; 
+                const editedTag = post.edited ? ' <span style="color:var(--text-muted); font-size:12px;">(معدّل)</span>' : ''; 
+                
+                const authorIsGuest = post.author && post.author.indexOf('tg_') === 0; 
+                const authorDisplay = authorIsGuest ? ('زائر تلجرام #' + post.author.slice(3)) : (post.author || 'مجهول'); 
+                const guestBadge = authorIsGuest ? ' <span style="background:#0088cc; color:#fff; font-size:10px; padding:2px 6px; border-radius:8px;">TG</span>' : ''; 
+                const authorVerifiedBadge = (!authorIsGuest && isKnownAdmin(post.author)) ? ' <span class="official-badge">⚜️ ارابيكا</span>' : ''; 
+                
+                fetchAdminStatusAndRerender(post.author, () => renderPostsFeed()); 
+                fetchAvatarAndRerender(post.author, () => renderPostsFeed()); 
+                const authorAvatarHtml = `<div class="post-avatar-circle" style="${avatarStyleFor(post.author)}">${authorIsGuest && !avatarCache[post.author] ? '🫥' : avatarInitialFor(post.author)}</div>`;
+                const authorClickAttr = ` onclick="viewUserProfile('${escapeAttr(post.author)}')"`;
+                
+                fragments.push(`
+                    <div class="card">
+                        <div class="post-header">
+                            <span class="post-author-link"${authorClickAttr}>
+                                ${authorAvatarHtml}
+                                <span class="post-author">${sanitizeHTML(authorDisplay)}${guestBadge}${authorVerifiedBadge}</span>
+                            </span>
+                            <div style="display:flex; gap:8px; align-items:center;">${followBtn}${delBtn}</div>
+                        </div>
+                        <div class="card-content">${sanitizeHTML(post.content)}${editedTag}</div>
+                        ${imgHtml}
+                        <div class="post-actions">
+                            <button class="action-btn" onclick="likePost('${postId}')">${(post.likedBy && post.likedBy.indexOf(authUid) !== -1) ? '❤️' : '🤍'} ${post.likes || 0}</button>
+                            <button class="action-btn" onclick="toggleComments('comments-${postId}')">💬 تعليقات (${(post.comments||[]).length})</button>
+                            <button class="action-btn share-post-btn" data-post-text="${escText}">🔗 مشاركة</button>
+                            ${editBtn}
+                        </div>
+                        <div id="comments-${postId}" class="comments-section">
+                            ${commentsHtml}
+                            <div style="display:flex; gap:5px; margin-top:10px;">
+                                <input type="text" id="new-comment-${postId}" placeholder="اكتب تعليقاً..." style="margin-bottom:0;">
+                                <button class="btn" style="width:auto; margin:0; padding:10px;" onclick="addComment('${postId}')">إرسال</button>
+                            </div>
+                        </div>
+                    </div>
+                `); 
+            }); 
+            feed.innerHTML = fragments.join(''); 
+            attachPostButtonListeners(); 
+        }
+
+        function attachPostButtonListeners() { 
+            document.querySelectorAll('.share-post-btn').forEach(btn => btn.addEventListener('click', function () { 
+                sharePost(this.dataset.postText); 
+            })); 
+            document.querySelectorAll('.edit-post-btn').forEach(btn => btn.addEventListener('click', function () { 
+                openEditPost(this.dataset.postId, this.dataset.postText, this.dataset.postImage); 
+            })); 
+            document.querySelectorAll('.follow-author-btn').forEach(btn => btn.addEventListener('click', function () { 
+                toggleFollow(this.dataset.author, this); 
+            })); 
+        }
+
+        function sharePost(text) { 
+            const shareText = text || ''; 
+            if (navigator.share) { 
+                navigator.share({ title: 'أرابيكا', text: shareText, url: window.location.href }).catch(() => {}); 
+            } else if (navigator.clipboard) { 
+                navigator.clipboard.writeText(shareText + '\n' + window.location.href).then(() => alert('تم نسخ المنشور')).catch(() => showError('تعذر النسخ')); 
+            } else { 
+                showError('المشاركة مش مدعومة'); 
+            } 
+        }
+
+        function openEditPost(postId, currentText, currentImage) { 
+            editingPostId = postId; 
+            document.getElementById('edit-post-text').value = currentText || ''; 
+            document.getElementById('edit-post-image').value = currentImage || ''; 
+            document.getElementById('edit-post-modal').style.display = 'flex'; 
+        }
+
+        function closeEditPostModal() { 
+            document.getElementById('edit-post-modal').style.display = 'none'; 
+            editingPostId = null; 
+        }
+
+        function saveEditPost() { 
+            const text = document.getElementById('edit-post-text').value.trim(); 
+            const imageUrl = document.getElementById('edit-post-image').value.trim(); 
+            if (!text && !imageUrl) { 
+                showError("أضف نصاً أو صورة"); 
+                return; 
+            } 
+            if (!editingPostId) return; 
+            db.collection("posts").doc(editingPostId).update({ 
+                content: text, 
+                imageUrl: imageUrl || null, 
+                edited: true 
+            }).then(closeEditPostModal).catch(e => showError("خطأ في التعديل")); 
+        }
+
+        function deletePost(id) { 
+            if (confirm("حذف المنشور؟")) db.collection("posts").doc(id).delete(); 
+        }
+
+        function likePost(id) { 
+            if (!authUid) { 
+                showError("لسه بيجهز الاتصال الآمن، حاول تاني بعد ثانية"); 
+                return; 
+            } 
+            const postRef = db.collection("posts").doc(id); 
+            postRef.get().then(doc => { 
+                if (!doc.exists) return; 
+                const likedBy = doc.data().likedBy || []; 
+                const alreadyLiked = likedBy.indexOf(authUid) !== -1; 
+                if (alreadyLiked) { 
+                    postRef.update({ 
+                        likes: firebase.firestore.FieldValue.increment(-1), 
+                        likedBy: firebase.firestore.FieldValue.arrayRemove(authUid) 
+                    }); 
+                } else { 
+                    postRef.update({ 
+                        likes: firebase.firestore.FieldValue.increment(1), 
+                        likedBy: firebase.firestore.FieldValue.arrayUnion(authUid) 
+                    }); 
+                } 
+            }).catch(e => showError("خطأ في الإعجاب")); 
+        }
+
+        function toggleComments(id) { 
+            const el = document.getElementById(id); 
+            el.style.display = el.style.display === 'block' ? 'none' : 'block'; 
+        }
+
+        function addComment(id) { 
+            const text = document.getElementById(`new-comment-${id}`).value.trim(); 
+            if (text) {
+                db.collection("posts").doc(id).update({ 
+                    comments: firebase.firestore.FieldValue.arrayUnion({ user: currentUser, text: text }) 
+                });
+            }
+        }
+
+        window.currentCategoryFilter = 'all';
+        window.showOnlyMyProducts = false;
+        window.storeFilterOwner = null;
 
         function showMyProducts() {
             window.showOnlyMyProducts = true;
             window.storeFilterOwner = currentUser;
             const banner = document.getElementById('store-filter-banner');
-            if (banner) {
-                banner.querySelector('span').innerText = '📌 منتجاتك فقط';
-                banner.style.display = 'flex';
-            }
+            banner.querySelector('span').innerText = '📌 بيتم عرض منتجاتك بس';
+            banner.style.display = 'flex';
             switchPage('store', true);
-            renderStoreProducts('all');
+            filterStoreProducts(window.currentCategoryFilter);
         }
 
-        function openListModal(title, usernames) {
-            document.getElementById('list-modal-title').innerText = title;
-            const body = document.getElementById('list-modal-body');
-            body.innerHTML = usernames.map(u => 
-                `<div style="padding:8px; border-bottom:1px solid var(--border); cursor:pointer;" onclick="viewUserProfile('${escapeAttr(u)}')">${sanitizeHTML(u)}</div>`
-            ).join('');
-            document.getElementById('list-modal').style.display = 'flex';
+        function clearStoreFilter() {
+            window.showOnlyMyProducts = false;
+            window.storeFilterOwner = null;
+            document.getElementById('store-filter-banner').style.display = 'none';
+            filterStoreProducts(window.currentCategoryFilter);
         }
+        window.productsMap = {}; 
+        let editingStoreProdId = null; 
 
-        function closeListModal() {
-            document.getElementById('list-modal').style.display = 'none';
-        }
-
-        function toggleFollow(targetUser, followEl, onResult) {
-            const followId = `${currentUser}_${targetUser}`;
-            db.collection('follows').doc(followId).get().then(doc => {
-                if (doc.exists) {
-                    db.collection('follows').doc(followId).delete()
-                        .then(() => {
-                            if (onResult) onResult(false);
-                        })
-                        .catch(e => showError('خطأ'));
-                } else {
-                    db.collection('follows').doc(followId).set({
-                        follower: currentUser,
-                        target: targetUser,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    }).then(() => {
-                        awardTaskOnce('firstFollow', 5);
-                        if (onResult) onResult(true);
-                    }).catch(e => showError('خطأ'));
-                }
+        function filterStoreProducts(category) {
+            window.currentCategoryFilter = category;
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`.category-btn[onclick="filterStoreProducts('${category}')"]`);
+            if(activeBtn) activeBtn.classList.add('active');
+            const cards = document.querySelectorAll('#store-products .product-card');
+            cards.forEach(card => {
+                const categoryMatch = (category === 'all' || card.getAttribute('data-category') === category);
+                const ownerMatch = (!window.showOnlyMyProducts || card.getAttribute('data-owner') === (window.storeFilterOwner || currentUser));
+                card.style.display = (categoryMatch && ownerMatch) ? 'block' : 'none';
             });
         }
 
+        function getCategoryNameArabic(cat) {
+            switch(cat) {
+                case 'tech': return '💻 تقني';
+                case 'entertainment': return '🎮 ترفيهي';
+                case 'services': return '🛠️ خدمي';
+                case 'industrial': return '🏭 صناعي';
+                default: return '🛒 منتج';
+            }
+        }
+
+        function addNewProduct() {
+            if (!authUid) { 
+                showError("لسه بيجهز الاتصال الآمن، حاول تاني بعد ثانية"); 
+                return; 
+            }
+            
+            const name = document.getElementById('new-prod-name').value.trim();
+            const price = parseFloat(document.getElementById('new-prod-price').value);
+            const category = document.getElementById('new-prod-category').value;
+            const imageUrl = document.getElementById('new-prod-image').value.trim();
+            const description = document.getElementById('new-prod-description').value.trim();
+            
+            if (!name || !price || price < 0) { 
+                showError("البيانات غير صحيحة"); 
+                return; 
+            }
+            
+            const btn = document.getElementById('add-prod-btn'); 
+            btn.disabled = true;
+            
+            db.collection("products").add({ 
+                name, 
+                price, 
+                category, 
+                imageUrl: imageUrl || null, 
+                description: description || null,
+                owner: currentUser, 
+                ownerUid: authUid, 
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+            })
+            .then(() => { 
+                document.getElementById('new-prod-name').value = ""; 
+                document.getElementById('new-prod-price').value = ""; 
+                document.getElementById('new-prod-image').value = ""; 
+                document.getElementById('new-prod-description').value = ""; 
+                document.getElementById('new-prod-category').value = "tech"; 
+            })
+            .finally(() => btn.disabled = false);
+        }
+
+        let lastProductsSnapshot = null;
+        
+        function loadProducts() {
+            const unsubscribe = db.collection("products").orderBy("timestamp", "desc").limit(30).onSnapshot(snapshot => {
+                lastProductsSnapshot = snapshot;
+                renderProductsFeed();
+            });
+            unsubscribeFunctions.push(unsubscribe);
+        }
+
+        function renderProductsFeed() {
+                if (!lastProductsSnapshot) return;
+                const store = document.getElementById('store-products'); 
+                const fragments = [];
+                window.productsMap = {}; 
+
+                lastProductsSnapshot.forEach(doc => {
+                    const prod = doc.data(); 
+                    const prodId = doc.id;
+                    window.productsMap[prodId] = { ...prod, id: prodId }; 
+                    
+                    const safeImg = sanitizeURL(prod.imageUrl);
+                    const prodCategory = prod.category || 'tech';
+                    const catName = getCategoryNameArabic(prodCategory);
+                    const imgHtml = safeImg ? `<img src="${safeImg}" class="prod-image" onerror="this.style.display='none'">` : '';
+                    
+                    const isOfficial = isKnownAdmin(prod.owner);
+                    const badgeHtml = isOfficial ? `<span class="official-badge">⚜️ ارابيكا</span>` : '';
+                    fetchAdminStatusAndRerender(prod.owner, () => renderProductsFeed());
+                    
+                    const ownerBtns = prod.owner === currentUser ? `
+                        <button class="btn" onclick="openEditProductModal('${prodId}')" style="background-color: #eab308; color: black; padding: 8px; flex: 1; font-size: 13px; margin: 0;">تعديل</button>
+                        <button class="btn" onclick="deleteProduct('${prodId}')" style="background-color: var(--danger); padding: 8px; flex: 1; font-size: 13px; margin: 0;">حذف</button>
+                    ` : '';
+
+                    fragments.push(`
+                        <div class="product-card" data-category="${prodCategory}" data-owner="${escapeAttr(prod.owner)}">
+                            <span class="product-category-tag">${catName}</span>
+                            ${imgHtml}
+                            <h4 style="margin: 10px 0 5px 0; font-size: 18px;">${sanitizeHTML(prod.name)}</h4>
+                            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;">
+                                بواسطة: ${sanitizeHTML(prod.owner)} <br>${badgeHtml}
+                            </p>
+                            <p style="color: var(--primary); font-weight: bold; font-size: 16px; margin: 5px 0;">${prod.price} Pi</p>
+                            
+                            <div style="display: flex; gap: 5px; margin-top: 10px; width: 100%;">
+                                <button class="btn" onclick="openProductDetails('${prodId}')" style="background: #3b82f6; padding: 8px; flex: 1.5; font-size: 13px; margin: 0;">تفاصيل</button>
+                                <button class="btn" onclick="buyProduct('${prodId}', '${escapeAttr(prod.name)}', ${prod.price}, '${escapeAttr(prod.owner)}')" style="background: linear-gradient(90deg, var(--primary-dark), var(--primary)); padding: 8px; flex: 1.5; font-size: 13px; margin: 0;">شراء</button>
+                                ${ownerBtns}
+                            </div>
+                        </div>
+                    `);
+                });
+                store.innerHTML = fragments.join('');
+                filterStoreProducts(window.currentCategoryFilter);
+        }
+
+        function openProductDetails(id) {
+            const p = window.productsMap[id];
+            if(!p) return;
+            document.getElementById('det-img').src = sanitizeURL(p.imageUrl) || '';
+            document.getElementById('det-img').style.display = p.imageUrl ? 'block' : 'none';
+            document.getElementById('det-name').innerText = sanitizeHTML(p.name);
+            document.getElementById('det-price').innerText = p.price + ' Pi';
+            document.getElementById('det-cat').innerText = getCategoryNameArabic(p.category || 'tech');
+            document.getElementById('det-owner').innerText = sanitizeHTML(p.owner);
+            const descWrap = document.getElementById('det-desc-wrap');
+            if (p.description) {
+                document.getElementById('det-desc').innerText = sanitizeHTML(p.description);
+                descWrap.style.display = 'block';
+            } else {
+                descWrap.style.display = 'none';
+            }
+            
+            const buyBtn = document.getElementById('det-buy-btn');
+            buyBtn.onclick = () => { closeProductDetails(); buyProduct(id, p.name, p.price, p.owner); };
+            
+            document.getElementById('productDetailsModal').style.display = 'flex';
+        }
+
+        function closeProductDetails() { 
+            document.getElementById('productDetailsModal').style.display = 'none'; 
+        }
+
+        function openEditProductModal(id) {
+            const p = window.productsMap[id];
+            if(!p) return;
+            editingStoreProdId = id;
+            document.getElementById('edit-prod-name').value = p.name;
+            document.getElementById('edit-prod-price').value = p.price;
+            document.getElementById('edit-prod-category').value = p.category || 'tech';
+            document.getElementById('edit-prod-image').value = p.imageUrl || '';
+            document.getElementById('edit-prod-description').value = p.description || '';
+            document.getElementById('editProductModal').style.display = 'flex';
+        }
+
+        function closeEditProductModal() { 
+            document.getElementById('editProductModal').style.display = 'none'; 
+            editingStoreProdId = null; 
+        }
+        
+        function saveEditedProduct() {
+            if(!editingStoreProdId) return;
+            const name = document.getElementById('edit-prod-name').value.trim();
+            const price = parseFloat(document.getElementById('edit-prod-price').value);
+            const category = document.getElementById('edit-prod-category').value;
+            const imageUrl = document.getElementById('edit-prod-image').value.trim();
+            const description = document.getElementById('edit-prod-description').value.trim();
+            
+            if (!name || !price || price < 0) { 
+                showError("البيانات غير صحيحة"); 
+                return; 
+            }
+            
+            db.collection("products").doc(editingStoreProdId).update({
+                name, 
+                price, 
+                category, 
+                imageUrl: imageUrl || null,
+                description: description || null
+            }).then(() => {
+                closeEditProductModal();
+            }).catch(e => showError("خطأ في تعديل المنتج"));
+        }
+
+        function deleteProduct(id) { 
+            if (confirm("هل أنت متأكد من حذف هذا المنتج نهائياً؟")) {
+                db.collection("products").doc(id).delete();
+            }
+        }
+
+        function buyProduct(productId, name, price, sellerUsername) {
+            if (typeof Pi === 'undefined') { 
+                showError("نظام Pi غير متاح هنا"); 
+                return; 
+            }
+            if (sellerUsername === currentUser) {
+                showError("مينفعش تشتري منتجك بنفسك");
+                return;
+            }
+            
+            if (!piReady) {
+                try {
+                    Pi.init({ version: "2.0", sandbox: false });
+                    piReady = true;
+                } catch (e) {
+                    showError("جاري الاتصال بشبكة Pi، يرجى المحاولة بعد ثانية...");
+                    return;
+                }
+            }
+
+            try {
+                Pi.createPayment({
+                    amount: price,
+                    memo: `شراء ${name}`,
+                    metadata: { productId, productName: name, sellerUsername, buyerUsername: currentUser }
+                }, {
+                    onReadyForServerApproval: function(paymentId) {
+                        fetch('/api/approve', { 
+                            method: 'POST', 
+                            headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify({ paymentId: paymentId }) 
+                        })
+                        .then(res => { 
+                            if (!res.ok) throw new Error("السيرفر رفض الطلب"); 
+                        }).catch(e => showError("فشل الاتصال للموافقة"));
+                    },
+                    onReadyForServerCompletion: function(paymentId, txid) {
+                        fetch('/api/complete', { 
+                            method: 'POST', 
+                            headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify({ paymentId, txid }) 
+                        })
+                        .then(res => { 
+                            if(res.ok) alert("تم الدفع بنجاح! الفلوس محجوزة لحد ما تأكد استلامك من صفحة \"طلباتي\"."); 
+                            else showError("فشل التأكيد."); 
+                        }).catch(e => showError("خطأ السيرفر"));
+                    },
+                    onCancel: function(paymentId) { 
+                        console.log("إلغاء:", paymentId); 
+                    },
+                    onError: function(error, payment) { 
+                        showError("خطأ في الشبكة"); 
+                    }
+                });
+            } catch (e) { 
+                showError("خطأ: " + e.message); 
+            }
+        }
+
+        function formatOrderStatus(status) {
+            switch (status) {
+                case 'held': return { text: '⏳ محجوز - في انتظار التأكيد', color: 'var(--gold)' };
+                case 'released': return { text: '✅ تم التحويل للبائع', color: 'var(--success)' };
+                case 'disputed': return { text: '⚠️ نزاع مفتوح', color: 'var(--danger)' };
+                default: return { text: status, color: 'var(--text-muted)' };
+            }
+        }
+
+        function renderOrderCard(order, orderId, isBuyer) {
+            const st = formatOrderStatus(order.status);
+            const otherParty = isBuyer ? order.sellerUsername : order.buyerUsername;
+            const otherLabel = isBuyer ? 'البائع' : 'المشتري';
+            let actionsHtml = '';
+            if (isBuyer && order.status === 'held') {
+                actionsHtml = `
+                    <div style="display:flex; gap:8px; margin-top:10px;">
+                        <button class="btn" style="margin:0; flex:1; background: var(--success);" onclick="confirmOrderReceipt('${orderId}')">✅ تأكيد الاستلام</button>
+                        <button class="btn" style="margin:0; flex:1; background:#444;" onclick="openOrderDispute('${orderId}')">⚠️ فتح نزاع</button>
+                    </div>`;
+            }
+            return `
+                <div class="card">
+                    <p style="margin:0 0 4px 0; font-weight:bold; color:var(--text-color);">${sanitizeHTML(order.productName || 'منتج')}</p>
+                    <p style="margin:0 0 4px 0; font-size:13px; color:var(--text-muted);">${otherLabel}: ${sanitizeHTML(otherParty || '—')}</p>
+                    <p style="margin:0 0 4px 0; font-size:13px; color:var(--primary); font-weight:bold;">${order.amount} Pi</p>
+                    <p style="margin:0; font-size:13px; color:${st.color}; font-weight:bold;">${st.text}</p>
+                    ${actionsHtml}
+                </div>`;
+        }
+
         function loadMyOrders() {
-            // سيتم تنفيذها عند الحاجة
+            const purchasesEl = document.getElementById('my-purchases-list');
+            const salesEl = document.getElementById('my-sales-list');
+            if (!purchasesEl || !salesEl) return;
+
+            db.collection('orders').where('buyerUid', '==', currentUser).onSnapshot(snap => {
+                if (snap.empty) {
+                    purchasesEl.innerHTML = '<p style="color:var(--text-muted); text-align:center; margin:0;">لا توجد مشتريات بعد</p>';
+                    return;
+                }
+                const docs = snap.docs.slice().sort((a, b) => {
+                    const ta = a.data().createdAt ? a.data().createdAt.toMillis() : 0;
+                    const tb = b.data().createdAt ? b.data().createdAt.toMillis() : 0;
+                    return tb - ta;
+                });
+                purchasesEl.innerHTML = docs.map(d => renderOrderCard(d.data(), d.id, true)).join('');
+            }, e => {
+                console.error('loadMyOrders (purchases) error:', e);
+                purchasesEl.innerHTML = `<p style="color:var(--danger); font-size:12px; text-align:center;">تعذر تحميل المشتريات (${e.code || e.message})</p>`;
+            });
+
+            db.collection('orders').where('sellerUid', '==', currentUser).onSnapshot(snap => {
+                if (snap.empty) {
+                    salesEl.innerHTML = '<p style="color:var(--text-muted); text-align:center; margin:0;">لا توجد مبيعات بعد</p>';
+                    return;
+                }
+                const docs = snap.docs.slice().sort((a, b) => {
+                    const ta = a.data().createdAt ? a.data().createdAt.toMillis() : 0;
+                    const tb = b.data().createdAt ? b.data().createdAt.toMillis() : 0;
+                    return tb - ta;
+                });
+                salesEl.innerHTML = docs.map(d => renderOrderCard(d.data(), d.id, false)).join('');
+            }, e => {
+                console.error('loadMyOrders (sales) error:', e);
+                salesEl.innerHTML = `<p style="color:var(--danger); font-size:12px; text-align:center;">تعذر تحميل المبيعات (${e.code || e.message})</p>`;
+            });
+        }
+
+        function confirmOrderReceipt(orderId) {
+            if (!confirm('تأكيد إنك استلمت المنتج/الخدمة؟ الفلوس هتتحول للبائع فورًا وده إجراء نهائي.')) return;
+            fetch('/api/release-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId, buyerUsername: currentUser })
+            })
+            .then(res => res.json().then(data => ({ ok: res.ok, data })))
+            .then(({ ok, data }) => {
+                if (!ok) throw new Error(data.error || 'فشل التحرير');
+                alert('تم تأكيد الاستلام وتحويل الفلوس للبائع ✅');
+            })
+            .catch(e => {
+                console.error('confirmOrderReceipt error:', e);
+                showError('تعذر إتمام العملية: ' + e.message);
+            });
+        }
+
+        function openOrderDispute(orderId) {
+            const reason = prompt('اكتب سبب فتح النزاع بإيجاز:');
+            if (!reason || !reason.trim()) return;
+            db.collection('orders').doc(orderId).update({
+                status: 'disputed',
+                disputeReason: reason.trim(),
+                disputedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                alert('تم فتح النزاع، هيتم مراجعته من فريق الدعم.');
+            }).catch(e => {
+                console.error('openOrderDispute error:', e);
+                showError('تعذر فتح النزاع: ' + e.message);
+            });
+        }
+
+        function switchPage(pageId, keepStoreFilter) {
+            if (pageId === 'orders') {
+                loadMyOrders();
+            }
+            if (pageId === 'store' && !keepStoreFilter && window.showOnlyMyProducts) {
+                window.showOnlyMyProducts = false;
+                window.storeFilterOwner = null;
+                const banner = document.getElementById('store-filter-banner');
+                if (banner) banner.style.display = 'none';
+                if (typeof filterStoreProducts === 'function') filterStoreProducts(window.currentCategoryFilter || 'all');
+            }
+            document.querySelectorAll('#main-app .page').forEach(page => {
+                page.classList.remove('active');
+            });
+            const activePage = document.getElementById('page-' + pageId);
+            if (activePage) {
+                activePage.classList.add('active');
+            } else {
+                const fallback = document.getElementById('page-feed');
+                if (fallback) fallback.classList.add('active');
+            }
+            const navPage = (pageId === 'settings' || pageId === 'search' || pageId === 'user-profile' || pageId === 'orders') ? 'profile' : pageId;
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+                if (item.getAttribute('data-page') === navPage) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            window.scrollTo(0, 0);
         }
     </script>
 </body>
-    </html>
+</html>
+
