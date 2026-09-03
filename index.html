@@ -675,7 +675,7 @@
                 return;
             }
             
-            Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
+            Pi.authenticate(['username', 'payments', 'wallet_address'], onIncompletePaymentFound)
                 .then(auth => {
                     const username = auth.user.username;
                     const accessToken = auth.accessToken; 
