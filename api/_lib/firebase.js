@@ -1,4 +1,4 @@
-const admin = require('firebase-admin');
+ const admin = require('firebase-admin');
 
 if (!admin.apps.length) {
     const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
