@@ -1,50 +1,53 @@
-const axios = require('axios');
-
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+const { db } = require('./_lib/firebase');
+const { getPayment, approvePayment, errBody } = require('./_lib/pi');
 
 module.exports = async (req, res) => {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
     const { paymentId } = req.body || {};
-    const API_KEY = process.env.PI_API_KEY;
+    if (!paymentId) return res.status(400).json({ error: 'paymentId required' });
 
-    console.log('🔍 [approve.js] paymentId:', paymentId);
-    console.log('🔍 [approve.js] API_KEY exists:', !!API_KEY);
+    try {
+        // 1) جلب الدفعة من Pi (المصدر الموثوق)
+        const payment = await getPayment(paymentId);
 
-    if (!paymentId) {
-        return res.status(400).json({ error: 'paymentId required' });
-    }
-    if (!API_KEY) {
-        return res.status(500).json({ error: 'API Key missing' });
-    }
-
-    const MAX_ATTEMPTS = 5;
-    const DELAY_MS = 2000;
-    let lastError = null;
-
-    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-        try {
-            const r = await axios.post(
-                `https://api.minepi.com/v2/payments/${paymentId}/approve`,
-                {},
-                { headers: { Authorization: `Key ${API_KEY}` } }
-            );
-            console.log('✅ [approve.js] Approved on attempt ' + attempt + ':', r.data);
-            return res.status(200).json(r.data);
-        } catch (e) {
-            lastError = e.response?.data || e.message;
-            console.error('❌ [approve.js] Attempt ' + attempt + ' failed (status ' + (e.response?.status || 'n/a') + '):', lastError);
-
-            if (attempt < MAX_ATTEMPTS) {
-                console.log('⏳ [approve.js] Retrying in ' + DELAY_MS + 'ms...');
-                await delay(DELAY_MS);
-            }
+        if (payment.status?.developer_approved) {
+            return res.status(200).json({ ok: true, alreadyApproved: true });
         }
-    }
+        if (payment.status?.cancelled || payment.status?.user_cancelled) {
+            return res.status(400).json({ error: 'Payment cancelled' });
+        }
 
-    return res.status(400).json({ error: lastError, attempts: MAX_ATTEMPTS });
+        // 2) التحقق من المنتج — لا نثق إلا بـ productId من metadata
+        const productId = payment.metadata?.productId;
+        if (!productId) return res.status(400).json({ error: 'productId missing in metadata' });
+
+        const snap = await db.collection('products').doc(productId).get();
+        if (!snap.exists) return res.status(400).json({ error: 'Product not found' });
+        const product = snap.data();
+
+        if (product.status && product.status !== 'available') {
+            return res.status(400).json({ error: 'Product not available' });
+        }
+        if (typeof product.price !== 'number' || Math.abs(product.price - payment.amount) > 0.0000001) {
+            console.error(`[approve] PRICE MISMATCH ${paymentId}: paid=${payment.amount} expected=${product.price}`);
+            return res.status(400).json({ error: 'Amount does not match product price' });
+        }
+
+        // بدل: if (product.sellerUid && product.sellerUid === payment.user_uid)
+        const q = await db.collection('users').where('piUid', '==', payment.user_uid).limit(1).get();
+        const buyerUsername = q.empty ? null : q.docs[0].id;
+        if (buyerUsername && buyerUsername === product.ownerUid) {
+            return res.status(400).json({ error: 'Cannot buy your own product' });
+        }
+
+        // 3) كل شيء سليم → الموافقة
+        const data = await approvePayment(paymentId);
+        console.log('✅ [approve]', paymentId);
+        return res.status(200).json(data);
+
+    } catch (e) {
+        console.error('❌ [approve]', paymentId, errBody(e));
+        return res.status(e.response?.status >= 500 ? 502 : 400).json({ error: errBody(e) });
+    }
 };
