@@ -1,27 +1,25 @@
-const { admin, db } = require('./firebase');
+const { admin } = require('./firebase');
 
-async function requireUser(req, res, next) {
-    const authHeader = req.headers.authorization;
+// يتحقق من Firebase ID Token في هيدر Authorization
+// يُرجع اسم المستخدم (uid) عند النجاح، أو يرمي خطأ له خاصية status عند الفشل
+module.exports = async function requireUser(req) {
+    const authHeader = req.headers.authorization || '';
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Unauthorized: No token provided' });
+        const err = new Error('Unauthorized: No token provided');
+        err.status = 401;
+        throw err;
     }
 
-    const token = authHeader.split(' ')[1];
+    const idToken = authHeader.slice(7); // إزالة "Bearer "
+
     try {
-        const decodedToken = await admin.auth().verifyIdToken(token);
-        req.user = decodedToken;
-        
-        // جلب بيانات المستخدم من Firestore
-        const userDoc = await db.collection('users').doc(decodedToken.uid).get();
-        if (userDoc.exists) {
-            req.userData = userDoc.data();
-        }
-        
-        next();
-    } catch (error) {
-        console.error('Auth error:', error);
-        return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+        const decoded = await admin.auth().verifyIdToken(idToken);
+        return decoded.uid; // = اسم مستخدم Pi (حسب نموذج المشروع)
+    } catch (e) {
+        console.error('requireUser: token verification failed:', e.message);
+        const err = new Error('Unauthorized: Invalid or expired token');
+        err.status = 401;
+        throw err;
     }
-}
-
-module.exports = { requireUser };
+};
