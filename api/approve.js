@@ -26,6 +26,16 @@ module.exports = async (req, res) => {
         if (!snap.exists) return res.status(400).json({ error: 'Product not found' });
         const product = snap.data();
 
+        // إضافة التحقق من رسوم المنصة
+        if (payment.amount <= 0.1) {
+            return res.status(400).json({ error: 'Amount must exceed platform fee' });
+        }
+
+        // إضافة التحقق من المخزون
+        if (typeof product.quantity === 'number' && product.quantity <= 0) {
+            return res.status(400).json({ error: 'Out of stock' });
+        }
+
         if (product.status && product.status !== 'available') {
             return res.status(400).json({ error: 'Product not available' });
         }
