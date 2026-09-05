@@ -1,9 +1,11 @@
 {
   "name": "arabeka-pi-payment",
   "version": "1.0.0",
+  "private": true,
+  "engines": { "node": ">=18.0.0" },
   "dependencies": {
-    "pi-backend": "*",
+    "pi-backend": "^0.1.3",
     "axios": "^1.6.0",
-    "firebase-admin": "^11.11.0"
+    "firebase-admin": "^12.0.0"
   }
 }
