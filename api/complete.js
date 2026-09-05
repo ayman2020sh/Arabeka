@@ -1,127 +1,78 @@
-const axios = require('axios');
-const admin = require('firebase-admin');
-
-if (!admin.apps.length) {
-    try {
-        const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-        admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-    } catch (error) {
-        console.error("Firebase Admin Initialization Error:", error);
-    }
-}
-const db = admin.apps.length ? admin.firestore() : null;
-
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-// إنشاء سجل الطلب المحجوز بعد التأكد الفعلي من نجاح الدفعة
-async function createHeldOrder(paymentId, txid, API_KEY) {
-    if (!db) {
-        console.error('createHeldOrder: Firestore not initialized, skipping order creation');
-        return;
-    }
-    try {
-        const info = await axios.get(
-            `https://api.minepi.com/v2/payments/${paymentId}`,
-            { headers: { Authorization: `Key ${API_KEY}` } }
-        );
-        const payment = info.data;
-        const metadata = payment.metadata || {};
-        const { productId, sellerUsername, buyerUsername } = metadata;
-        const amount = payment.amount;
-
-        if (!productId || !sellerUsername || !buyerUsername) {
-            console.error('createHeldOrder: missing metadata, cannot create order', metadata);
-            return;
-        }
-
-        // التحقق من تطابق السعر مع سعر المنتج الفعلي الحالي (حماية من التلاعب)
-        let priceMismatch = false;
-        let expectedPrice = null;
-        try {
-            const productDoc = await db.collection('products').doc(productId).get();
-            if (productDoc.exists) {
-                expectedPrice = productDoc.data().price;
-                if (typeof expectedPrice === 'number' && Math.abs(expectedPrice - amount) > 0.0001) {
-                    priceMismatch = true;
-                    console.error(`createHeldOrder: PRICE MISMATCH! paid=${amount}, expected=${expectedPrice}, paymentId=${paymentId}`);
-                }
-            }
-        } catch (e) {
-            console.error('createHeldOrder: product price check failed:', e.message);
-        }
-
-        const releaseDeadline = admin.firestore.Timestamp.fromMillis(Date.now() + 48 * 60 * 60 * 1000);
-
-        await db.collection('orders').doc(paymentId).set({
-            productId,
-            productName: metadata.productName || '',
-            buyerUsername,
-            buyerUid: buyerUsername,
-            sellerUsername,
-            sellerUid: sellerUsername,
-            amount,
-            paymentId,
-            txid,
-            status: 'held',
-            priceMismatch,
-            expectedPrice,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            releaseDeadline
-        });
-        console.log('✅ Order created (held):', paymentId);
-    } catch (e) {
-        console.error('createHeldOrder failed:', e.response?.data || e.message);
-    }
-}
+const { admin, db } = require('./_lib/firebase');
+const { getPayment, completePayment, errBody } = require('./_lib/pi');
 
 module.exports = async (req, res) => {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
-
-    let { paymentId, txid } = req.body || {};
-    const API_KEY = process.env.PI_API_KEY;
-
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+    const { paymentId } = req.body || {};
+    let { txid } = req.body || {};
     if (!paymentId) return res.status(400).json({ error: 'paymentId required' });
-    if (!API_KEY) return res.status(500).json({ error: 'API Key missing' });
 
-    const MAX_ATTEMPTS = 5;
-    const DELAY_MS = 2000;
-    let lastError = null;
+    const orderRef = db.collection('orders').doc(paymentId);
+    try {
+        const payment = await getPayment(paymentId);
+        txid = txid || payment.transaction?.txid;
+        if (!txid) return res.status(400).json({ error: 'no txid yet' });
 
-    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        const productId = payment.metadata?.productId;
+        if (!productId) return res.status(400).json({ error: 'productId missing' });
+        const productSnap = await db.collection('products').doc(productId).get();
+        if (!productSnap.exists) return res.status(400).json({ error: 'Product not found' });
+        const product = productSnap.data();
+
+        // المشتري: من Pi (موثوق) → اسم المستخدم عبر users.piUid
+        const q = await db.collection('users').where('piUid', '==', payment.user_uid).limit(1).get();
+        const buyerUsername = q.empty ? (payment.metadata?.buyerUsername || null) : q.docs[0].id;
+        const buyerVerified = !q.empty;
+
+        let isNew = true;
         try {
-            if (!txid) {
-                const info = await axios.get(
-                    `https://api.minepi.com/v2/payments/${paymentId}`,
-                    { headers: { Authorization: `Key ${API_KEY}` } }
-                );
-                txid = info.data?.transaction?.txid;
-                if (!txid) return res.status(400).json({ error: 'no txid yet' });
-            }
-
-            const r = await axios.post(
-                `https://api.minepi.com/v2/payments/${paymentId}/complete`,
-                { txid },
-                { headers: { Authorization: `Key ${API_KEY}` } }
-            );
-            console.log('✅ [complete.js] Completed on attempt ' + attempt + ':', r.data);
-
-            await createHeldOrder(paymentId, txid, API_KEY);
-
-            return res.status(200).json(r.data);
+            await orderRef.create({
+                productId,
+                productName: product.name || '',
+                buyerUid: buyerUsername,          // == username (نموذج Firebase Auth عندك)
+                buyerUsername,
+                buyerPiUid: payment.user_uid,      // لأي استرداد مستقبلي
+                buyerVerified,
+                sellerUid: product.ownerUid,       // == username
+                sellerUsername: product.ownerUid,
+                amount: payment.amount,
+                paymentId, txid,
+                status: 'completing',
+                payoutAttempts: 0,
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                releaseDeadline: admin.firestore.Timestamp.fromMillis(Date.now() + 48 * 3600 * 1000)
+            });
         } catch (e) {
-            lastError = e.response?.data || e.message;
-            console.error('❌ [complete.js] Attempt ' + attempt + ' failed (status ' + (e.response?.status || 'n/a') + '):', lastError);
-
-            if (attempt < MAX_ATTEMPTS) {
-                console.log('⏳ [complete.js] Retrying in ' + DELAY_MS + 'ms...');
-                await delay(DELAY_MS);
-            }
+            if (e.code !== 6) throw e; // 6 = ALREADY_EXISTS
+            isNew = false;
         }
-    }
 
-    return res.status(500).json({ error: lastError, attempts: MAX_ATTEMPTS });
+        if (!isNew) {
+            const existing = (await orderRef.get()).data();
+            if (existing.status !== 'completing')
+                return res.status(200).json({ ok: true, alreadyCompleted: true, status: existing.status });
+        }
+
+        const data = payment.status?.developer_completed
+            ? { alreadyCompleted: true }
+            : await completePayment(paymentId, txid);
+
+        await orderRef.update({ status: 'held', completedAt: admin.firestore.FieldValue.serverTimestamp() });
+        
+        // خصم الكمية (null/غير موجود = غير محدود)
+        await db.runTransaction(async t => {
+            const s = await t.get(productSnap.ref);
+            if (!s.exists) return;
+            const qty = s.data().quantity;
+            if (typeof qty === 'number') {
+                t.update(productSnap.ref, { quantity: Math.max(0, qty - 1) });
+            }
+        });
+
+        console.log('✅ [complete] held:', paymentId);
+        return res.status(200).json(data);
+    } catch (e) {
+        console.error('❌ [complete]', paymentId, errBody(e));
+        return res.status(e.response?.status >= 500 ? 502 : 400).json({ error: errBody(e) });
+    }
 };
