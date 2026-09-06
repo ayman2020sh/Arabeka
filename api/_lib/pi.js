@@ -1,40 +1,37 @@
-const PiNetwork = require('pi-backend');
+const axios = require('axios');
 
-let piInstance = null;
+const API_KEY = process.env.PI_API_KEY;
+if (!API_KEY) throw new Error('PI_API_KEY is not set');
 
-function getPi() {
-    if (!piInstance) {
-        const apiKey = process.env.PI_API_KEY;
-        const walletPrivateSeed = process.env.PI_WALLET_PRIVATE_SEED;
-        
-        if (!apiKey || !walletPrivateSeed) {
-            throw new Error('PI_API_KEY and PI_WALLET_PRIVATE_SEED must be set');
+// استدعاءات خادم-إلى-خادم مباشرة لواجهة Pi Platform API (كما توصي الوثائق الرسمية)
+const pi = axios.create({
+    baseURL: 'https://api.minepi.com/v2',
+    timeout: 8000,
+    headers: { Authorization: `Key ${API_KEY}` }
+});
+
+const delay = ms => new Promise(r => setTimeout(r, ms));
+
+// إعادة المحاولة فقط عند أخطاء الشبكة أو 5xx
+async function withRetry(fn, { attempts = 3, delayMs = 1500 } = {}) {
+    let lastErr;
+    for (let i = 1; i <= attempts; i++) {
+        try { return await fn(); }
+        catch (e) {
+            lastErr = e;
+            const status = e.response?.status;
+            const retryable = !status || status >= 500;
+            if (!retryable || i === attempts) throw e;
+            await delay(delayMs);
         }
-        
-        piInstance = new PiNetwork(apiKey, walletPrivateSeed);
     }
-    return piInstance;
+    throw lastErr;
 }
 
-async function getPayment(paymentId) {
-    const pi = getPi();
-    return await pi.getPayment(paymentId);
-}
+const getPayment = id => withRetry(() => pi.get(`/payments/${id}`)).then(r => r.data);
+const approvePayment = id => withRetry(() => pi.post(`/payments/${id}/approve`)).then(r => r.data);
+const completePayment = (id, txid) => withRetry(() => pi.post(`/payments/${id}/complete`, { txid })).then(r => r.data);
 
-async function approvePayment(paymentId) {
-    const pi = getPi();
-    return await pi.approvePayment(paymentId);
-}
+const errBody = e => e.response?.data || { message: e.message };
 
-async function completePayment(paymentId, txid) {
-    const pi = getPi();
-    return await pi.completePayment(paymentId, txid);
-}
-
-function errBody(e) {
-    if (e.response?.data) return e.response.data;
-    if (e.message) return e.message;
-    return String(e);
-}
-
-module.exports = { getPi, getPayment, approvePayment, completePayment, errBody };
+module.exports = { pi, getPayment, approvePayment, completePayment, errBody };
