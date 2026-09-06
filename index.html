@@ -614,7 +614,8 @@
                 const trySilentPiAuth = function (attemptsLeft) {
                     if (attemptsLeft === undefined) attemptsLeft = 20;
                     if (typeof Pi !== 'undefined' && piReady) {
-                        Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
+                        
+Pi.authenticate(['username', 'payments', 'wallet_address'], onIncompletePaymentFound)
                             .catch(e => console.warn("إعادة توثيق صامتة مع Pi فشلت:", e.message));
                         return;
                     }
@@ -637,7 +638,8 @@
                 return;
             }
 
-            Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
+        
+Pi.authenticate(['username', 'payments', 'wallet_address'], onIncompletePaymentFound)
                 .then(auth => {
                     const piUsername = auth.user.username;
                     return fetch('/api/auth', {
