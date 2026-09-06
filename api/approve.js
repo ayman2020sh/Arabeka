@@ -47,6 +47,7 @@ module.exports = async (req, res) => {
         // بدل: if (product.sellerUid && product.sellerUid === payment.user_uid)
         const q = await db.collection('users').where('piUid', '==', payment.user_uid).limit(1).get();
         const buyerUsername = q.empty ? null : q.docs[0].id;
+        console.log(`[approve] payment.user_uid=${payment.user_uid} → buyer=${buyerUsername} | metadata.buyer=${payment.metadata?.buyerUsername}`);
         if (buyerUsername && buyerUsername === product.ownerUid) {
             return res.status(400).json({ error: 'Cannot buy your own product' });
         }
