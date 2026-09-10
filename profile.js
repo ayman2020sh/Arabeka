@@ -1,3 +1,4 @@
+
 // ===== الملف الشخصي (بياناتي + مهامي) ===== 
 // ================= الملف الشخصي =================
 const TASKS_LIST = [
@@ -42,7 +43,14 @@ const WALLET_ROW_HTML =
 let walletNoticeTimer = null;
 
 function ensureWalletRow() {
-    if (document.getElementById('user-wallet')) return;
+    const existing = document.getElementById('user-wallet');
+    if (existing) {
+        // الصف موجود مسبقاً في index.html (بدون أزرار) — نُكمل الأزرار فقط
+        if (!document.getElementById('wallet-link') && existing.parentElement) {
+            existing.parentElement.innerHTML = WALLET_ROW_HTML;
+        }
+        return;
+    }
     const ps = document.querySelectorAll('#page-profile p');
     for (let i = 0; i < ps.length; i++) {
         if (ps[i].textContent && ps[i].textContent.indexOf('تاريخ الانضمام') !== -1) {
