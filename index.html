@@ -1,23 +1,44 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
+From: <Saved by Blink>
+Snapshot-Content-Location: https://arena.ai/api/chat/workspace/cas/user/B_dvrCnUopL3z0CAXAGzis0GUH8HFsXbIS_OS6XJEBg
+Subject: =?utf-8?Q?=D8=A3=D8=B1=D8=A7=D8=A8=D9=8A=D9=83=D8=A7=20-=20=D9=85=D8=AC?=
+ =?utf-8?Q?=D8=AA=D9=85=D8=B9=20=D8=A7=D9=84=D8=AA=D8=AC=D8=A7=D8=B1=D8=A9?=
+ =?utf-8?Q?=20=D8=A7=D9=84=D8=B1=D9=82=D9=85=D9=8A=D8=A9?=
+Date: Thu, 10 Sep 2026 04:59:40 +0300
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--784MOhF3KrPNt9rEM0qGPSpuwNsJ6WMTCqgIRjHYN5----"
+
+
+------MultipartBoundary--784MOhF3KrPNt9rEM0qGPSpuwNsJ6WMTCqgIRjHYN5----
+Content-Type: text/html
+Content-ID: <frame-8248A67562BB19A3C0D1EC33C292966C@mhtml.blink>
+Content-Transfer-Encoding: binary
+Content-Location: https://arena.ai/api/chat/workspace/cas/user/B_dvrCnUopL3z0CAXAGzis0GUH8HFsXbIS_OS6XJEBg
+
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link rel="stylesheet" type="text/css" href="cid:css-67ef2eff-9a68-4016-8d86-5ffb2ca7aae5@mhtml.blink" />
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>أرابيكا - مجتمع التجارة الرقمية</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <link rel="stylesheet" href="style/theme.css">
+    
+    
+    
+    
+    <link rel="stylesheet" href="https://arena.ai/api/chat/workspace/cas/user/style/theme.css">
+    <!-- تحسينات الاتجاه عند التبديل للإنجليزية -->
+    
 </head>
 <body>
     <!-- START: Header -->
     <div class="header">
-        <button onclick="comingSoon()" style="background:none; border:none; color: var(--text-color); font-size: 20px; cursor: pointer; padding: 0;">☰</button>
+        <button style="background:none; border:none; color: var(--text-color); font-size: 20px; cursor: pointer; padding: 0;">☰</button>
         <span>أرابيكا🎗</span>
-        <button onclick="comingSoon()" style="background:none; border:none; color: var(--text-color); font-size: 18px; cursor: pointer; padding: 0; position: relative;">🔔</button>
+        <div style="display:flex; gap:12px; align-items:center;">
+            <button style="background:none; border:none; color: var(--text-color); font-size: 18px; cursor: pointer; padding: 0; position: relative;">🔔</button>
+            <button id="lang-btn" data-no-i18n="" title="Switch to English" style="background:none; border:none; color: var(--color, var(--text-color)); font-size: 14px; font-weight: bold; cursor: pointer; padding: 0;">EN</button>
+        </div>
     </div>
     <div id="login-error" style="display:none;" class="error-message"></div>
     <!-- END: Header -->
@@ -27,8 +48,8 @@
         <div class="modal-content">
             <h4 id="modal-title">تعديل البيانات</h4>
             <input type="text" id="modal-input-1" placeholder="الحقل الأول">
-            <button class="btn" onclick="saveModal()">حفظ التغييرات</button>
-            <button class="btn" style="background-color:#444;" onclick="closeModal()">إلغاء</button>
+            <button class="btn">حفظ التغييرات</button>
+            <button class="btn" style="background-color:#444;">إلغاء</button>
         </div>
     </div>
 
@@ -36,25 +57,25 @@
         <div class="modal-content" style="max-height:70vh; overflow-y:auto;">
             <h4 id="list-modal-title">القائمة</h4>
             <div id="list-modal-body" style="text-align:right; margin: 10px 0;"></div>
-            <button class="btn" style="background-color:#444;" onclick="closeListModal()">إغلاق</button>
+            <button class="btn" style="background-color:#444;">إغلاق</button>
         </div>
     </div>
 
     <div id="edit-post-modal" class="modal">
         <div class="modal-content">
             <h4>تعديل المنشور</h4>
-            <textarea id="edit-post-text" rows="4" placeholder="نص المنشور..." oninput="autoResizeTextarea(this)"></textarea>
+            <textarea id="edit-post-text" rows="4" placeholder="نص المنشور..."></textarea>
             <input type="url" id="edit-post-image" placeholder="🔗 رابط صورة (اختياري)">
-            <button class="btn" onclick="saveEditPost()">حفظ التعديلات</button>
-            <button class="btn" style="background-color:#444;" onclick="closeEditPostModal()">إلغاء</button>
+            <button class="btn">حفظ التعديلات</button>
+            <button class="btn" style="background-color:#444;">إلغاء</button>
         </div>
     </div>
 
     <div id="productDetailsModal" class="modal">
         <div class="modal-content" style="text-align: right; position: relative;">
-            <button onclick="closeProductDetails()" style="position: absolute; left: 15px; top: 15px; background: none; border: none; color: var(--text-muted); font-size: 20px;">✖</button>
+            <button style="position: absolute; left: 15px; top: 15px; background: none; border: none; color: var(--text-muted); font-size: 20px;">✖</button>
             <h3 id="det-name" style="margin-top: 0; margin-bottom: 15px; padding-left: 20px; color: var(--primary);"></h3>
-            <img id="det-img" src="" style="width: 100%; border-radius: 10px; margin-bottom: 15px; max-height: 250px; object-fit: cover;">
+            <img id="det-img" src="https://arena.ai/api/chat/workspace/cas/user/B_dvrCnUopL3z0CAXAGzis0GUH8HFsXbIS_OS6XJEBg" style="width: 100%; border-radius: 10px; margin-bottom: 15px; max-height: 250px; object-fit: cover;">
             <p style="margin: 5px 0; font-size: 14px;"><strong>السعر:</strong> <span id="det-price" style="color: var(--gold); font-weight: bold;"></span></p>
             <p style="margin: 5px 0; font-size: 14px;"><strong>التصنيف:</strong> <span id="det-cat"></span></p>
             <p style="margin: 5px 0; font-size: 14px;"><strong>البائع:</strong> <span id="det-owner"></span></p>
@@ -77,9 +98,9 @@
                 <option value="industrial">🏭 صناعي</option>
             </select>
             <input type="url" id="edit-prod-image" placeholder="رابط الصورة">
-            <textarea id="edit-prod-description" rows="3" maxlength="250" placeholder="وصف المنتج (اختياري، حتى 250 حرف)" oninput="autoResizeTextarea(this)"></textarea>
-            <button class="btn" style="background-color: #eab308; color: black;" onclick="saveEditedProduct()">حفظ التعديلات</button>
-            <button class="btn" style="background-color:#444;" onclick="closeEditProductModal()">إلغاء</button>
+            <textarea id="edit-prod-description" rows="3" maxlength="250" placeholder="وصف المنتج (اختياري، حتى 250 حرف)"></textarea>
+            <button class="btn" style="background-color: #eab308; color: black;">حفظ التعديلات</button>
+            <button class="btn" style="background-color:#444;">إلغاء</button>
         </div>
     </div>
     <!-- END: Modals -->
@@ -89,7 +110,7 @@
         <h2>مرحباً بك في مجتمع أرابيكا</h2>
         <p style="color: var(--text-muted);">انضم إلى مجتمعنا وابدأ التجارة الآن</p>
         <button class="btn" id="login-btn" style="background: linear-gradient(45deg, var(--gold), #ff8c00); color: black;">Pi sign.in</button>
-        <a href="https://arabekavqet3465.pinet.com" target="_blank" class="chat-button">🤖 اسأل مساعد أرابيكا</a>
+        <a href="https://arabekavqet3465.pinet.com/" target="_blank" class="chat-button">🤖 اسأل مساعد أرابيكا</a>
     </div>
     <!-- END: Login -->
 
@@ -102,27 +123,27 @@
                         <div class="card-title">آرابيكا</div>
                         <div class="card-subtitle">بيع الخدمات والمنتجات</div>
                         <div class="card-features"><span>تواصل آمن</span><span>بياناتك مشفرة</span></div>
-                        <button class="login-btn-card" id="hero-btn" onclick="heroAction()"><span class="login-btn-icon">➜</span><span id="hero-btn-text">pi sign.in</span></button>
+                        <button class="login-btn-card" id="hero-btn"><span class="login-btn-icon">➜</span><span id="hero-btn-text">pi sign.in</span></button>
                     </div>
-                    <div class="card-image-wrap"><span class="deco-diamond d1">💠</span><span class="deco-diamond d2">💠</span><span class="deco-diamond d3">💠</span><img src="arabeka_card.png" alt="كارت آرابيكا"></div>
+                    <div class="card-image-wrap"><span class="deco-diamond d1">💠</span><span class="deco-diamond d2">💠</span><span class="deco-diamond d3">💠</span><img src="https://arena.ai/api/chat/workspace/cas/user/arabeka_card.png" alt="كارت آرابيكا"></div>
                 </div>
 
                 <div class="card" style="padding: 0; overflow: hidden;">
                     <div style="display: flex; justify-content: space-around; align-items: center; padding: 16px 5px; border-bottom: 1px solid var(--border);">
-                        <a href="https://arabekavqet3465.pinet.com" target="_blank" style="text-decoration:none; color: var(--text-color); text-align:center; font-size:12px; display:flex; flex-direction:column; align-items:center; gap:6px;">
+                        <a href="https://arabekavqet3465.pinet.com/" target="_blank" style="text-decoration:none; color: var(--text-color); text-align:center; font-size:12px; display:flex; flex-direction:column; align-items:center; gap:6px;">
                             <span style="font-size:24px;">🤖</span>مساعد أرابيكا
                         </a>
-                        <div onclick="switchPage('search')" style="cursor:pointer; color: var(--text-color); text-align:center; font-size:12px; display:flex; flex-direction:column; align-items:center; gap:6px;">
+                        <div style="cursor:pointer; color: var(--text-color); text-align:center; font-size:12px; display:flex; flex-direction:column; align-items:center; gap:6px;">
                             <span style="font-size:24px;">👥</span>أصدقاء
                         </div>
-                        <a href="contact.html" style="text-decoration:none; color: var(--text-color); text-align:center; font-size:12px; display:flex; flex-direction:column; align-items:center; gap:6px;">
+                        <a href="https://arena.ai/api/chat/workspace/cas/user/contact.html" style="text-decoration:none; color: var(--text-color); text-align:center; font-size:12px; display:flex; flex-direction:column; align-items:center; gap:6px;">
                             <span style="font-size:24px;">🎧</span>الدعم
                         </a>
                     </div>
                     <div style="display: flex; justify-content: space-around; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); background: #0a0a0a;">
                         <a href="https://t.me/piwep3" target="_blank" style="color: #0088cc; font-size: 24px;"><i class="fa-brands fa-telegram"></i></a>
                         <a href="https://x.com/arabekaio" target="_blank" style="color: var(--text-color); font-size: 22px;">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
                         </a>
                         <a href="https://www.facebook.com/share/185iYyEhq2/" target="_blank" style="color: #1877F2; font-size: 24px;"><i class="fa-brands fa-facebook"></i></a>
                     </div>
@@ -132,7 +153,7 @@
                             <div style="font-size: 13px; font-weight: bold;">ادفع واستلم أموالك</div>
                             <div style="font-size: 11px; color: var(--text-muted);">بـ Pi wallet</div>
                         </div>
-                        <div onclick="switchPage('store')" style="cursor:pointer; background: var(--card-bg); padding: 18px 8px; text-align: center;">
+                        <div style="cursor:pointer; background: var(--card-bg); padding: 18px 8px; text-align: center;">
                             <div style="font-size: 26px; margin-bottom: 6px;">🛒</div>
                             <div style="font-size: 13px; font-weight: bold;">بيع منتجاتك</div>
                             <div style="font-size: 11px; color: var(--text-muted);">وخدماتك بسهولة</div>
@@ -144,7 +165,7 @@
 
                 <div class="card" style="background: linear-gradient(145deg, #1c1d24, #262833);">
                     <h4 style="margin-top: 0; color: var(--primary);"> ⚡️شارك رأيك</h4>
-                    <textarea id="post-text" placeholder="هل تعجبك آربيكا؟ شارك تجربتك وآراءك..." rows="3" oninput="autoResizeTextarea(this)"></textarea>
+                    <textarea id="post-text" placeholder="هل تعجبك آربيكا؟ شارك تجربتك وآراءك..." rows="3"></textarea>
                     <select id="post-category">
                         <option value="general">💬 عام</option>
                         <option value="educational">📖 تعليمي</option>
@@ -153,20 +174,20 @@
                         <option value="politics_economy">📊 سياسة واقتصاد</option>
                     </select>
                     <input type="url" id="post-image-url" placeholder="🔗 رابط صورة (اختياري)">
-                    <button class="btn" id="publish-btn" onclick="publishPost()" style="background: linear-gradient(90deg, var(--primary-dark), var(--primary));">✓ نشر الرأي</button>
+                    <button class="btn" id="publish-btn" style="background: linear-gradient(90deg, var(--primary-dark), var(--primary));">✓ نشر الرأي</button>
                 </div>
 
                 <div class="categories-wrapper">
-                    <button class="category-btn active" onclick="filterFeedPosts('all')">🌐 الكل</button>
-                    <button class="category-btn" onclick="filterFeedPosts('educational')">📖 تعليمي</button>
-                    <button class="category-btn" onclick="filterFeedPosts('personal')">🙋 شخصي</button>
-                    <button class="category-btn" onclick="filterFeedPosts('tech')">💻 تكنولوجيا</button>
-                    <button class="category-btn" onclick="filterFeedPosts('politics_economy')">📊 سياسة واقتصاد</button>
+                    <button class="category-btn active">🌐 الكل</button>
+                    <button class="category-btn">📖 تعليمي</button>
+                    <button class="category-btn">🙋 شخصي</button>
+                    <button class="category-btn">💻 تكنولوجيا</button>
+                    <button class="category-btn">📊 سياسة واقتصاد</button>
                 </div>
 
                 <div id="posts-filter-banner" class="card filter-banner">
                     <span style="color: var(--text-color); font-size:14px;">📌 بتعرض منشوراتك بس</span>
-                    <button class="btn" style="width:auto; margin:0; padding:8px 16px; background-color:#444;" onclick="clearPostsFilter()">عرض الكل</button>
+                    <button class="btn" style="width:auto; margin:0; padding:8px 16px; background-color:#444;">عرض الكل</button>
                 </div>
 
                 <div id="posts-feed"></div>
@@ -189,23 +210,23 @@
                         <option value="industrial">🏭 صناعي</option>
                     </select>
                     <input type="url" id="new-prod-image" placeholder="🔗 رابط صورة المنتج (اختياري)">
-                    <textarea id="new-prod-description" rows="3" maxlength="250" placeholder="📝 وصف المنتج (اختياري، حتى 250 حرف)" oninput="autoResizeTextarea(this)"></textarea>
+                    <textarea id="new-prod-description" rows="3" maxlength="250" placeholder="📝 وصف المنتج (اختياري، حتى 250 حرف)"></textarea>
                     <p style="font-size:11px; color:var(--text-muted); margin:0 0 8px 0;">💡 تُخصم رسوم منصة 0.1 Pi من كل عملية بيع عند التحويل للبائع.</p>
-                    <button class="btn" id="add-prod-btn" onclick="addNewProduct()">عرض للبيع</button>
+                    <button class="btn" id="add-prod-btn">عرض للبيع</button>
                 </div>
 
                 <div class="categories-wrapper">
-                    <button class="category-btn active" onclick="filterStoreProducts('all')">🌐 الكل</button>
-                    <button class="category-btn" onclick="filterStoreProducts('tech')">💻 تقني</button>
-                    <button class="category-btn" onclick="filterStoreProducts('entertainment')">🎮 ترفيهي</button>
-                    <button class="category-btn" onclick="filterStoreProducts('services')">🛠️ خدمي</button>
-                    <button class="category-btn" onclick="filterStoreProducts('industrial')">🏭 صناعي</button>
+                    <button class="category-btn active">🌐 الكل</button>
+                    <button class="category-btn">💻 تقني</button>
+                    <button class="category-btn">🎮 ترفيهي</button>
+                    <button class="category-btn">🛠️ خدمي</button>
+                    <button class="category-btn">🏭 صناعي</button>
                 </div>
 
                 <h3 style="color: var(--text-color); margin-bottom: 15px;">أحدث المنتجات</h3>
                 <div id="store-filter-banner" class="card filter-banner">
                     <span style="color: var(--text-color); font-size:14px;">📌 بتعرض منتجاتك بس</span>
-                    <button class="btn" style="width:auto; margin:0; padding:8px 16px; background-color:#444;" onclick="clearStoreFilter()">عرض الكل</button>
+                    <button class="btn" style="width:auto; margin:0; padding:8px 16px; background-color:#444;">عرض الكل</button>
                 </div>
                 <div class="product-grid" id="store-products"></div>
             </div>
@@ -216,7 +237,7 @@
         <div id="page-profile" class="page">
             <div class="container">
                 <div class="card" style="text-align: center; background: linear-gradient(145deg, #1e1e1e, #2a1b3d); border-top: 4px solid var(--primary);">
-                    <div id="user-avatar-circle" onclick="editAvatar()" style="width: 80px; height: 80px; background-color: var(--primary-dark); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 36px; font-weight: bold; margin: 0 auto 15px auto; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: pointer; overflow: hidden; background-size: cover; background-position: center;">
+                    <div id="user-avatar-circle" style="width: 80px; height: 80px; background-color: var(--primary-dark); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 36px; font-weight: bold; margin: 0 auto 15px auto; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: pointer; overflow: hidden; background-size: cover; background-position: center;">
                         A
                         <div style="position: absolute; bottom: -5px; right: -5px; background-color: #1da1f2; width: 28px; height: 28px; border-radius: 50%; font-size: 14px; display: flex; justify-content: center; align-items: center; border: 3px solid var(--card-bg); font-weight: bold;">P</div>
                     </div>
@@ -234,11 +255,11 @@
                         <p style="color: var(--text-muted); font-size: 14px; margin: 5px 0;">تاريخ الانضمام: 2024</p>
                     </div>
                     <div style="display: flex; justify-content: space-around; text-align: center; padding-top: 5px;">
-                        <div class="stat-block" onclick="showFollowing()">
+                        <div class="stat-block">
                             <div class="stat-number" id="following-count">0</div>
                             <div class="stat-label">متابعة</div>
                         </div>
-                        <div class="stat-block" onclick="showFollowers()">
+                        <div class="stat-block">
                             <div class="stat-number" id="followers-count">0</div>
                             <div class="stat-label">المتابعين</div>
                         </div>
@@ -246,7 +267,7 @@
                             <div class="stat-number" id="posts-count">0</div>
                             <div class="stat-label">المنشورات</div>
                         </div>
-                        <div class="stat-block" onclick="showMyProducts()">
+                        <div class="stat-block">
                             <div class="stat-number" id="my-products-count">0</div>
                             <div class="stat-label">عروض البيع</div>
                         </div>
@@ -262,10 +283,10 @@
                 <div id="my-posts-list"></div>
 
                 <div class="card" style="padding: 5px 15px;">
-                    <div class="settings-row" onclick="editBio()">
+                    <div class="settings-row">
                         <div class="row-left"><span class="icon">🫆</span><span class="label">تعديل نبذه</span></div><span class="row-arrow">›</span>
                     </div>
-                    <div class="settings-row" onclick="switchPage('settings')">
+                    <div class="settings-row">
                         <div class="row-left"><span class="icon">⚙️</span><span class="label">الإعدادات</span></div><span class="row-arrow">›</span>
                     </div>
                 </div>
@@ -277,7 +298,7 @@
         <div id="page-user-profile" class="page">
             <div class="container">
                 <div class="back-row">
-                    <button class="back-btn" onclick="closeUserProfile()" aria-label="رجوع">→</button>
+                    <button class="back-btn" aria-label="رجوع">→</button>
                     <h2 style="margin:0; color: var(--text-color);">الملف الشخصي</h2>
                 </div>
 
@@ -293,16 +314,16 @@
 
                 <div class="card">
                     <div style="display: flex; justify-content: space-around; text-align: center;">
-                        <div class="stat-block" onclick="showUserFollowing()"><div class="stat-number" id="uprofile-following-count">0</div><div class="stat-label">متابعة</div></div>
-                        <div class="stat-block" onclick="showUserFollowers()"><div class="stat-number" id="uprofile-followers-count">0</div><div class="stat-label">المتابعين</div></div>
+                        <div class="stat-block"><div class="stat-number" id="uprofile-following-count">0</div><div class="stat-label">متابعة</div></div>
+                        <div class="stat-block"><div class="stat-number" id="uprofile-followers-count">0</div><div class="stat-label">المتابعين</div></div>
                         <div class="stat-block" style="cursor:default;"><div class="stat-number" id="uprofile-posts-count">0</div><div class="stat-label">المنشورات</div></div>
-                        <div class="stat-block" onclick="showUserProducts()"><div class="stat-number" id="uprofile-products-count">0</div><div class="stat-label">عروض البيع</div></div>
+                        <div class="stat-block"><div class="stat-number" id="uprofile-products-count">0</div><div class="stat-label">عروض البيع</div></div>
                     </div>
                 </div>
 
                 <div class="card" style="display: flex; gap: 10px;">
-                    <button id="uprofile-follow-btn" class="btn" style="margin:0; flex:1;" onclick="uprofileToggleFollow()">➕ متابعة</button>
-                    <button id="uprofile-friend-btn" class="btn" style="margin:0; flex:1; background: linear-gradient(90deg, var(--primary-dark), var(--primary));" onclick="uprofileHandleFriendAction()">🤝 إضافة صديق</button>
+                    <button id="uprofile-follow-btn" class="btn" style="margin:0; flex:1;">➕ متابعة</button>
+                    <button id="uprofile-friend-btn" class="btn" style="margin:0; flex:1; background: linear-gradient(90deg, var(--primary-dark), var(--primary));">🤝 إضافة صديق</button>
                 </div>
 
                 <h3 style="color: var(--text-color);">منشورات المستخدم</h3>
@@ -315,15 +336,15 @@
         <div id="page-search" class="page">
             <div class="container">
                 <div class="back-row">
-                    <button class="back-btn" onclick="switchPage('profile')" aria-label="رجوع">→</button>
+                    <button class="back-btn" aria-label="رجوع">→</button>
                     <h2 style="margin:0; color: var(--text-color);">البحث والأصدقاء</h2>
                 </div>
 
                 <div class="search-bar-row">
                     <input type="text" id="user-search-input" placeholder="ابحث باسم المستخدم...">
-                    <button class="small-action-btn" style="padding: 12px 16px;" onclick="searchUsers()">🔍</button>
+                    <button class="small-action-btn" style="padding: 12px 16px;">🔍</button>
                 </div>
-                <button class="btn" style="background: linear-gradient(90deg, var(--primary-dark), var(--primary));" onclick="inviteFriends()">📨 ادعُ أصدقاءك لأرابيكا</button>
+                <button class="btn" style="background: linear-gradient(90deg, var(--primary-dark), var(--primary));">📨 ادعُ أصدقاءك لأرابيكا</button>
 
                 <div id="search-results" class="card" style="display:none;"></div>
 
@@ -337,13 +358,13 @@
         <div id="page-settings" class="page">
             <div class="container">
                 <div class="back-row">
-                    <button class="back-btn" onclick="switchPage('profile')" aria-label="رجوع">→</button>
+                    <button class="back-btn" aria-label="رجوع">→</button>
                     <h2 style="margin:0; color: var(--text-color);">الإعدادات</h2>
                 </div>
 
                 <div class="card">
                     <h4 style="margin-top:0; color:var(--primary);">👤 إعدادات الحساب</h4>
-                    <div class="settings-row" onclick="editAvatar()">
+                    <div class="settings-row">
                         <div class="row-left"><span class="icon">🖼️</span><span class="label">تغيير صورة الحساب</span></div><span class="row-arrow">›</span>
                     </div>
                     <div class="settings-row" style="cursor: default;">
@@ -353,24 +374,24 @@
 
                 <div class="card">
                     <h4 style="margin-top:0; color:var(--primary);">🛍️ المشتريات والمبيعات</h4>
-                    <div class="settings-row" onclick="switchPage('orders')">
+                    <div class="settings-row">
                         <div class="row-left"><span class="icon">📦</span><span class="label">طلباتي</span></div><span class="row-arrow">›</span>
                     </div>
                 </div>
 
                 <div class="card">
                     <h4 style="margin-top:0; color:var(--primary);">📄 السياسات والقوانين</h4>
-                    <a href="privacy.html" class="settings-row">
+                    <a href="https://arena.ai/api/chat/workspace/cas/user/privacy.html" class="settings-row">
                         <div class="row-left"><span class="icon">🔒</span><span class="label">سياسة الخصوصية</span></div><span class="row-arrow">›</span>
                     </a>
-                    <a href="terms.html" class="settings-row">
+                    <a href="https://arena.ai/api/chat/workspace/cas/user/terms.html" class="settings-row">
                         <div class="row-left"><span class="icon">📜</span><span class="label">الشروط والأحكام</span></div><span class="row-arrow">›</span>
                     </a>
                 </div>
 
                 <div class="card" style="border: 1px solid var(--danger);">
                     <h4 style="margin-top:0; color:var(--danger);">هنستناك ياحبيبنا 🫡</h4>
-                    <button class="btn" style="background-color: var(--danger);" onclick="logout()">🚪 تسجيل الخروج</button>
+                    <button class="btn" style="background-color: var(--danger);">🚪 تسجيل الخروج</button>
                 </div>
             </div>
         </div>
@@ -380,7 +401,7 @@
         <div id="page-orders" class="page">
             <div class="container">
                 <div class="back-row">
-                    <button class="back-btn" onclick="switchPage('profile')" aria-label="رجوع">→</button>
+                    <button class="back-btn" aria-label="رجوع">→</button>
                     <h2 style="margin:0; color: var(--text-color);">طلباتي</h2>
                 </div>
 
@@ -395,10 +416,10 @@
 
         <!-- START: Bottom nav -->
         <div class="bottom-nav">
-            <button class="nav-item active" data-page="feed" onclick="switchPage('feed')"><span style="font-size: 24px;">🏠</span></button>
-            <button class="nav-item" onclick="handleAddButton()"><span style="font-size: 26px;">➕</span></button>
-            <button class="nav-item" data-page="store" onclick="switchPage('store')"><span style="font-size: 24px;">🛒</span></button>
-            <button class="nav-item" data-page="profile" onclick="switchPage('profile')">
+            <button class="nav-item active" data-page="feed"><span style="font-size: 24px;">🏠</span></button>
+            <button class="nav-item"><span style="font-size: 26px;">➕</span></button>
+            <button class="nav-item" data-page="store"><span style="font-size: 24px;">🛒</span></button>
+            <button class="nav-item" data-page="profile">
                 <span id="nav-avatar-circle" style="width:26px; height:26px; border-radius:50%; background-color: var(--primary-dark); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold; background-size:cover; background-position:center; color:#fff;">A</span>
             </button>
         </div>
@@ -406,13 +427,45 @@
     </div>
 
     <!-- ملفات JS مقسّمة (بدل سكربت واحد ضخم) -->
-    <script src="core.js"></script>
-    <script src="ui.js"></script>
-    <script src="profile.js"></script>
-    <script src="social.js"></script>
-    <script src="posts.js"></script>
-    <script src="store.js"></script>
-    <script src="orders.js"></script>
-    <script src="auth.js"></script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a38a3bfcae47edc0',t:'MTc4ODk5OTI4NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-</html>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+            
+</body></html>
+------MultipartBoundary--784MOhF3KrPNt9rEM0qGPSpuwNsJ6WMTCqgIRjHYN5----
+Content-Type: text/css
+Content-Transfer-Encoding: binary
+Content-Location: https://arena.ai/api/chat/workspace/cas/user/style/theme.css
+
+@charset "utf-8";
+
+
+------MultipartBoundary--784MOhF3KrPNt9rEM0qGPSpuwNsJ6WMTCqgIRjHYN5----
+Content-Type: text/css
+Content-Transfer-Encoding: binary
+Content-Location: https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css
+
+@charset "utf-8";
+
+
+------MultipartBoundary--784MOhF3KrPNt9rEM0qGPSpuwNsJ6WMTCqgIRjHYN5----
+Content-Type: text/css
+Content-Transfer-Encoding: binary
+Content-Location: cid:css-67ef2eff-9a68-4016-8d86-5ffb2ca7aae5@mhtml.blink
+
+@charset "utf-8";
+
+[dir="ltr"] .hero-text { text-align: left; }
+
+[dir="ltr"] .settings-row .row-left span.icon { margin-left: 0px; margin-right: 15px; }
+
+[dir="ltr"] .official-badge { margin-right: 0px; margin-left: 5px; }
+------MultipartBoundary--784MOhF3KrPNt9rEM0qGPSpuwNsJ6WMTCqgIRjHYN5------
