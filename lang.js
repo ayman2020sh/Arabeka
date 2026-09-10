@@ -204,11 +204,61 @@ window.ARABEKA_LANG = {
         /* ===== الدعم ===== */
         "الدعم": "Support",
         "مساعد أرابيكا": "Arabeka Assistant",
-        "الإعداد قيد التطوير 🤌": "This feature is coming soon 🤌"
+        "الإعداد قيد التطوير 🤌": "This feature is coming soon 🤌",
+
+        /* ===== إضافات 2026-09-10: نصوص ناقصة + احتياط للنسخة المشوّهة ===== */
+        "✏️ تعديل": "✏️ Edit",
+        "🔗 مشاركة": "🔗 Share",
+        "لا توجد مشتريات بعد": "No purchases yet",
+        "لا توجد مبيعات بعد": "No sales yet",
+        "لا": "No",
+        "تسجيل الدخول باستخدام Pi": "Sign in with Pi",
+        "محفظة باي": "Pi Wallet",
+        "الأصدقاء": "Friends",
+        "🤝 أضف صديقًا": "🤝 Add Friend",
+        "طلبات الصداقة ترسل": "Incoming Friend Requests",
+        "لا توجد طلبات متاحة": "No requests currently",
+        "المتابعون": "Followers",
+        "عروض بيع": "Listings",
+        /* احتياط: نصوص النسخة المشوّهة (يصحّحها i18n.js تلقائياً أيضاً) */
+        "الإله": "Settings",
+        "تعديل نبهم": "Edit Bio",
+        "نبزة 🫆": "Bio 🫆",
+        "الزر": "Cancel",
+        "حفظ الأشياء": "Save Changes",
+        "حفظ المنتج": "Save Product",
+        "الحق الأول": "First field",
+        "عرض البيع": "For Sale",
+        "💻 تمرير": "💻 Tech",
+        "🛠️ خدمة": "🛠️ Services",
+        "🛠️ خدماتي": "🛠️ Services",
+        "🏭 صناعية": "🏭 Industrial",
+        "📊 سيارة واقتصاد": "📊 Politics & Economy",
+        "✓ نشر": "✓ Post Opinion",
+        "تعرض منشوراتك بس": "📌 Showing your posts only",
+        "تعرض منتجاتك بس": "📌 Showing your products only",
+        "💡 تُخصم منصة رسم 0.1 Pi من كل عملية بيع عند تحويل للبائع.": "💡 A 0.1 Pi platform fee is deducted from every sale when transferred to the seller.",
+        "🛍️ المشترين والمبيعات": "🛍️ Purchases & Sales",
+        "📄 المستهلكين والقوانين": "📄 Policies & Terms",
+        "⚜️ ara man": "⚜️ Arabeka",
+        "⚜️ ara ظرف": "⚜️ Arabeka"
     },
 
     /* ===== قواعد للنصوص المتغيرة (تحتوي أرقاماً أو محتوى ديناميكي) ===== */
     patterns: [
+        /* المهام (نص مركب: ⬜ المهمة (+نقاط)) */
+        { r: /^([⬜✅]) أكمل نبذتك الشخصية \(\+(\d+)\)$/, en: "$1 Complete your bio (+$2)" },
+        { r: /^([⬜✅]) انشر أول منشور \(\+(\d+)\)$/, en: "$1 Publish your first post (+$2)" },
+        { r: /^([⬜✅]) تابع أول شخص \(\+(\d+)\)$/, en: "$1 Follow someone (+$2)" },
+        /* شارة الولاء (🥈 عضو مميز · عدد نقطة) */
+        { r: /^🥇 عضو أساسي · (\d+) نقطة$/, en: "🥇 Basic Member · $1 points" },
+        { r: /^🥈 عضو مميز · (\d+) نقطة$/, en: "🥈 Premium Member · $1 points" },
+        { r: /^🥉 عضو نشط · (\d+) نقطة$/, en: "🥉 Active Member · $1 points" },
+        /* الطلبات */
+        { r: /^البائع: (.+)$/, en: "Seller: $1" },
+        { r: /^المشتري: (.+)$/, en: "Buyer: $1" },
+        { r: /^تعذر تحميل المشتريات \((.+)\)$/, en: "Couldn't load purchases ($1)" },
+        { r: /^تعذر تحميل المبيعات \((.+)\)$/, en: "Couldn't load sales ($1)" },
         /* بادئات رسائل الأخطاء (بادئة ثابتة + نص متغير) */
         { r: /^خطأ في المتابعة: ?(.*)$/, en: "Follow error: $1" },
         { r: /^خطأ بالحفظ: ?(.*)$/, en: "Save error: $1" },

@@ -20,6 +20,61 @@
     var SKIP_ATTR = '[data-no-i18n], .card-content, .comment';
     var ATTRS = ['placeholder', 'title', 'aria-label'];
 
+    /* تصحيح أخطاء النصوص الموجودة في النسخة القديمة من index.html
+       (الكلمة المشوّهة -> الكلمة الصحيحة) */
+    var FIXES = {
+        'الإله': 'الإعدادات',
+        'تعديل نبهم': 'تعديل نبذه',
+        'نبزة 🫆': 'نبذه 🫆',
+        'نبزة': 'نبذه',
+        'الحق الأول': 'الحقل الأول',
+        'الزر': 'إلغاء',
+        'حفظ الأشياء': 'حفظ التعديلات',
+        'حفظ المنتج': 'حفظ التعديلات',
+        '🏭 صناعية': '🏭 صناعي',
+        '🛠️ خدماتي': '🛠️ خدمي',
+        '🛠️ خدمة': '🛠️ خدمي',
+        '💻 تمرير': '💻 تقني',
+        '📊 سيارة واقتصاد': '📊 سياسة واقتصاد',
+        '✓ نشر': '✓ نشر الرأي',
+        'عرض البيع': 'عرض للبيع',
+        'تعرض منشوراتك بس': '📌 بتعرض منشوراتك بس',
+        'تعرض منتجاتك بس': '📌 بتعرض منتجاتك بس',
+        '💡 تُخصم منصة رسم 0.1 Pi من كل عملية بيع عند تحويل للبائع.': '💡 تُخصم رسوم منصة 0.1 Pi من كل عملية بيع عند التحويل للبائع.',
+        '🛍️ المشترين والمبيعات': '🛍️ المشتريات والمبيعات',
+        '📄 المستهلكين والقوانين': '📄 السياسات والقوانين',
+        'الأصدقاء': 'أصدقاء',
+        '🤝 أضف صديقًا': '🤝 إضافة صديق',
+        'طلبات الصداقة ترسل': 'طلبات الصداقة الواردة',
+        'لا توجد طلبات متاحة': 'لا توجد طلبات حالياً',
+        '⚜️ ara man': '⚜️ ارابيكا',
+        '⚜️ ara ظرف': '⚜️ ارابيكا',
+        'المتابعون': 'المتابعين',
+        'عروض بيع': 'عروض البيع'
+    };
+
+    /* تصحيح خصائص CSS التي تُرجمت خطأً للعربية داخل style="" */
+    var CSS_FIXES = [
+        [/هامش\s+أعلى/g, 'margin-top'],
+        [/هامش\s+أسفل/g, 'margin-bottom'],
+        [/هامش/g, 'margin'],
+        [/خطي-التدرج/g, 'linear-gradient'],
+        [/اتجاه/g, 'direction']
+    ];
+
+    function fixCssProps(root) {
+        var scope = root && root.querySelectorAll ? root : document;
+        if (!scope.querySelectorAll) return;
+        var els = scope.querySelectorAll('[style]');
+        for (var i = 0; i < els.length; i++) {
+            var st = els[i].getAttribute('style');
+            if (!st || st.search(/[\u0600-\u06FF]/) === -1) continue;
+            var fixed = st;
+            for (var j = 0; j < CSS_FIXES.length; j++) fixed = fixed.replace(CSS_FIXES[j][0], CSS_FIXES[j][1]);
+            if (fixed !== st) els[i].setAttribute('style', fixed);
+        }
+    }
+
     /* ذاكرة أصل النص لكل عقدة (للرجوع للعربية بدقة) */
     var origText = new WeakMap();
     var lastOut = new WeakMap();
@@ -47,7 +102,22 @@
         return !!(el && el.closest && el.closest(selector));
     }
 
-    /* ===== ترجمة عقدة نصية ===== */
+    /* ===== تصحيح نص مشوّه ===== */
+    function fixText(node) {
+        var cur = node.nodeValue;
+        if (!cur) return cur;
+        var m = /^(\s*)([\s\S]*?)(\s*)$/.exec(cur);
+        var core = m[2];
+        if (!core) return cur;
+        if (Object.prototype.hasOwnProperty.call(FIXES, core)) {
+            var fixed = m[1] + FIXES[core] + m[3];
+            node.nodeValue = fixed;
+            return fixed;
+        }
+        return cur;
+    }
+
+    /* ===== ترجمة عقدة نصية (مع تصحيح الأخطاء أولاً) ===== */
     function handleTextNode(node) {
         if (node.nodeType !== 3) return;
         if (skipped(node, SKIP_TEXT)) return;
@@ -55,14 +125,19 @@
         if (!cur || !cur.trim()) return;
 
         if (lang === 'en') {
-            var out = translate(cur);
-            if (out === cur) return;
-            if (lastOut.get(node) !== cur) origText.set(node, cur);
+            var base = fixText(node);
+            var out = translate(base);
+            if (out === base) return;
+            if (lastOut.get(node) !== base) origText.set(node, base);
             lastOut.set(node, out);
             node.nodeValue = out;
         } else {
             var orig = origText.get(node);
-            if (orig !== undefined && orig !== cur) node.nodeValue = orig;
+            if (orig !== undefined && orig !== cur) {
+                node.nodeValue = orig;
+                cur = orig;
+            }
+            fixText(node);
         }
     }
 
@@ -169,7 +244,6 @@
     function startObserver() {
         var pending = false;
         var observer = new MutationObserver(function (muts) {
-            if (lang !== 'en') return;
             if (pending) return;
             pending = true;
             requestAnimationFrame(function () {
@@ -180,6 +254,7 @@
                     else if (mu.type === 'attributes') handleAttrs(mu.target);
                     else {
                         for (var j = 0; j < mu.addedNodes.length; j++) walk(mu.addedNodes[j]);
+                        fixCssProps(document.body);
                     }
                 }
             });
@@ -202,10 +277,12 @@
     function init() {
         injectStyles();
         injectButton();
+        fixCssProps(document);
         if (lang === 'en') applyLang();
         else {
             document.documentElement.lang = 'ar';
             document.documentElement.dir = 'rtl';
+            walk(document.body); // لتصحيح أي نصوص مشوّهة في الوضع العربي
         }
         startObserver();
     }
