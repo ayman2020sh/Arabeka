@@ -36,11 +36,50 @@ function onIncompletePaymentFound(payment) {
 function saveWalletFromAuth(auth) {
     try {
         const w = auth && auth.user && auth.user.wallet_address;
-        if (!w || !currentUser) return;
+        if (!w) {
+            // Pi لم يُرجع العنوان (الإذن غير ممنوح بعد) — يمكن ربطه يدوياً من صفحة الحساب
+            console.warn('[wallet] Pi auth returned no wallet_address — scope not granted yet');
+            return;
+        }
+        if (!currentUser) return;
         db.collection('users').doc(currentUser).set({ walletAddress: w }, { merge: true })
-            .catch(e => console.warn('wallet save:', e.message));
-    } catch (e) { console.warn('wallet save error:', e.message); }
+            .then(() => { if (typeof renderUserWallet === 'function') renderUserWallet(w); })
+            .catch(e => console.warn('[wallet] save failed:', e.message));
+    } catch (e) { console.warn('[wallet] save error:', e.message); }
 }
+
+// طلب إذن المحفظة يدوياً (زر «🔗 ربط المحفظة» في صفحة الحساب)
+function linkWalletNow() {
+    if (typeof Pi === 'undefined' || !piReady) {
+        if (typeof walletNotice === 'function') walletNotice('الرجاء فتح التطبيق من متصفح Pi', false);
+        return;
+    }
+    if (typeof walletNotice === 'function') walletNotice('⏳ جارٍ طلب إذن المحفظة...', true);
+    Pi.authenticate(['username', 'payments', 'wallet_address'], onIncompletePaymentFound)
+        .then(auth => {
+            const w = auth && auth.user && auth.user.wallet_address;
+            if (!w) {
+                console.warn('[wallet] manual link: no wallet_address. user keys:',
+                    auth && auth.user ? Object.keys(auth.user).join(',') : 'none');
+                if (typeof walletNotice === 'function') walletNotice('لم يمنح Pi الإذن بعنوان المحفظة — جرّب مرة أخرى', false);
+                return;
+            }
+            db.collection('users').doc(currentUser).set({ walletAddress: w }, { merge: true })
+                .then(() => {
+                    if (typeof renderUserWallet === 'function') renderUserWallet(w);
+                    if (typeof walletNotice === 'function') walletNotice('✅ تم ربط المحفظة بنجاح', true);
+                })
+                .catch(e => {
+                    console.error('[wallet] manual save failed:', e.message);
+                    if (typeof walletNotice === 'function') walletNotice('فشل حفظ المحفظة: ' + e.message, false);
+                });
+        })
+        .catch(e => {
+            console.warn('[wallet] manual link failed:', e.message);
+            if (typeof walletNotice === 'function') walletNotice('فشل طلب إذن المحفظة: ' + e.message, false);
+        });
+}
+window.linkWalletNow = linkWalletNow;
 
 // ================= المصادقة =================
 firebase.auth().onAuthStateChanged(function (user) {
