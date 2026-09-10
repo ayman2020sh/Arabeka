@@ -105,6 +105,44 @@
         }
     }
 
+    /* ===== إنشاء زر الترجمة في الهيدر إن لم يكن موجوداً ===== */
+    function injectButton() {
+        if (document.getElementById('lang-btn')) { updateBtn(); return; }
+        var header = document.querySelector('.header');
+        if (!header) return;
+
+        var btn = document.createElement('button');
+        btn.id = 'lang-btn';
+        btn.setAttribute('data-no-i18n', '');
+        btn.style.cssText = 'background:none; border:none; color: var(--text-color); font-size: 14px; font-weight: bold; cursor: pointer; padding: 0;';
+        btn.onclick = function () { setLang(lang === 'en' ? 'ar' : 'en'); };
+
+        // الوضع بجانب زر التنبيهات (آخر زر في الهيدر)
+        var btns = header.querySelectorAll(':scope > button');
+        var bell = btns.length ? btns[btns.length - 1] : null;
+        if (bell) {
+            var wrap = document.createElement('div');
+            wrap.style.cssText = 'display:flex; gap:12px; align-items:center;';
+            header.insertBefore(wrap, bell);
+            wrap.appendChild(bell);
+            wrap.appendChild(btn);
+        } else {
+            header.appendChild(btn);
+        }
+        updateBtn();
+    }
+
+    /* ===== تحسينات اتجاه الواجهة (تُطبَّق تلقائياً) ===== */
+    function injectStyles() {
+        if (document.getElementById('i18n-extra-style')) return;
+        var st = document.createElement('style');
+        st.id = 'i18n-extra-style';
+        st.textContent = '[dir="ltr"] .hero-text{text-align:left}' +
+            '[dir="ltr"] .settings-row .row-left span.icon{margin-left:0;margin-right:15px}' +
+            '[dir="ltr"] .official-badge{margin-right:0;margin-left:5px}';
+        document.head.appendChild(st);
+    }
+
     /* ===== تفعيل اللغة ===== */
     function applyLang() {
         document.documentElement.lang = (lang === 'en') ? 'en' : 'ar';
@@ -162,7 +200,8 @@
 
     /* ===== تشغيل ===== */
     function init() {
-        updateBtn();
+        injectStyles();
+        injectButton();
         if (lang === 'en') applyLang();
         else {
             document.documentElement.lang = 'ar';

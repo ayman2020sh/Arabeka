@@ -25,6 +25,38 @@ function getLoyaltyBadge(points) {
     return '';
 }
 
+// اختصار عنوان المحفظة للعرض
+function shortenWallet(addr) {
+    if (!addr) return '';
+    if (addr.length <= 14) return addr;
+    return addr.slice(0, 6) + '…' + addr.slice(-4);
+}
+
+// إنشاء صف المحفظة إن لم يكن موجوداً في الصفحة (يستبدل سطر تاريخ الانضمام القديم)
+function ensureWalletRow() {
+    if (document.getElementById('user-wallet')) return;
+    const ps = document.querySelectorAll('#page-profile p');
+    for (let i = 0; i < ps.length; i++) {
+        if (ps[i].textContent && ps[i].textContent.indexOf('تاريخ الانضمام') !== -1) {
+            ps[i].innerHTML = 'المحفظة: <span id="user-wallet" style="color: var(--text-color); direction: ltr; display: inline-block;">غير مرتبطة</span>';
+            return;
+        }
+    }
+}
+
+function renderUserWallet(wallet) {
+    ensureWalletRow();
+    const el = document.getElementById('user-wallet');
+    if (!el) return;
+    if (wallet) {
+        el.textContent = shortenWallet(wallet);
+        el.title = wallet;
+    } else {
+        el.textContent = 'غير مرتبطة';
+        el.title = '';
+    }
+}
+
 function loadUserBio() {
     const unsubscribe = db.collection("users").doc(currentUser).onSnapshot(doc => {
         const d = doc.exists ? doc.data() : {};
@@ -35,6 +67,7 @@ function loadUserBio() {
         const badge = getLoyaltyBadge(points);
         const badgeEl = document.getElementById('user-loyalty-badge');
         if (badgeEl) badgeEl.innerText = badge ? (badge + ' · ' + points + ' نقطة') : (points + ' نقطة');
+        renderUserWallet(d.walletAddress || null);
         renderTasksList(d.tasksCompleted);
         const isAdminUser = d.isAdmin === true;
         const vb = document.getElementById('user-verified-badge');

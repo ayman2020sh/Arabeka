@@ -32,6 +32,16 @@ function onIncompletePaymentFound(payment) {
     }).catch(err => console.error('incomplete payment recovery:', err.message));
 }
 
+// حفظ عنوان المحفظة بعد منح إذن wallet_address
+function saveWalletFromAuth(auth) {
+    try {
+        const w = auth && auth.user && auth.user.wallet_address;
+        if (!w || !currentUser) return;
+        db.collection('users').doc(currentUser).set({ walletAddress: w }, { merge: true })
+            .catch(e => console.warn('wallet save:', e.message));
+    } catch (e) { console.warn('wallet save error:', e.message); }
+}
+
 // ================= المصادقة =================
 firebase.auth().onAuthStateChanged(function (user) {
     if (!user) return;
@@ -53,6 +63,7 @@ firebase.auth().onAuthStateChanged(function (user) {
             if (typeof Pi !== 'undefined' && piReady) {
                 
 Pi.authenticate(['username', 'payments', 'wallet_address'], onIncompletePaymentFound)
+                    .then(saveWalletFromAuth)
                     .catch(e => console.warn("إعادة توثيق صامتة مع Pi فشلت:", e.message));
                 return;
             }
@@ -93,6 +104,7 @@ Pi.authenticate(['username', 'payments', 'wallet_address'], onIncompletePaymentF
             .then(username => {
                 localStorage.setItem('arabeka_username', username);
                 loginSuccess(username);
+                saveWalletFromAuth(auth);
             });
         })
         .catch(error => showError("خطأ تسجيل الدخول: " + error.message));
@@ -132,3 +144,25 @@ function logout() {
     });
 }
 
+
+// ===== تحميل ملفات الترجمة تلقائياً =====
+// يضمن عمل الترجمة حتى لو لم تُضف وسوم script في index.html
+(function ensureTranslationFiles() {
+    function load() {
+        if (window.ARABEKA_LANG) return;            // محمّلة بالفعل
+        if (window.__i18nLoaderStarted) return;     // التحميل جارٍ
+        if (document.querySelector('script[src$="lang.js"]')) return; // وسم موجود
+        window.__i18nLoaderStarted = true;
+        const s1 = document.createElement('script');
+        s1.src = 'lang.js';
+        s1.onload = function () {
+            const s2 = document.createElement('script');
+            s2.src = 'i18n.js';
+            document.head.appendChild(s2);
+        };
+        s1.onerror = function () { console.warn('lang.js failed to load'); };
+        document.head.appendChild(s1);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load);
+    else setTimeout(load, 0);
+})();
