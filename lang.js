@@ -243,6 +243,12 @@ window.ARABEKA_LANG = {
         "⚜️ ara man": "⚜️ Arabeka",
         "⚜️ ara ظرف": "⚜️ Arabeka",
         /* ===== إضافات جولة 2026-09-10 (هـ): نصوص اللقطات الأخيرة + المحفظة ===== */
+        "✍️ إدخال يدوي": "✍️ Enter manually",
+        "أدخل عنوان محفظتك (56 حرفاً يبدأ بحرف G):": "Enter your wallet address (56 characters starting with G):",
+        "العنوان غير صحيح — لازم يبدأ بحرف G ويكون 56 حرفاً": "Invalid address — it must start with G and be 56 characters",
+        "✅ تم حفظ عنوان المحفظة": "✅ Wallet address saved",
+        "لازم تسجل الدخول الأول": "You need to sign in first",
+        "لم يُمنح إذن عنوان المحفظة (الأذونات: لا شيء) — استخدم «إدخال يدوي»": "Wallet address permission not granted (scopes: none) — use the manual entry option",
         "التبديل للعربية": "Switch to Arabic",
         "التبديل للإنجليزية": "Switch to English",
         "🤖 مساعد أرابيكا": "🤖 Arabeka Assistant",
@@ -329,6 +335,7 @@ window.ARABEKA_LANG = {
         { r: /^رد غير متوقع من الخادم/, en: "Unexpected server response" }
         ,
         /* جولة (هـ): نصوص ناقصة من لقطات 2026-09-10 */
+        { r: /^لم يُمنح إذن عنوان المحفظة \(الأذونات: (.+)\) — استخدم «إدخال يدوي»$/, en: 'Wallet address permission not granted (scopes: $1) — use the manual entry option' },
         { r: /^تم الدفع لكن تعذر تأكيده الآن، سيُستكمل تلقائياً عند فتح التطبيق\. ?(.*)$/, en: "Payment was made but couldn't be confirmed now; it will complete automatically when you open the app. $1" },
         { r: /^متوفر: (.+)$/, en: "Available: $1" }, /* متوفر: الرقم */
         { r: /^تعذر تحميل المنشورات \((.+)\)$/, en: "Couldn't load posts ($1)" }, /* تعذر تحميل المنشورات */
