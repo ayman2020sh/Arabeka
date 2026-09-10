@@ -36,6 +36,7 @@ function shortenWallet(addr) {
 const WALLET_ROW_HTML =
     'المحفظة: <span id="user-wallet" style="color: var(--text-muted); direction: ltr; display: inline-block;">غير مرتبطة</span>' +
     ' <a href="javascript:void(0)" id="wallet-link" onclick="linkWalletNow();return false;" style="color: var(--primary); font-size: 13px; text-decoration: underline; margin-inline-start: 6px;">🔗 ربط المحفظة</a>' +
+    ' <a href="javascript:void(0)" id="wallet-manual" onclick="manualWalletEntry();return false;" style="color: var(--primary); font-size: 13px; text-decoration: underline; margin-inline-start: 6px;">✍️ إدخال يدوي</a>' +
     ' <span id="wallet-note" style="display: none; font-size: 12px; margin-inline-start: 6px;"></span>';
 
 let walletNoticeTimer = null;
@@ -69,11 +70,15 @@ function renderUserWallet(wallet) {
         el.title = wallet;
         el.style.color = 'var(--success, #22c55e)';
         if (link) link.style.display = 'none';
+        const manual = document.getElementById('wallet-manual');
+        if (manual) manual.style.display = 'none';
     } else {
         el.textContent = 'غير مرتبطة';
         el.title = '';
         el.style.color = 'var(--text-muted)';
         if (link) link.style.display = 'inline';
+        const manual2 = document.getElementById('wallet-manual');
+        if (manual2) manual2.style.display = 'inline';
     }
 }
 
@@ -87,6 +92,28 @@ function walletNotice(message, ok) {
     if (walletNoticeTimer) clearTimeout(walletNoticeTimer);
     walletNoticeTimer = setTimeout(() => { el.style.display = 'none'; }, 9000);
 }
+
+// إدخال عنوان المحفظة يدوياً (احتياطي عندما لا يمنح Pi الإذن)
+function manualWalletEntry() {
+    const el = document.getElementById('user-wallet');
+    const current = (el && el.title) ? el.title : '';
+    const input = prompt('أدخل عنوان محفظتك (56 حرفاً يبدأ بحرف G):', current);
+    if (input === null || input === undefined) return;
+    const addr = String(input).trim();
+    if (!addr) return;
+    if (!/^G[A-Z2-7]{55}$/.test(addr)) {
+        walletNotice('العنوان غير صحيح — لازم يبدأ بحرف G ويكون 56 حرفاً', false);
+        return;
+    }
+    if (!currentUser) { walletNotice('لازم تسجل الدخول الأول', false); return; }
+    db.collection('users').doc(currentUser).set({ walletAddress: addr, walletAddressSource: 'manual' }, { merge: true })
+        .then(() => {
+            renderUserWallet(addr);
+            walletNotice('✅ تم حفظ عنوان المحفظة', true);
+        })
+        .catch(e => walletNotice('فشل حفظ المحفظة: ' + e.message, false));
+}
+window.manualWalletEntry = manualWalletEntry;
 
 function loadUserBio() {
     const unsubscribe = db.collection("users").doc(currentUser).onSnapshot(doc => {
