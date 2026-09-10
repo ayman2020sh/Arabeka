@@ -241,7 +241,34 @@ window.ARABEKA_LANG = {
         "🛍️ المشترين والمبيعات": "🛍️ Purchases & Sales",
         "📄 المستهلكين والقوانين": "📄 Policies & Terms",
         "⚜️ ara man": "⚜️ Arabeka",
-        "⚜️ ara ظرف": "⚜️ Arabeka"
+        "⚜️ ara ظرف": "⚜️ Arabeka",
+        /* ===== إضافات جولة 2026-09-10 (هـ): نصوص اللقطات الأخيرة + المحفظة ===== */
+        "التبديل للعربية": "Switch to Arabic",
+        "التبديل للإنجليزية": "Switch to English",
+        "🤖 مساعد أرابيكا": "🤖 Arabeka Assistant",
+        "💰 المبيعات": "💰 Sales",
+        "💻 تكنولوجي": "💻 Technology",
+        "معرف Pi": "Pi Username",
+        "كارت آرابيكا": "Arabeka Card",
+        "كارت آرا شين": "Arabeka Card",
+        "🔗 رابط الصورة (اختياري)": "🔗 Image URL (optional)",
+        "السعر (Pi) - أكبر من 0.1": "Price (Pi) - greater than 0.1",
+        "الكمية المتاحة (اتركه كاملاً = غير محدود)": "Available quantity (leave empty = unlimited)",
+        "تاريخ الانضمام": "Join date",
+        "لا توجد منشورات بعد": "No posts yet",
+        "لا توجد منشورات": "No posts",
+        "لا يوجد نتائج": "No results",
+        "لا يوجد بيانات بعد": "No data yet",
+        "عرض الملف": "View Profile",
+        "متوفر:": "Available:",
+        "حذف": "Delete",
+        "⚠️ فتح نزاع": "⚠️ Open Dispute",
+        "السعر يجب أن يكون أكبر من": "Price must be greater than",
+        "Pi (رسوم المنصة)": "Pi (platform fee)",
+        "🔗 ربط المحفظة": "🔗 Link wallet",
+        "⏳ جارٍ طلب إذن المحفظة...": "⏳ Requesting wallet permission...",
+        "✅ تم ربط المحفظة بنجاح": "✅ Wallet linked successfully",
+        "لم يمنح Pi الإذن بعنوان المحفظة — جرّب مرة أخرى": "Pi didn't grant wallet address permission — try again",
     },
 
     /* ===== قواعد للنصوص المتغيرة (تحتوي أرقاماً أو محتوى ديناميكي) ===== */
@@ -300,5 +327,16 @@ window.ARABEKA_LANG = {
         { r: /^تأكيد إنك استلمت المنتج\/الخدمة؟[\s\S]*$/, en: "Confirm you received the product/service? Funds will be transferred to the seller (after platform fee deduction). This action is final." },
         { r: /^رد غير متوقع من الخادم \(([\d]+)\)$/, en: "Unexpected server response ($1)" },
         { r: /^رد غير متوقع من الخادم/, en: "Unexpected server response" }
+        ,
+        /* جولة (هـ): نصوص ناقصة من لقطات 2026-09-10 */
+        { r: /^تم الدفع لكن تعذر تأكيده الآن، سيُستكمل تلقائياً عند فتح التطبيق\. ?(.*)$/, en: "Payment was made but couldn't be confirmed now; it will complete automatically when you open the app. $1" },
+        { r: /^متوفر: (.+)$/, en: "Available: $1" }, /* متوفر: الرقم */
+        { r: /^تعذر تحميل المنشورات \((.+)\)$/, en: "Couldn't load posts ($1)" }, /* تعذر تحميل المنشورات */
+        { r: /^تعذر تحميل الطلبات \((.+)\)$/, en: "Couldn't load requests ($1)" }, /* تعذر تحميل الطلبات */
+        { r: /^تعذر تحميل المنتجات \((.+)\)$/, en: "Couldn't load products ($1)" }, /* تعذر تحميل المنتجات */
+        { r: /^(.+) Pi\) وده إجراء نهائي\.$/, en: "$1 Pi) and this is final." }, /* رسالة الإجراء النهائي */
+        { r: /^السعر يجب أن يكون أكبر من (.+) Pi \(رسوم المنصة\)$/, en: "Price must be greater than $1 Pi (platform fee)" }, /* رسوم المنصة في رسائل الخطأ */
+        { r: /^فشل حفظ المحفظة: (.+)$/, en: "Failed to save wallet: $1" }, /* فشل حفظ المحفظة */
+        { r: /^فشل طلب إذن المحفظة: (.+)$/, en: "Failed to request wallet permission: $1" }, /* فشل طلب إذن المحفظة */
     ]
 };
