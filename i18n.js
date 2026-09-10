@@ -18,7 +18,7 @@
     /* عناصر لا تُترجم: أكواد + محتوى المستخدمين */
     var SKIP_TEXT = '[data-no-i18n], script, style, textarea, code, pre, .card-content, .comment, #user-bio';
     var SKIP_ATTR = '[data-no-i18n], .card-content, .comment';
-    var ATTRS = ['placeholder', 'title', 'aria-label'];
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
 
     /* تصحيح أخطاء النصوص الموجودة في النسخة القديمة من index.html
        (الكلمة المشوّهة -> الكلمة الصحيحة) */
@@ -50,16 +50,32 @@
         '⚜️ ara man': '⚜️ ارابيكا',
         '⚜️ ara ظرف': '⚜️ ارابيكا',
         'المتابعون': 'المتابعين',
-        'عروض بيع': 'عروض البيع'
+        'عروض بيع': 'عروض البيع',
+        /* جولة 2026-09-10 (هـ): تصحيحات من لقطات المستخدم */
+        '💻 تكنولوجي': '💻 تكنولوجيا',
+        'كارت آرا شين': 'كارت آرابيكا',
+        'الكمية المتاحة (اتركه كاملاً = غير محدود)': 'الكمية المتاحة (اتركه فارغاً = غير محدود)',
+        'الألب': 'العربي',
+        'أ': 'A',
+        'تاريخ الانضمام: 2024': 'تاريخ الانضمام'
     };
 
     /* تصحيح خصائص CSS التي تُرجمت خطأً للعربية داخل style="" */
     var CSS_FIXES = [
         [/هامش\s+أعلى/g, 'margin-top'],
         [/هامش\s+أسفل/g, 'margin-bottom'],
+        [/هامش\s+يمين/g, 'margin-right'],
+        [/هامش\s+يسار/g, 'margin-left'],
         [/هامش/g, 'margin'],
+        [/لون\s+الخلفية/g, 'background-color'],
+        [/لون\s+النص/g, 'color'],
         [/خطي-التدرج/g, 'linear-gradient'],
-        [/اتجاه/g, 'direction']
+        [/خطي\s+متدرج/g, 'linear-gradient'],
+        [/اتجاه/g, 'direction'],
+        [/فار\s*\(/g, 'var('],
+        [/درجة/g, 'deg'],
+        [/،/g, ','],
+        [/؛/g, ';']
     ];
 
     function fixCssProps(root) {
@@ -106,18 +122,21 @@
     function fixText(node) {
         var cur = node.nodeValue;
         if (!cur) return cur;
-        var m = /^(\s*)([\s\S]*?)(\s*)$/.exec(cur);
-        var core = m[2];
-        if (!core) return cur;
-        if (Object.prototype.hasOwnProperty.call(FIXES, core)) {
-            var fixed = m[1] + FIXES[core] + m[3];
-            node.nodeValue = fixed;
-            return fixed;
-        }
-        return cur;
+        var fixed = fixString(cur);
+        if (fixed !== cur) node.nodeValue = fixed;
+        return fixed;
     }
 
     /* ===== ترجمة عقدة نصية (مع تصحيح الأخطاء أولاً) ===== */
+    /* تصحيح نص مفرد (يُستخدم للعقد النصية والخصائص) */
+    function fixString(str) {
+        if (!str) return str;
+        var m = /^(\s*)([\s\S]*?)(\s*)$/.exec(str);
+        var core = m[2];
+        if (core && Object.prototype.hasOwnProperty.call(FIXES, core)) return m[1] + FIXES[core] + m[3];
+        return str;
+    }
+
     function handleTextNode(node) {
         if (node.nodeType !== 3) return;
         if (skipped(node, SKIP_TEXT)) return;
@@ -147,8 +166,10 @@
         if (skipped(el, SKIP_ATTR)) return;
         for (var i = 0; i < ATTRS.length; i++) {
             var name = ATTRS[i];
-            var val = el.getAttribute && el.getAttribute(name);
-            if (!val || !val.trim()) continue;
+            var raw = el.getAttribute && el.getAttribute(name);
+            if (!raw || !raw.trim()) continue;
+            var val = fixString(raw);
+            if (val !== raw) el.setAttribute(name, val);
             if (lang === 'en') {
                 var out = translate(val);
                 if (out === val) continue;
