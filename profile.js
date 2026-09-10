@@ -32,29 +32,60 @@ function shortenWallet(addr) {
     return addr.slice(0, 6) + '…' + addr.slice(-4);
 }
 
-// إنشاء صف المحفظة إن لم يكن موجوداً في الصفحة (يستبدل سطر تاريخ الانضمام القديم)
+// صف المحفظة — يُنشأ تلقائياً (يستبدل سطر «تاريخ الانضمام» القديم)
+const WALLET_ROW_HTML =
+    'المحفظة: <span id="user-wallet" style="color: var(--text-muted); direction: ltr; display: inline-block;">غير مرتبطة</span>' +
+    ' <a href="javascript:void(0)" id="wallet-link" onclick="linkWalletNow();return false;" style="color: var(--primary); font-size: 13px; text-decoration: underline; margin-inline-start: 6px;">🔗 ربط المحفظة</a>' +
+    ' <span id="wallet-note" style="display: none; font-size: 12px; margin-inline-start: 6px;"></span>';
+
+let walletNoticeTimer = null;
+
 function ensureWalletRow() {
     if (document.getElementById('user-wallet')) return;
     const ps = document.querySelectorAll('#page-profile p');
     for (let i = 0; i < ps.length; i++) {
         if (ps[i].textContent && ps[i].textContent.indexOf('تاريخ الانضمام') !== -1) {
-            ps[i].innerHTML = 'المحفظة: <span id="user-wallet" style="color: var(--text-color); direction: ltr; display: inline-block;">غير مرتبطة</span>';
+            ps[i].innerHTML = WALLET_ROW_HTML;
             return;
         }
+    }
+    // احتياط: لو لم يوجد سطر تاريخ الانضمام، نضيف الصف بعد النبذة
+    const bio = document.getElementById('user-bio');
+    if (bio && bio.parentElement) {
+        const p = document.createElement('p');
+        p.style.cssText = 'color: var(--text-muted); font-size: 14px; margin: 6px 0 0 0;';
+        p.innerHTML = WALLET_ROW_HTML;
+        bio.parentElement.appendChild(p);
     }
 }
 
 function renderUserWallet(wallet) {
     ensureWalletRow();
     const el = document.getElementById('user-wallet');
+    const link = document.getElementById('wallet-link');
     if (!el) return;
     if (wallet) {
         el.textContent = shortenWallet(wallet);
         el.title = wallet;
+        el.style.color = 'var(--success, #22c55e)';
+        if (link) link.style.display = 'none';
     } else {
         el.textContent = 'غير مرتبطة';
         el.title = '';
+        el.style.color = 'var(--text-muted)';
+        if (link) link.style.display = 'inline';
     }
+}
+
+// رسالة قصيرة بجانب صف المحفظة (نجاح/خطأ)
+function walletNotice(message, ok) {
+    const el = document.getElementById('wallet-note');
+    if (!el) return;
+    el.textContent = message;
+    el.style.color = ok ? 'var(--success, #22c55e)' : 'var(--danger)';
+    el.style.display = 'inline';
+    if (walletNoticeTimer) clearTimeout(walletNoticeTimer);
+    walletNoticeTimer = setTimeout(() => { el.style.display = 'none'; }, 9000);
 }
 
 function loadUserBio() {
