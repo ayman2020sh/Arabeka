@@ -37,8 +37,9 @@ function saveWalletFromAuth(auth) {
     try {
         const w = auth && auth.user && auth.user.wallet_address;
         if (!w) {
-            // Pi لم يُرجع العنوان (الإذن غير ممنوح بعد) — يمكن ربطه يدوياً من صفحة الحساب
-            console.warn('[wallet] Pi auth returned no wallet_address — scope not granted yet');
+            // Pi لم يُرجع العنوان (الإذن غير ممنوح) — يمكن ربطه من صفحة الحساب
+            const scopes = piGrantedScopes(auth);
+            console.warn('[wallet] no wallet_address. Pi granted scopes: ' + (scopes.length ? scopes.join(', ') : 'none'));
             return;
         }
         if (!currentUser) return;
@@ -46,6 +47,14 @@ function saveWalletFromAuth(auth) {
             .then(() => { if (typeof renderUserWallet === 'function') renderUserWallet(w); })
             .catch(e => console.warn('[wallet] save failed:', e.message));
     } catch (e) { console.warn('[wallet] save error:', e.message); }
+}
+
+// قراءة الأذونات التي منحها Pi فعلاً (للتشخيص)
+function piGrantedScopes(auth) {
+    try {
+        const c = auth && auth.user && auth.user.credentials;
+        return (c && c.scopes) ? c.scopes : [];
+    } catch (e) { return []; }
 }
 
 // طلب إذن المحفظة يدوياً (زر «🔗 ربط المحفظة» في صفحة الحساب)
@@ -59,9 +68,13 @@ function linkWalletNow() {
         .then(auth => {
             const w = auth && auth.user && auth.user.wallet_address;
             if (!w) {
-                console.warn('[wallet] manual link: no wallet_address. user keys:',
-                    auth && auth.user ? Object.keys(auth.user).join(',') : 'none');
-                if (typeof walletNotice === 'function') walletNotice('لم يمنح Pi الإذن بعنوان المحفظة — جرّب مرة أخرى', false);
+                const scopes = piGrantedScopes(auth);
+                console.warn('[wallet] manual link: no wallet_address.');
+                console.warn('[wallet] Pi granted scopes:', scopes.length ? scopes.join(', ') : 'none');
+                console.warn('[wallet] user object keys:', auth && auth.user ? Object.keys(auth.user).join(', ') : 'none');
+                if (typeof walletNotice === 'function') {
+                    walletNotice('لم يُمنح إذن عنوان المحفظة (الأذونات: ' + (scopes.length ? scopes.join(', ') : 'لا شيء') + ') — استخدم «إدخال يدوي»', false);
+                }
                 return;
             }
             db.collection('users').doc(currentUser).set({ walletAddress: w }, { merge: true })
