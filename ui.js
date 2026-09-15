@@ -20,6 +20,10 @@ function sanitizeURL(url) {
 
 function comingSoon() { alert('الإعداد قيد التطوير 🤌'); }
 
+// ================= قائمة الجانبية (زر الثلاث شرطات) =================
+function openSideMenu() { document.getElementById('side-menu-modal').style.display = 'flex'; }
+function closeSideMenu() { document.getElementById('side-menu-modal').style.display = 'none'; }
+
 function showError(message) {
     const el = document.getElementById('login-error');
     if (!el) return;
