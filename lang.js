@@ -280,7 +280,14 @@ window.ARABEKA_LANG = {
         "لا توجد إشعارات بعد": "No notifications yet",
         "🔔 إشعار جديد": "🔔 New notification",
         "سجّل الدخول الأول": "Sign in first",
-        "تسجيل الخروج": "Log out"
+        "تسجيل الخروج": "Log out",
+        /* التعدين */
+        "⛏️ تعدين ARA": "⛏️ ARA Mining",
+        "⛏️ عدّن الآن": "⛏️ Mine now",
+        "⛏️ جارٍ التعدين...": "⛏️ Mining...",
+        "+3.14 ARA كل 24 ساعة": "+3.14 ARA every 24 hours",
+        "(محاكاة داخل التطبيق)": "(in-app simulation)",
+        "جلسة تعدين كل 24 ساعة فقط": "One mining session per 24 hours"
     },
 
     /* ===== قواعد للنصوص المتغيرة (تحتوي أرقاماً أو محتوى ديناميكي) ===== */
@@ -358,6 +365,12 @@ window.ARABEKA_LANG = {
         { r: /^💰 (.+) أكد استلام الأوردر: (.+) — تم تحويل الفلوس$/, en: "💰 $1 confirmed receipt of order: $2 — payment released" },
         { r: /^💰 (.+) أكد استلام الأوردر — تم تحويل الفلوس$/, en: "💰 $1 confirmed receipt of order — payment released" },
         { r: /^⚠️ (.+) فتح نزاع على الأوردر: (.+)$/, en: "⚠️ $1 opened a dispute on order: $2" },
-        { r: /^⚠️ (.+) فتح نزاع على الأوردر$/, en: "⚠️ $1 opened a dispute on order" }
+        { r: /^⚠️ (.+) فتح نزاع على الأوردر$/, en: "⚠️ $1 opened a dispute on order" },
+        /* نصوص التعدين */
+        { r: /^⛏️ رصيدك: (.+) ARA$/, en: "⛏️ Your balance: $1 ARA" },
+        { r: /^⏳ جاهز بعد (\d+) س (\d+) د$/, en: "⏳ Ready in $1h $2m" },
+        { r: /^⏳ جاهز بعد (\d+) د$/, en: "⏳ Ready in $1m" },
+        { r: /^⏳ جاهز بعد أقل من دقيقة$/, en: "⏳ Ready in less than a minute" },
+        { r: /^✅ تم التعدين: \+(.+) ARA$/, en: "✅ Mined: +$1 ARA" }
     ]
 };
