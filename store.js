@@ -216,7 +216,10 @@ function buyProduct(productId) {
             },
             onReadyForServerCompletion: function (paymentId, txid) {
                 post('/api/complete', { paymentId, txid }).then(({ ok, data }) => {
-                    if (ok) alert("تم الدفع بنجاح! الفلوس محجوزة لحد ما تأكد استلامك من صفحة \"طلباتي\".");
+                    if (ok) {
+                        alert("تم الدفع بنجاح! الفلوس محجوزة لحد ما تأكد استلامك من صفحة \"طلباتي\".");
+                        pushNotification(sellerUsername, 'purchase', { productId: productId, productName: name });
+                    }
                     else {
                         const msg = typeof data.error === 'string' ? data.error : (data.error && data.error.message) || '';
                         console.error('complete failed:', msg);
