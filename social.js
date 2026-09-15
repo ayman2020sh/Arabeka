@@ -16,7 +16,6 @@ function viewUserProfile(username) {
     av.style.backgroundImage = 'none';
     av.innerText = username.charAt(0).toUpperCase();
     document.getElementById('uprofile-bio').innerText = '—';
-    document.getElementById('uprofile-loyalty-badge').innerText = '';
     document.getElementById('uprofile-verified-badge').style.display = 'none';
     document.getElementById('uprofile-posts').innerHTML = '';
 
@@ -28,9 +27,6 @@ function viewUserProfile(username) {
             if (safe) { av.style.backgroundImage = `url('${safe}')`; av.innerText = ''; }
         }
         if (d.bio) document.getElementById('uprofile-bio').innerText = d.bio;
-        const points = d.loyaltyPoints || 0;
-        const badge = getLoyaltyBadge(points);
-        document.getElementById('uprofile-loyalty-badge').innerText = badge ? (badge + ' · ' + points + ' نقطة') : (points + ' نقطة');
         if (d.isAdmin === true) document.getElementById('uprofile-verified-badge').style.display = 'inline-block';
     }).catch(() => {});
 
