@@ -81,6 +81,7 @@ async function confirmOrderReceipt(orderId, btnEl) {
         const data = await res.json().catch(() => ({ error: 'رد غير متوقع من الخادم (' + res.status + ')' }));
         if (!res.ok) throw new Error(data.error || 'فشل التحرير');
         alert('تم تأكيد الاستلام وتحويل الفلوس للبائع ✅');
+        notifyOrderEvent(orderId, 'released');
     } catch (e) {
         console.error('confirmOrderReceipt error:', e.message);
         showError('تعذر إتمام العملية: ' + e.message);
@@ -95,7 +96,10 @@ function openOrderDispute(orderId) {
         status: 'disputed',
         disputeReason: reason.trim().slice(0, 1000),
         disputedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => alert('تم فتح النزاع، هيتم مراجعته من فريق الدعم.'))
+    }).then(() => {
+        alert('تم فتح النزاع، هيتم مراجعته من فريق الدعم.');
+        notifyOrderEvent(orderId, 'dispute');
+    })
       .catch(e => showError('تعذر فتح النزاع: ' + e.message));
 }
 
