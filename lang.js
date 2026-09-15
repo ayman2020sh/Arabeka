@@ -275,6 +275,12 @@ window.ARABEKA_LANG = {
         "⏳ جارٍ طلب إذن المحفظة...": "⏳ Requesting wallet permission...",
         "✅ تم ربط المحفظة بنجاح": "✅ Wallet linked successfully",
         "لم يمنح Pi الإذن بعنوان المحفظة — جرّب مرة أخرى": "Pi didn't grant wallet address permission — try again",
+        /* الإشعارات + القائمة الجانبية */
+        "🔔 الإشعارات": "🔔 Notifications",
+        "لا توجد إشعارات بعد": "No notifications yet",
+        "🔔 إشعار جديد": "🔔 New notification",
+        "سجّل الدخول الأول": "Sign in first",
+        "تسجيل الخروج": "Log out"
     },
 
     /* ===== قواعد للنصوص المتغيرة (تحتوي أرقاماً أو محتوى ديناميكي) ===== */
@@ -345,5 +351,13 @@ window.ARABEKA_LANG = {
         { r: /^السعر يجب أن يكون أكبر من (.+) Pi \(رسوم المنصة\)$/, en: "Price must be greater than $1 Pi (platform fee)" }, /* رسوم المنصة في رسائل الخطأ */
         { r: /^فشل حفظ المحفظة: (.+)$/, en: "Failed to save wallet: $1" }, /* فشل حفظ المحفظة */
         { r: /^فشل طلب إذن المحفظة: (.+)$/, en: "Failed to request wallet permission: $1" }, /* فشل طلب إذن المحفظة */
+        /* نصوص الإشعارات المركبة */
+        { r: /^❤️ (.+) أعجب بمنشورك$/, en: "❤️ $1 liked your post" },
+        { r: /^💬 (.+) علّق على منشورك$/, en: "💬 $1 commented on your post" },
+        { r: /^🛒 (.+) اشترى منتجك: (.+)$/, en: "🛒 $1 bought your product: $2" },
+        { r: /^💰 (.+) أكد استلام الأوردر: (.+) — تم تحويل الفلوس$/, en: "💰 $1 confirmed receipt of order: $2 — payment released" },
+        { r: /^💰 (.+) أكد استلام الأوردر — تم تحويل الفلوس$/, en: "💰 $1 confirmed receipt of order — payment released" },
+        { r: /^⚠️ (.+) فتح نزاع على الأوردر: (.+)$/, en: "⚠️ $1 opened a dispute on order: $2" },
+        { r: /^⚠️ (.+) فتح نزاع على الأوردر$/, en: "⚠️ $1 opened a dispute on order" }
     ]
 };
