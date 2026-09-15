@@ -1,29 +1,81 @@
 
-// ===== الملف الشخصي (بياناتي + مهامي) ===== 
+// ===== الملف الشخصي (بياناتي + تعدين ARA) ===== 
 // ================= الملف الشخصي =================
-const TASKS_LIST = [
-    { key: 'completeBio', label: 'أكمل نبذتك الشخصية', points: 5 },
-    { key: 'firstPost', label: 'انشر أول منشور', points: 10 },
-    { key: 'firstFollow', label: 'تابع أول شخص', points: 5 }
-];
+// ================= تعدين ARA (محاكاة — إنفاذ الـ24 ساعة من الخادم /api/mine) =================
+const MINE_REWARD = 3.14;
+const MINE_COOLDOWN_MS = 24 * 3600 * 1000;
+let mineLastMs = 0;
+let mineTimer = null;
 
-function renderTasksList(tasksCompleted) {
-    const el = document.getElementById('tasks-list');
-    if (!el) return;
-    const done = tasksCompleted || {};
-    el.innerHTML = TASKS_LIST.map(t => {
-        const isDone = !!done[t.key];
-        const style = isDone ? 'color: var(--text-muted); text-decoration: line-through;' : '';
-        return '<div style="' + style + '">' + (isDone ? '✅' : '⬜') + ' ' + sanitizeHTML(t.label) + ' (+' + t.points + ')</div>';
-    }).join('');
+function fmtMineRemaining(ms) {
+    if (ms <= 0) return '';
+    const totalMin = Math.ceil(ms / 60000);
+    if (totalMin < 1) return 'أقل من دقيقة';
+    const h = Math.floor(totalMin / 60), m = totalMin % 60;
+    return h > 0 ? (h + ' س ' + m + ' د') : (m + ' د');
 }
 
-function getLoyaltyBadge(points) {
-    const p = points || 0;
-    if (p >= 500) return '🥇 عضو أساسي';
-    if (p >= 200) return '🥈 عضو مميز';
-    if (p >= 50) return '🥉 عضو نشط';
-    return '';
+function renderMineState(d) {
+    const btn = document.getElementById('mine-btn');
+    const balEl = document.getElementById('mine-balance');
+    const stEl = document.getElementById('mine-status');
+    if (!btn || !balEl || !stEl) return;
+    const balance = Math.round((d.araBalance || 0) * 100) / 100;
+    balEl.textContent = '⛏️ رصيدك: ' + balance + ' ARA';
+    mineLastMs = d.lastMineAt ? d.lastMineAt.toMillis() : 0;
+    const remain = mineLastMs ? (mineLastMs + MINE_COOLDOWN_MS - Date.now()) : 0;
+    if (remain <= 0) {
+        btn.disabled = false;
+        btn.textContent = '⛏️ عدّن الآن';
+        stEl.textContent = '+' + MINE_REWARD + ' ARA كل 24 ساعة';
+        if (mineTimer) { clearInterval(mineTimer); mineTimer = null; }
+        return;
+    }
+    btn.disabled = true;
+    stEl.textContent = '⏳ جاهز بعد ' + fmtMineRemaining(remain);
+    if (!mineTimer) {
+        mineTimer = setInterval(() => {
+            const b = document.getElementById('mine-btn');
+            const el = document.getElementById('mine-status');
+            if (!b || !el) return;
+            const left = mineLastMs + MINE_COOLDOWN_MS - Date.now();
+            if (left <= 0) {
+                b.disabled = false;
+                b.textContent = '⛏️ عدّن الآن';
+                el.textContent = '+' + MINE_REWARD + ' ARA كل 24 ساعة';
+                clearInterval(mineTimer); mineTimer = null;
+            } else {
+                el.textContent = '⏳ جاهز بعد ' + fmtMineRemaining(left);
+            }
+        }, 30000);
+    }
+}
+
+async function startMining() {
+    const btn = document.getElementById('mine-btn');
+    if (!btn || btn.disabled || !authUid) return;
+    btn.disabled = true;
+    btn.textContent = '⛏️ جارٍ التعدين...';
+    try {
+        const idToken = await getIdToken();
+        const res = await fetch('/api/mine', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken }
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'فشل التعدين');
+        const balEl = document.getElementById('mine-balance');
+        const stEl = document.getElementById('mine-status');
+        if (balEl) balEl.textContent = '⛏️ رصيدك: ' + (Math.round((data.balance || 0) * 100) / 100) + ' ARA';
+        if (stEl) stEl.textContent = '✅ تم التعدين: +' + data.reward + ' ARA';
+        btn.textContent = '✅ تم';
+        // الحالة النهائية تتحدث تلقائياً من onSnapshot (lastMineAt/araBalance)
+    } catch (e) {
+        console.error('startMining error:', e.message);
+        showError('تعذر التعدين: ' + e.message);
+        btn.disabled = false;
+        btn.textContent = '⛏️ عدّن الآن';
+    }
 }
 
 // اختصار عنوان المحفظة للعرض
@@ -129,12 +181,8 @@ function loadUserBio() {
         if (d.bio) document.getElementById('user-bio').innerText = d.bio;
         applyAvatarToCircle(d.avatarUrl || null);
         applyNavAvatar(d.avatarUrl || null);
-        const points = d.loyaltyPoints || 0;
-        const badge = getLoyaltyBadge(points);
-        const badgeEl = document.getElementById('user-loyalty-badge');
-        if (badgeEl) badgeEl.innerText = badge ? (badge + ' · ' + points + ' نقطة') : (points + ' نقطة');
         renderUserWallet(d.walletAddress || null);
-        renderTasksList(d.tasksCompleted);
+        renderMineState(d);
         const isAdminUser = d.isAdmin === true;
         const vb = document.getElementById('user-verified-badge');
         if (vb) vb.style.display = isAdminUser ? 'inline-block' : 'none';
