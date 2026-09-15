@@ -164,6 +164,8 @@ function likePost(id) {
         return postRef.update({
             likes: firebase.firestore.FieldValue.increment(alreadyLiked ? -1 : 1),
             likedBy: alreadyLiked ? firebase.firestore.FieldValue.arrayRemove(authUid) : firebase.firestore.FieldValue.arrayUnion(authUid)
+        }).then(() => {
+            if (!alreadyLiked) pushNotification(doc.data().author, 'like', { postId: id });
         });
     }).catch(e => showError("خطأ في الإعجاب: " + e.message));
 }
@@ -174,8 +176,15 @@ function addComment(id) {
     const input = document.getElementById(`new-comment-${id}`);
     const text = input.value.trim();
     if (!text) return;
-    db.collection("posts").doc(id).update({
-        comments: firebase.firestore.FieldValue.arrayUnion({ user: currentUser, text: text, at: Date.now() })
-    }).then(() => { input.value = ''; }).catch(e => showError("تعذر إضافة التعليق: " + e.message));
+    const comment = { user: currentUser, text: text, at: Date.now() };
+    db.collection("posts").doc(id).get().then(doc => {
+        const author = doc.exists ? doc.data().author : null;
+        return db.collection("posts").doc(id).update({
+            comments: firebase.firestore.FieldValue.arrayUnion(comment)
+        }).then(() => {
+            input.value = '';
+            pushNotification(author, 'comment', { postId: id });
+        });
+    }).catch(e => showError("تعذر إضافة التعليق: " + e.message));
 }
 
