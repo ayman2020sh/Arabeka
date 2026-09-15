@@ -259,7 +259,6 @@
                         العربي
                         <span id="user-verified-badge" style="display:none;" class="official-badge">⚜️ ارابيكا</span>
                     </h2>
-                    <p id="user-loyalty-badge" style="color: var(--gold); font-size: 13px; margin: 2px 0; font-weight: bold;"></p>
                     <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">🎗        🎗       🎗</p>
                 </div>
 
@@ -289,8 +288,13 @@
                 </div>
 
                 <div class="card">
-                    <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 8px 0; font-weight: bold;">المهام 🎯</p>
-                    <div id="tasks-list" style="font-size: 13px; color: var(--text-color); display: flex; flex-direction: column; gap: 4px;"></div>
+                    <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 8px 0; font-weight: bold;">⛏️ تعدين ARA</p>
+                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                        <button id="mine-btn" class="btn" style="margin:0; flex:0 0 auto;" onclick="startMining()">⛏️ عدّن الآن</button>
+                        <span id="mine-balance" style="color: var(--gold); font-weight: bold;"></span>
+                    </div>
+                    <p id="mine-status" style="font-size:12px; color:var(--text-muted); margin:8px 0 0 0;">+3.14 ARA كل 24 ساعة</p>
+                    <p style="font-size:11px; color:var(--text-muted); margin:4px 0 0 0; opacity:0.8;">(محاكاة داخل التطبيق)</p>
                 </div>
 
                 <h3 style="color: var(--text-color);">منشوراتي</h3>
@@ -322,7 +326,6 @@
                         <span id="uprofile-name-text"></span>
                         <span id="uprofile-verified-badge" style="display:none;" class="official-badge">⚜️ ارابيكا</span>
                     </h2>
-                    <p id="uprofile-loyalty-badge" style="color: var(--gold); font-size: 13px; margin: 2px 0; font-weight: bold;"></p>
                     <p style="color: var(--text-muted); font-size: 14px; margin-top: 8px;" id="uprofile-bio">—</p>
                 </div>
 
@@ -437,5 +440,5 @@
     <script src="auth.js"></script>
     <script src="lang.js"></script>
     <script src="i18n.js"></script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3b4a3e57f4a5234',t:'MTc4OTQ0Mzk0Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3b5a3863b89edcb',t:'MTc4OTQ1NDQxMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
             </html>
