@@ -179,12 +179,14 @@ function loginSuccess(username) {
     loadProfileStats();
     loadIncomingFriendRequests();
     loadMyOrders();
+    initNotifications();
     switchPage('feed');
 }
 
 function logout() {
     if (!confirm("هل تريد تسجيل الخروج؟")) return;
     cleanupListeners();
+    resetNotifications();
     localStorage.removeItem('arabeka_username');
     firebase.auth().signOut().then(() => {
         currentUser = null; authUid = null;
