@@ -294,7 +294,6 @@ window.ARABEKA_LANG = {
       "جلسة تعدين كل 24 ساعة فقط": "One mining session per 24 hours"
     
     },
-    },
     patterns: [
         /* ===== الطلبات ===== */
         { r: /^البائع: (.+)$/, en: "Seller: $1" },
@@ -367,6 +366,10 @@ window.ARABEKA_LANG = {
         { r: /^⏳ جاهز بعد (\d+) س (\d+) د$/, en: "⏳ Ready in $1h $2m" },
         { r: /^⏳ جاهز بعد (\d+) د$/, en: "⏳ Ready in $1m" },
         { r: /^⏳ جاهز بعد أقل من دقيقة$/, en: "⏳ Ready in less than a minute" },
-        { r: /^✅ تم التعدين: \+(.+) ARA$/, en: "✅ Mined: +$1 ARA" }
+        { r: /^✅ تم التعدين: \+(.+) ARA$/, en: "✅ Mined: +$1 ARA" },
+        /* ===== محادثة الطلب ===== */
+        { r: /^💬 (.+) أرسل رسالة جديدة في الطلب: (.+)$/, en: "💬 $1 sent a new message in the order: $2" },
+        { r: /^💬 (.+) أرسل رسالة جديدة في الطلب$/, en: "💬 $1 sent a new message in the order" },
+        { r: /^تعذر إرسال الرسالة: ?(.*)$/, en: "Unable to send the message: $1" }
     ]
 };
