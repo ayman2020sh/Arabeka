@@ -291,7 +291,9 @@ window.ARABEKA_LANG = {
         "⛏️ جارٍ التعدين...": "⛏️ Mining...",
         "+3.14 ARA كل 24 ساعة": "+3.14 ARA every 24 hours",
         "(محاكاة داخل التطبيق)": "(in-app simulation)",
-        "جلسة تعدين كل 24 ساعة فقط": "One mining session per 24 hours"
+      "جلسة تعدين كل 24 ساعة فقط": "One mining session per 24 hours"
+    
+    },
     },
     patterns: [
         /* ===== الطلبات ===== */
