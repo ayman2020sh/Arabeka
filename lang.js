@@ -154,6 +154,8 @@ window.ARABEKA_LANG = {
 "اكتب رسالتك...": "Write your message...",
 "إرسال": "Send",
 "إغلاق": "Close",
+  "لا توجد رسائل بعد": "No messages yet",
+"💬 محادثة الطلب مع": "💬 Order chat with",     
 "تعذر تحميل المحادثة": "Unable to load the chat",
 "تعذر إرسال الرسالة: ": "Unable to send the message: ",
 "الطلب غير موجود": "Order not found",
