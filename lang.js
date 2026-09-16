@@ -146,7 +146,13 @@ window.ARABEKA_LANG = {
         "اكتب سبب فتح النزاع بإيجاز:": "Briefly write the reason for opening a dispute:",
         "تم فتح النزاع، هيتم مراجعته من فريق الدعم.": "Dispute opened; our support team will review it.",
         "🛍️ المشتريات والمبيعات": "🛍️ Purchases & Sales",
-
+"💬 محادثة الطلب": "💬 Order Chat",
+"الطرف الآخر": "Other party",
+"اكتب رسالتك...": "Write your message...",
+"تعذر تحميل المحادثة": "Unable to load the chat",
+"تعذر إرسال الرسالة: ": "Unable to send the message: ",
+"الطلب غير موجود": "Order not found",
+"غير مصرح لك بهذا الطلب": "You are not authorized for this order",
         /* ===== الملف الشخصي ===== */
         "نبذه 🫆": "Bio 🫆",
         "تعديل نبذه": "Edit Bio",
