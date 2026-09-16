@@ -123,7 +123,7 @@ window.ARABEKA_LANG = {
         "مينفعش تشتري منتجك بنفسك": "You can't buy your own product",
         "جاري الاتصال بشبكة Pi، يرجى المحاولة بعد ثانية...": "Connecting to the Pi network, please try again in a moment...",
         "رفض السيرفر الطلب": "The server rejected the request",
-        "تم الدفع بنجاح! الفلوس محجوزة لحد ما تأكد استلامك من صفحة \"طلباتي\".": "Payment successful! Funds are held until you confirm receipt from the \"My Orders\" page.",
+        "تم الدفع بنجاح! الأموال محجوزة لحد ما تأكد استلامك من صفحة \"طلباتي\".": "Payment successful! Funds are held until you confirm receipt from the \"My Orders\" page.",
         "تم الدفع لكن تعذر تأكيده الآن، سيُستكمل تلقائياً عند فتح التطبيق.": "Payment made but couldn't be confirmed now; it will complete automatically when you open the app.",
         "خطأ في الشبكة": "Network error",
 
@@ -142,7 +142,7 @@ window.ARABEKA_LANG = {
         "⏳ جارٍ التحويل...": "⏳ Transferring...",
         "فشل التحرير": "Release failed",
         "✅ تأكيد الاستلام": "✅ Confirm Receipt",
-        "تم تأكيد الاستلام وتحويل الفلوس للبائع ✅": "Receipt confirmed and funds transferred to seller ✅",
+        "تم تأكيد الاستلام وتحويل الأموال للبائع ✅": "Receipt confirmed and funds transferred to seller ✅",
         "اكتب سبب فتح النزاع بإيجاز:": "Briefly write the reason for opening a dispute:",
         "تم فتح النزاع، هيتم مراجعته من فريق الدعم.": "Dispute opened; our support team will review it.",
         "🛍️ المشتريات والمبيعات": "🛍️ Purchases & Sales",
@@ -155,14 +155,7 @@ window.ARABEKA_LANG = {
         "المتابعين": "Followers",
         "المنشورات": "Posts",
         "عروض البيع": "Listings",
-        "المهام 🎯": "Tasks 🎯",
-        "أكمل نبذتك الشخصية": "Complete your bio",
-        "انشر أول منشور": "Publish your first post",
-        "تابع أول شخص": "Follow someone",
-        "🥇 عضو أساسي": "🥇 Basic Member",
-        "🥈 عضو مميز": "🥈 Premium Member",
-        "🥉 عضو نشط": "🥉 Active Member",
-        "تاريخ الانضمام: 2024": "Join date: 2024",
+
         "المحفظة: ": "Wallet: ",
         "المحفظة:": "Wallet:",
         "غير مرتبطة": "Not linked",
@@ -260,7 +253,7 @@ window.ARABEKA_LANG = {
         "🔗 رابط الصورة (اختياري)": "🔗 Image URL (optional)",
         "السعر (Pi) - أكبر من 0.1": "Price (Pi) - greater than 0.1",
         "الكمية المتاحة (اتركه كاملاً = غير محدود)": "Available quantity (leave empty = unlimited)",
-        "تاريخ الانضمام": "Join date",
+        
         "لا توجد منشورات بعد": "No posts yet",
         "لا توجد منشورات": "No posts",
         "لا يوجد نتائج": "No results",
@@ -290,17 +283,8 @@ window.ARABEKA_LANG = {
         "جلسة تعدين كل 24 ساعة فقط": "One mining session per 24 hours"
     },
 
-    /* ===== قواعد للنصوص المتغيرة (تحتوي أرقاماً أو محتوى ديناميكي) ===== */
-    patterns: [
-        /* المهام (نص مركب: ⬜ المهمة (+نقاط)) */
-        { r: /^([⬜✅]) أكمل نبذتك الشخصية \(\+(\d+)\)$/, en: "$1 Complete your bio (+$2)" },
-        { r: /^([⬜✅]) انشر أول منشور \(\+(\d+)\)$/, en: "$1 Publish your first post (+$2)" },
-        { r: /^([⬜✅]) تابع أول شخص \(\+(\d+)\)$/, en: "$1 Follow someone (+$2)" },
-        /* شارة الولاء (🥈 عضو مميز · عدد نقطة) */
-        { r: /^🥇 عضو أساسي · (\d+) نقطة$/, en: "🥇 Basic Member · $1 points" },
-        { r: /^🥈 عضو مميز · (\d+) نقطة$/, en: "🥈 Premium Member · $1 points" },
-        { r: /^🥉 عضو نشط · (\d+) نقطة$/, en: "🥉 Active Member · $1 points" },
-        /* الطلبات */
+   
+        //* الطلبات */
         { r: /^البائع: (.+)$/, en: "Seller: $1" },
         { r: /^المشتري: (.+)$/, en: "Buyer: $1" },
         { r: /^تعذر تحميل المشتريات \((.+)\)$/, en: "Couldn't load purchases ($1)" },
