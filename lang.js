@@ -359,8 +359,8 @@ window.ARABEKA_LANG = {
         { r: /^❤️ (.+) أعجب بمنشورك$/, en: "❤️ $1 liked your post" },
         { r: /^💬 (.+) علّق على منشورك$/, en: "💬 $1 commented on your post" },
         { r: /^🛒 (.+) اشترى منتجك: (.+)$/, en: "🛒 $1 bought your product: $2" },
-        { r: /^💰 (.+) أكد استلام الأوردر: (.+) — تم تحويل الفلوس$/, en: "💰 $1 confirmed receipt of order: $2 — payment released" },
-        { r: /^💰 (.+) أكد استلام الأوردر — تم تحويل الفلوس$/, en: "💰 $1 confirmed receipt of order — payment released" },
+        { r: /^💰 (.+) أكد استلام الأوردر: (.+) — تم تحويل الاموال$/, en: "💰 $1 confirmed receipt of order: $2 — payment released" },
+        { r: /^💰 (.+) أكد استلام الأوردر — تم تحويل الاموال$/, en: "💰 $1 confirmed receipt of order — payment released" },
         { r: /^⚠️ (.+) فتح نزاع على الأوردر: (.+)$/, en: "⚠️ $1 opened a dispute on order: $2" },
         { r: /^⚠️ (.+) فتح نزاع على الأوردر$/, en: "⚠️ $1 opened a dispute on order" },
         /* نصوص التعدين */
