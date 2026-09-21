@@ -4,6 +4,11 @@ const { releaseOrder, recoverIncomplete, getPi } = require('./_lib/payout');
 const BATCH = 5;
 
 module.exports = async (req, res) => {
+    if (!process.env.CRON_SECRET) {
+        console.error('CRON_SECRET is not configured');
+        return res.status(500).json({ error: 'CRON_SECRET is not configured' });
+    }
+
     if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`)
         return res.status(401).json({ error: 'Unauthorized' });
 
