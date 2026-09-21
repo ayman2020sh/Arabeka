@@ -92,7 +92,7 @@ function renderPostsFeed() {
         const liked = post.likedBy && post.likedBy.indexOf(authUid) !== -1;
 
         fragments.push(`
-            <div class="card">
+            <div class="card" id="post-${escapeAttr(postId)}">
                 <div class="post-header">
                     <span class="post-author-link" onclick="viewUserProfile('${escapeAttr(post.author)}')">
                         ${authorAvatarHtml}
