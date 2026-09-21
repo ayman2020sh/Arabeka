@@ -70,6 +70,7 @@ function notifText(n) {
         case 'purchase': return `🛒 ${actor} اشترى منتجك${prod}`;
         case 'released': return `💰 ${actor} أكد استلام الأوردر${prod} — تم تحويل الفلوس`;
         case 'dispute': return `⚠️ ${actor} فتح نزاع على الأوردر${prod}`;
+        case 'chat_message': return `💬 ${actor} أرسل رسالة جديدة في الطلب${prod}`;
         default: return `🔔 إشعار جديد`;
     }
 }
@@ -91,12 +92,43 @@ function renderNotifList() {
     notifSnapshotCache.forEach(d => {
         const n = d.data();
         const when = formatNotifTime(n.createdAt ? n.createdAt.toDate() : null);
-        items.push(`<div style="padding:8px 6px; border-bottom:1px solid #333; ${n.read ? 'opacity:0.55;' : 'font-weight:bold;'}">
+        items.push(`<div onclick="openNotification('${escapeAttr(d.id)}')" style="padding:8px 6px; border-bottom:1px solid #333; cursor:pointer; ${n.read ? 'opacity:0.55;' : 'font-weight:bold;'}">
             <div>${notifText(n)}</div>
             <div style="font-size:11px; color:var(--text-muted); margin-top:2px;" data-no-i18n>${when}</div>
+            <button onclick="event.stopPropagation(); deleteNotification('${escapeAttr(d.id)}')" style="margin-top:6px; background:none; border:0; color:var(--danger); cursor:pointer; font-size:12px;">🗑️ حذف</button>
         </div>`);
     });
     el.innerHTML = items.join('');
+}
+
+function deleteNotification(notifId) {
+    if (!currentUser || !notifId) return;
+    db.collection('users').doc(currentUser).collection('notifications').doc(notifId).delete()
+        .catch(e => console.error('deleteNotification:', e.message));
+}
+
+function deleteAllNotifications() {
+    if (!currentUser || !notifSnapshotCache || notifSnapshotCache.empty) return;
+    const batch = db.batch();
+    notifSnapshotCache.forEach(d => batch.delete(d.ref));
+    batch.commit().catch(e => console.error('deleteAllNotifications:', e.message));
+}
+
+function openNotification(notifId) {
+    if (!notifSnapshotCache) return;
+    const doc = notifSnapshotCache.docs.find(d => d.id === notifId);
+    if (!doc) return;
+    const n = doc.data();
+    if (!n.read) doc.ref.update({ read: true }).catch(e => console.error('openNotification read:', e.message));
+    closeNotifPanel();
+    if (n.type === 'chat_message' && n.extra && n.extra.orderId) {
+        switchPage('orders');
+        setTimeout(() => openOrderChat(n.extra.orderId, n.actor || 'الطرف الآخر'), 350);
+    } else if (['purchase', 'released', 'dispute'].indexOf(n.type) !== -1) {
+        switchPage('orders');
+    } else {
+        switchPage('feed');
+    }
 }
 
 function markAllNotifsRead() {
@@ -113,6 +145,16 @@ function openNotificationsPanel() {
     if (!currentUser) { showError('سجّل الدخول الأول'); return; }
     renderNotifList();
     document.getElementById('notif-modal').style.display = 'flex';
+    const list = document.getElementById('notif-list');
+    if (list && !document.getElementById('delete-all-notifs-btn')) {
+        const btn = document.createElement('button');
+        btn.id = 'delete-all-notifs-btn';
+        btn.className = 'btn';
+        btn.style.cssText = 'background:var(--danger); margin:0 0 10px 0;';
+        btn.textContent = '🗑️ حذف كل الإشعارات';
+        btn.onclick = deleteAllNotifications;
+        list.parentNode.insertBefore(btn, list);
+    }
     markAllNotifsRead();
 }
 
