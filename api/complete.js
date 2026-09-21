@@ -21,8 +21,14 @@ module.exports = async (req, res) => {
 
         // المشتري: من Pi (موثوق) → اسم المستخدم عبر users.piUid
         const q = await db.collection('users').where('piUid', '==', payment.user_uid).limit(1).get();
-        const buyerUsername = q.empty ? (payment.metadata?.buyerUsername || null) : q.docs[0].id;
-        const buyerVerified = !q.empty;
+        if (q.empty) {
+            console.error(`[complete] buyer identity is not linked: piUid=${payment.user_uid}`);
+            return res.status(409).json({
+                error: 'Buyer identity is not linked. Please sign in again before completing this payment.'
+            });
+        }
+        const buyerUsername = q.docs[0].id;
+        const buyerVerified = true;
 
         let isNew = true;
         try {
