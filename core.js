@@ -39,7 +39,8 @@ window.productsMap = {};
 
 // ================= لوحة التصحيح (تظهر فقط مع ?debug=1) =================
 (function setupDebugPanel() {
-    const enabled = location.search.indexOf('debug=1') !== -1 || localStorage.getItem('arabeka_debug') === '1';
+    const localHost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    const enabled = localHost && (location.search.indexOf('debug=1') !== -1 || localStorage.getItem('arabeka_debug') === '1');
     if (!enabled) return;
 
     const panel = document.createElement('div');
