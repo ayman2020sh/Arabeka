@@ -128,6 +128,15 @@ function openNotification(notifId) {
         switchPage('orders');
     } else {
         switchPage('feed');
+        if ((n.type === 'like' || n.type === 'comment') && n.extra && n.extra.postId) {
+            setTimeout(() => {
+                const postEl = document.getElementById('post-' + n.extra.postId);
+                if (!postEl) return;
+                postEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                postEl.style.outline = '2px solid var(--gold)';
+                setTimeout(() => { postEl.style.outline = ''; }, 2500);
+            }, 350);
+        }
     }
 }
 
