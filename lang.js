@@ -38,6 +38,8 @@ window.ARABEKA_LANG = {
         "تصفح المتجر": "Browse Store",
         "الرجاء فتح التطبيق من متصفح Pi": "Please open the app in Pi Browser",
         "لسه بيجهز الاتصال بـ Pi، بنحاول تاني تلقائياً...": "Still preparing the Pi connection, retrying automatically...",
+        "⏳ جارٍ الاتصال بـ Pi...": "⏳ Connecting to Pi...",
+        "⏳ جارٍ التحقق من الحساب...": "⏳ Verifying account...",
         "فشل التوثيق الأمني مع الخادم": "Server authentication failed",
         "انتهت صلاحية جلستك القديمة، برجاء تسجيل الدخول من جديد.": "Your old session expired, please sign in again.",
         "انتهت الجلسة، سجّل الدخول من جديد": "Session expired, please sign in again",
