@@ -25,7 +25,16 @@ function updatePremiumBadge() {
     if (!el) return;
     el.style.display = premiumActive ? 'inline-block' : 'none';
     const btn = document.getElementById('premium-btn');
-    if (btn) btn.textContent = premiumActive ? '⭐ اشتراكك فعّال' : '⭐ الاشتراك المميز — 1 Pi / 30 يوم';
+    if (!btn) return;
+    if (premiumActive) {
+        btn.textContent = '✖️ إلغاء الاشتراك المميز';
+        btn.style.background = '#4b2230';
+        btn.style.color = '#ffb3c0';
+    } else {
+        btn.textContent = '⭐ الاشتراك المميز — 1 Pi / 30 يوم';
+        btn.style.background = 'linear-gradient(90deg,#b8860b,#ffd700)';
+        btn.style.color = '#1a1a1a';
+    }
 }
 
 // فحص اشتراك المستخدم الحالي بعد الدخول (عنوانه من وثيقته)
@@ -74,5 +83,34 @@ function subscribePremium() {
     }).catch(e => {
         if (e && (e.message === 'no-wallet' || e.message === 'already')) return;
         showError('تعذر الاشتراك: ' + (e && e.message ? e.message : 'خطأ في الشبكة'));
+    }).finally(() => { if (btn) btn.disabled = false; });
+}
+
+// زر ذكي: اشتراك للمشترك الجديد / إلغاء للمشترك الحالي
+function premiumAction() { premiumActive ? cancelPremium() : subscribePremium(); }
+
+function cancelPremium() {
+    if (!currentUser) { showError('سجّل الدخول أولاً'); return; }
+    if (typeof Pi === 'undefined') { showError('افتح التطبيق من متصفح Pi'); return; }
+    if (!confirm('هل تريد إلغاء الاشتراك المميز؟ ستفقد الشارة ⭐ نهاية الفترة المدفوعة.')) return;
+    const btn = document.getElementById('premium-btn');
+    if (btn) btn.disabled = true;
+    subWalletOf(currentUser).then(w => {
+        if (!w) { showError('اربط محفظتك أولاً'); throw new Error('no-wallet'); }
+        // نحتاج sub_id الحقيقي — نجلبه من العقد
+        return Pi.SmartContract.Subscription.getSubscriberSubscriptions(w, { mode: 'simulate' })
+            .then(r => {
+                const subs = Array.isArray(r) ? r : (r && r.subscriptions) || [];
+                const mine = subs.find(x => parseInt(x.service_id) === SUB_SERVICE_ID && x.auto_renew !== false);
+                if (!mine) { alert('لا يوجد اشتراك فعّال بالتجديد التلقائي على هذه الخدمة'); throw new Error('no-sub'); }
+                return Pi.SmartContract.Subscription.cancel(w, parseInt(mine.sub_id), { mode: 'submit' });
+            });
+    }).then(r => {
+        if (!r) return;
+        alert('✅ تم إرسال الإلغاء — لن يُجدد تلقائياً بعد الآن');
+        setTimeout(initSubscription, 12000);
+    }).catch(e => {
+        if (e && (e.message === 'no-wallet' || e.message === 'no-sub')) return;
+        showError('تعذر الإلغاء: ' + (e && e.message ? e.message : 'خطأ في الشبكة'));
     }).finally(() => { if (btn) btn.disabled = false; });
 }
