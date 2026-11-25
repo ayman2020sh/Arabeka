@@ -120,8 +120,21 @@ function ensureWalletRow() {
     }
 }
 
+function ensurePremiumSection() {
+    if (document.getElementById('premium-btn')) return;
+    const walletEl = document.getElementById('user-wallet');
+    if (!walletEl || !walletEl.parentElement) return;
+    const row = walletEl.parentElement.parentElement;
+    if (!row) return;
+    const p = document.createElement('p');
+    p.style.cssText = 'color: var(--text-muted); font-size: 14px; margin: 8px 0 0 0; text-align: center;';
+    p.innerHTML = '<button id="premium-btn" class="btn" onclick="subscribePremium()" style="background: linear-gradient(90deg,#b8860b,#ffd700); color:#1a1a1a; font-weight:bold; width:100%; padding:10px; border:none; border-radius:10px;">⭐ الاشتراك المميز — 1 Pi / 30 يوم</button><span id="user-premium-badge" style="display:none; margin-inline-start:8px; font-size:20px;">⭐</span>';
+    row.appendChild(p);
+}
+
 function renderUserWallet(wallet) {
     ensureWalletRow();
+    ensurePremiumSection();
     const el = document.getElementById('user-wallet');
     const link = document.getElementById('wallet-link');
     if (!el) return;
@@ -182,6 +195,7 @@ function loadUserBio() {
         applyAvatarToCircle(d.avatarUrl || null);
         applyNavAvatar(d.avatarUrl || null);
         renderUserWallet(d.walletAddress || null);
+        if (typeof updatePremiumBadge === 'function') updatePremiumBadge();
         renderMineState(d);
         const isAdminUser = d.isAdmin === true;
         const vb = document.getElementById('user-verified-badge');
