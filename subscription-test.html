@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اختبار الاشتراكات — أرابيكا (Testnet)</title>
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+<style>
+  * { box-sizing: border-box; font-family: Tahoma, Arial, sans-serif; }
+  body { margin: 0; padding: 14px; background: #12141c; color: #e8e8e8; }
+  h2 { color: #D4AF37; font-size: 19px; margin: 6px 0 2px; }
+  .note { background: #1e2530; border: 1px solid #D4AF37; border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.7; margin: 10px 0; }
+  .card { background: #1a1d29; border-radius: 12px; padding: 12px; margin: 10px 0; }
+  .card h3 { margin: 0 0 8px; font-size: 15px; color: #9db4ff; }
+  button { display: block; width: 100%; margin: 7px 0; padding: 13px; font-size: 15px; font-weight: bold; border: none; border-radius: 10px; background: #D4AF37; color: #1a1a1a; cursor: pointer; }
+  button.sec { background: #2b3350; color: #cdd7ff; }
+  button.danger { background: #4b2230; color: #ffb3c0; }
+  button:disabled { opacity: .45; }
+  input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #333a55; background: #0e1119; color: #fff; font-size: 15px; }
+  label { font-size: 13px; color: #9aa3bb; }
+  #log { background: #05070c; border-radius: 10px; padding: 10px; font-size: 11.5px; line-height: 1.6; white-space: pre-wrap; word-break: break-all; max-height: 45vh; overflow-y: auto; direction: ltr; text-align: left; color: #8fe3a8; }
+  .me { font-size: 13px; color: #8fe3a8; word-break: break-all; }
+</style>
+</head>
+<body>
+
+<h2>🧪 مختبر الاشتراكات — Pi Testnet</h2>
+<div class="note">⚠️ هذه الصفحة للاختبار فقط وتعمل داخل <b>Pi Browser</b> حصراً. لا تلمس التطبيق الرئيسي. الخدمة: <b>شارة أرابيكا المميزة</b> — 1 Test-Pi كل 30 يوماً.</div>
+
+<div class="card">
+  <h3>1) الدخول والفحص</h3>
+  <button id="b-login" onclick="piLogin()">🔐 تسجيل الدخول عبر Pi</button>
+  <div class="me" id="me"></div>
+  <button class="sec" onclick="probe()">🔎 فحص واجهة SmartContract</button>
+</div>
+
+<div class="card">
+  <h3>2) الخدمة (التاجر = محفظتك)</h3>
+  <button id="b-reg" onclick="registerService()" disabled>📝 تسجيل خدمة «الشارة المميزة» (مرة واحدة فقط)</button>
+  <button class="sec" onclick="myServices()">📋 خدماتي المسجلة</button>
+</div>
+
+<div class="card">
+  <h3>3) الاشتراك</h3>
+  <label>رقم الخدمة service_id</label>
+  <input id="in-service" type="number" value="0">
+  <label>فترات الموافقة المسبقة</label>
+  <input id="in-periods" type="number" value="3">
+  <button id="b-sub" onclick="doSubscribe()" disabled>⭐ اشتراك (1 Test-Pi فوراً + تجديد تلقائي)</button>
+  <button class="sec" onclick="mySubs()">📄 اشتراكاتي</button>
+  <button class="sec" onclick="checkActive()">✅ هل اشتراكي فعّال؟</button>
+</div>
+
+<div class="card">
+  <h3>4) الإدارة</h3>
+  <label>رقم الاشتراك sub_id</label>
+  <input id="in-sub" type="number" value="0">
+  <button class="danger" id="b-cancel" onclick="doCancel()" disabled>✖️ إلغاء التجديد التلقائي</button>
+  <button class="sec" id="b-process" onclick="doProcess()" disabled>💰 تحصيل المستحقات (process)</button>
+</div>
+
+<div class="card">
+  <h3>السجل</h3>
+  <div id="log"></div>
+  <button class="sec" onclick="document.getElementById('log').innerHTML=''">🧹 مسح السجل</button>
+</div>
+
+<script>
+// قسم: أدوات مساعدة
+var SERVICE_NAME = "Arabeka Premium Badge";
+
+function log(tag, data) {
+  var el = document.getElementById('log');
+  var time = new Date().toLocaleTimeString('en-GB');
+  var body;
+  try { body = typeof data === 'string' ? data : JSON.stringify(data, function (k, v) { return typeof v === 'bigint' ? v.toString() : v; }, 2); }
+  catch (e) { body = String(data); }
+  el.innerHTML = '[' + time + '] ' + tag + '\n' + body + '\n\n' + el.innerHTML;
+  el.scrollTop = 0;
+}
+function fail(tag, e) { log('❌ ' + tag, (e && (e.message || e.code)) ? (e.message || e.code) : String(e)); if (e) console.error(e); }
+function myAddress() { return window._piAddr; }
+
+// قسم: تسجيل الدخول
+function piLogin() {
+  Pi.init({ version: "2.0", sandbox: false });
+  Pi.authenticate(['username', 'payments', 'wallet_address'], function () {}).then(function (auth) {
+    var u = auth && auth.user ? auth.user : {};
+    window._piAddr = u.wallet_address || u.walletAddress || (u.credentials && u.credentials.wallet_address) || null;
+    window._piName = u.username || null;
+    document.getElementById('me').textContent = '👤 ' + window._piName + '\n' + (window._piAddr || '⚠️ لم يصل عنوان محفظة — وافق على إذن wallet_address');
+    log('تم الدخول', { username: window._piName, address: window._piAddr });
+    ['b-reg','b-sub','b-cancel','b-process'].forEach(function (id) { document.getElementById(id).disabled = !window._piAddr; });
+  }).catch(function (e) { fail('فشل الدخول', e); });
+}
+
+// قسم: فحص الواجهة المتاحة فعلياً
+function probe() {
+  try {
+    var sc = Pi.SmartContract || {};
+    var sub = sc.Subscription || {};
+    log('Pi.SmartContract keys', Object.keys(sc));
+    log('Subscription methods', Object.getOwnPropertyNames(Object.getPrototypeOf(sub)));
+  } catch (e) { fail('probe', e); }
+}
+
+// قسم: الخدمة
+function registerService() {
+  log('⏳ تسجيل الخدمة…', SERVICE_NAME);
+  Pi.SmartContract.Subscription.registerService(myAddress(), SERVICE_NAME, 10000000, 2592000, 0, 3, { mode: 'submit' })
+    .then(function (r) { log('✅ سُجلت الخدمة', r); })
+    .catch(function (e) { fail('registerService', e); });
+}
+function myServices() {
+  Pi.SmartContract.Subscription.getMerchantServices(myAddress(), { mode: 'simulate' })
+    .then(function (r) { log('خدماتي', r); })
+    .catch(function (e) { fail('getMerchantServices', e); });
+}
+
+// قسم: الاشتراك
+function doSubscribe() {
+  var sid = parseInt(document.getElementById('in-service').value || '0', 10);
+  var periods = parseInt(document.getElementById('in-periods').value || '3', 10);
+  log('⏳ اشتراك في الخدمة ' + sid + '…', 'ستظهر شاشة محفظتك للتوقيع');
+  Pi.SmartContract.Subscription.subscribe(myAddress(), sid, true, periods, { mode: 'submit' })
+    .then(function (r) { log('✅ تم الاشتراك', r); })
+    .catch(function (e) { fail('subscribe', e); });
+}
+function mySubs() {
+  Pi.SmartContract.Subscription.getSubscriberSubscriptions(myAddress(), { mode: 'simulate' })
+    .then(function (r) { log('اشتراكاتي', r); })
+    .catch(function (e) { fail('getSubscriberSubscriptions', e); });
+}
+function checkActive() {
+  var sid = parseInt(document.getElementById('in-service').value || '0', 10);
+  Pi.SmartContract.Subscription.isSubscriptionActive(myAddress(), sid, { mode: 'simulate' })
+    .then(function (r) { log('الحالة', { active: r }); })
+    .catch(function (e) { fail('isSubscriptionActive', e); });
+}
+
+// قسم: الإدارة
+function doCancel() {
+  var sub = parseInt(document.getElementById('in-sub').value || '0', 10);
+  Pi.SmartContract.Subscription.cancel(myAddress(), sub, { mode: 'submit' })
+    .then(function (r) { log('✅ أُلغي التجديد', r); })
+    .catch(function (e) { fail('cancel', e); });
+}
+function doProcess() {
+  var sid = parseInt(document.getElementById('in-service').value || '0', 10);
+  Pi.SmartContract.Subscription.process(myAddress(), sid, 0, 50, { mode: 'submit' })
+    .then(function (r) { log('✅ نتيجة التحصيل', r); })
+    .catch(function (e) { fail('process', e); });
+}
+</script>
+</body>
+</html>
