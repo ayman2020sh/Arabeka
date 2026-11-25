@@ -31,6 +31,9 @@
   <h3>1) الدخول والفحص</h3>
   <button id="b-login" onclick="piLogin()">🔐 تسجيل الدخول عبر Pi</button>
   <div class="me" id="me"></div>
+  <label>احتياطي: عنوان المحفظة يدوياً (G...)</label>
+  <input id="in-addr" placeholder="G..." style="direction:ltr">
+  <button class="sec" onclick="manualAddr()">✔️ استخدام هذا العنوان</button>
   <button class="sec" onclick="probe()">🔎 فحص واجهة SmartContract</button>
 </div>
 
@@ -82,16 +85,31 @@ function fail(tag, e) { log('❌ ' + tag, (e && (e.message || e.code)) ? (e.mess
 function myAddress() { return window._piAddr; }
 
 // قسم: تسجيل الدخول
+function setAddress(a) {
+  window._piAddr = a;
+  document.getElementById('me').textContent = '👤 ' + (window._piName || '') + '\n' + a;
+  ['b-reg', 'b-sub', 'b-cancel', 'b-process'].forEach(function (id) { document.getElementById(id).disabled = !a; });
+}
 function piLogin() {
   Pi.init({ version: "2.0", sandbox: false });
   Pi.authenticate(['username', 'payments', 'wallet_address'], function () {}).then(function (auth) {
     var u = auth && auth.user ? auth.user : {};
-    window._piAddr = u.wallet_address || u.walletAddress || (u.credentials && u.credentials.wallet_address) || null;
     window._piName = u.username || null;
-    document.getElementById('me').textContent = '👤 ' + window._piName + '\n' + (window._piAddr || '⚠️ لم يصل عنوان محفظة — وافق على إذن wallet_address');
-    log('تم الدخول', { username: window._piName, address: window._piAddr });
-    ['b-reg','b-sub','b-cancel','b-process'].forEach(function (id) { document.getElementById(id).disabled = !window._piAddr; });
-  }).catch(function (e) { fail('فشل الدخول', e); });
+    log('تم الدخول (الكائن الكامل)', auth);
+    if (typeof Pi.getUserWalletAddresses !== 'function') { log('⚠️', 'getUserWalletAddresses غير موجودة — استخدم الإدخال اليدوي'); return null; }
+    return Pi.getUserWalletAddresses();
+  }).then(function (w) {
+    if (!w) return;
+    log('المحافظ المرجعة', w);
+    var arr = (w && w.wallets) || [];
+    if (arr.length && arr[0].publicKey) setAddress(arr[0].publicKey);
+    else log('⚠️', 'لا محافظ مرجعة — استخدم الإدخال اليدوي');
+  }).catch(function (e) { fail('الدخول/جلب المحافظ', e); });
+}
+function manualAddr() {
+  var a = (document.getElementById('in-addr').value || '').trim();
+  if (!/^G[A-Z2-7]{55}$/.test(a)) { log('❌ عنوان غير صالح', a); return; }
+  setAddress(a); log('✅ عنوان يدوي معتمد', a);
 }
 
 // قسم: فحص الواجهة المتاحة فعلياً
@@ -152,5 +170,5 @@ function doProcess() {
     .catch(function (e) { fail('process', e); });
 }
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5fdc031ac380d6a',t:'MTc5NTU3OTI3MQ=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5fdc031ac380d6a',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
