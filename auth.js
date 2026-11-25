@@ -138,26 +138,9 @@ function handleLogin() {
         return;
     }
 
-    const loginButton = document.getElementById('login-btn');
-    if (loginButton.disabled) return;
-    const originalLabel = loginButton.textContent;
-    loginButton.disabled = true;
-    loginButton.textContent = '⏳ جارٍ الاتصال بـ Pi...';
 
-    // Pi.authenticate must be called directly from the click gesture; it may also throw synchronously.
-    let piAuth;
-    try {
-        piAuth = Pi.authenticate(['username', 'payments', 'wallet_address'], onIncompletePaymentFound);
-    } catch (error) {
-        loginButton.disabled = false;
-        loginButton.textContent = originalLabel;
-        showError('خطأ تسجيل الدخول: ' + (error.message || String(error)));
-        return;
-    }
-
-    Promise.resolve(piAuth)
+Pi.authenticate(['username', 'payments', 'wallet_address'], onIncompletePaymentFound)
         .then(auth => {
-            loginButton.textContent = '⏳ جارٍ التحقق من الحساب...';
             const piUsername = auth.user.username;
             return fetch('/api/auth', {
                 method: 'POST',
@@ -176,11 +159,7 @@ function handleLogin() {
                 saveWalletFromAuth(auth);
             });
         })
-        .catch(error => showError('خطأ تسجيل الدخول: ' + (error.message || String(error))))
-        .finally(() => {
-            loginButton.disabled = false;
-            loginButton.textContent = originalLabel;
-        });
+        .catch(error => showError("خطأ تسجيل الدخول: " + error.message));
 }
 
 function loginSuccess(username) {
@@ -202,6 +181,7 @@ function loginSuccess(username) {
     loadMyOrders();
     initNotifications();
     switchPage('feed');
+    if (typeof initSubscription === 'function') initSubscription();
 }
 
 function logout() {
