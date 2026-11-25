@@ -128,7 +128,7 @@ function ensurePremiumSection() {
     if (!walletP || !walletP.parentElement) return;
     const p = document.createElement('div');
     p.style.cssText = 'margin: 10px 0 0 0; padding-top: 10px; border-top: 1px dashed var(--border); text-align: center;';
-    p.innerHTML = '<span id="user-premium-badge" style="display:none; font-size:18px; margin-inline-end:6px;">⭐</span><button id="premium-btn" class="btn" onclick="subscribePremium()" style="background: linear-gradient(90deg,#b8860b,#ffd700); color:#1a1a1a; font-weight:bold; width:100%; padding:10px; border:none; border-radius:10px; font-size:14px;">⭐ الاشتراك المميز — 1 Pi / 30 يوم</button>';
+    p.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; gap:8px;"><span id="user-premium-badge" style="display:none; font-size:18px;">⭐</span><button id="premium-btn" class="btn" onclick="premiumAction()" style="background: linear-gradient(90deg,#b8860b,#ffd700); color:#1a1a1a; font-weight:bold; width:100%; padding:10px; border:none; border-radius:10px; font-size:14px;">⭐ الاشتراك المميز — 1 Pi / 30 يوم</button></div>';
     walletP.parentElement.insertBefore(p, walletP.nextSibling); // بعد صف المحفظة مباشرة
 }
 
