@@ -123,13 +123,13 @@ function ensureWalletRow() {
 function ensurePremiumSection() {
     if (document.getElementById('premium-btn')) return;
     const walletEl = document.getElementById('user-wallet');
-    if (!walletEl || !walletEl.parentElement) return;
-    const row = walletEl.parentElement.parentElement;
-    if (!row) return;
-    const p = document.createElement('p');
-    p.style.cssText = 'color: var(--text-muted); font-size: 14px; margin: 8px 0 0 0; text-align: center;';
-    p.innerHTML = '<button id="premium-btn" class="btn" onclick="subscribePremium()" style="background: linear-gradient(90deg,#b8860b,#ffd700); color:#1a1a1a; font-weight:bold; width:100%; padding:10px; border:none; border-radius:10px;">⭐ الاشتراك المميز — 1 Pi / 30 يوم</button><span id="user-premium-badge" style="display:none; margin-inline-start:8px; font-size:20px;">⭐</span>';
-    row.appendChild(p);
+    if (!walletEl) return;
+    const walletP = walletEl.closest('p'); // صف المحفظة نفسه
+    if (!walletP || !walletP.parentElement) return;
+    const p = document.createElement('div');
+    p.style.cssText = 'margin: 10px 0 0 0; padding-top: 10px; border-top: 1px dashed var(--border); text-align: center;';
+    p.innerHTML = '<span id="user-premium-badge" style="display:none; font-size:18px; margin-inline-end:6px;">⭐</span><button id="premium-btn" class="btn" onclick="subscribePremium()" style="background: linear-gradient(90deg,#b8860b,#ffd700); color:#1a1a1a; font-weight:bold; width:100%; padding:10px; border:none; border-radius:10px; font-size:14px;">⭐ الاشتراك المميز — 1 Pi / 30 يوم</button>';
+    walletP.parentElement.insertBefore(p, walletP.nextSibling); // بعد صف المحفظة مباشرة
 }
 
 function renderUserWallet(wallet) {
