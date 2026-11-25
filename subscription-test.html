@@ -24,8 +24,8 @@
 </head>
 <body>
 
-<h2>🧪 مختبر الاشتراكات — Pi Testnet</h2>
-<div class="note">⚠️ للاختبار فقط داخل <b>Pi Browser</b>. الخدمة الرسمية: <b>Arabeka Premium Badge</b> — 1 Test-Pi كل 30 يوماً. لا إدخال أرقام يدوياً: القوائم تُملأ من البلوكشين.</div>
+<h2>🧪 مختبر الاشتراكات — Pi Testnet <small style="font-size:11px;color:#8fe3a8">v4</small></h2>
+<div class="note">⚠️ داخل <b>Pi Browser</b> فقط. اضغط «⚡ تجهيز» بعد الدخول — سيملأ القوائم تلقائياً (مع إعادة محاولة عند فشل الشبكة).</div>
 
 <div class="card">
   <h3>1) الدخول</h3>
@@ -34,29 +34,29 @@
   <label>احتياطي: عنوان المحفظة يدوياً (G...)</label>
   <input id="in-addr" placeholder="G..." style="direction:ltr">
   <button class="sec" onclick="manualAddr()">✔️ استخدام هذا العنوان</button>
+  <button id="b-boot" onclick="bootstrap()" disabled>⚡ تجهيز (جلب الخدمات + الاشتراكات + الحالة)</button>
 </div>
 
 <div class="card">
   <h3>2) الخدمات</h3>
-  <button id="b-refresh-svc" onclick="myServices()" disabled>📋 جلب خدماتي (يملأ القائمة)</button>
-  <select id="sel-service"></select>
-  <button id="b-reg" onclick="registerService()" disabled>📝 تسجيل الخدمة الرسمية (مرة واحدة فقط)</button>
-  <button class="sec" id="b-reg2" onclick="registerQuick()" disabled>⚗️ تسجيل خدمة تجربة سريعة (دورة دقيقتان)</button>
+  <select id="sel-service" onchange="onServiceChange()"></select>
+  <button class="sec" onclick="myServices()">🔄 تحديث قائمة الخدمات</button>
+  <button id="b-reg2" onclick="registerQuick()" disabled>⚗️ تسجيل خدمة تجربة (دورة دقيقتان)</button>
+  <button class="sec" id="b-reg" onclick="registerService()" disabled>📝 إعادة تسجيل الخدمة الرسمية (غير مطلوب — 473 قائمة)</button>
 </div>
 
 <div class="card">
   <h3>3) الاشتراك</h3>
   <button id="b-sub" onclick="doSubscribe()" disabled>⭐ اشتراك في الخدمة المختارة</button>
   <button class="sec" onclick="checkActive()">✅ هل اشتراكي فعّال؟</button>
-  <button class="sec" onclick="mySubs()">📄 جلب اشتراكاتي (يملأ القائمة)</button>
   <select id="sel-sub"></select>
+  <button class="sec" onclick="mySubs()">🔄 تحديث قائمة الاشتراكات</button>
 </div>
 
 <div class="card">
   <h3>4) الإدارة</h3>
   <button class="danger" id="b-cancel" onclick="doCancel()" disabled>✖️ إلغاء التجديد للاشتراك المختار</button>
   <button class="sec" id="b-process" onclick="doProcess()" disabled>💰 تحصيل مستحقات الخدمة المختارة</button>
-  <button class="sec" onclick="pollLast()">🔄 تأكيد حالة آخر معاملة</button>
 </div>
 
 <div class="card">
@@ -71,16 +71,21 @@ var SERVICE_NAME = "Arabeka Premium Badge";
 var QUICK_NAME = "Arabeka Cycle Test";
 
 // قسم: أدوات مساعدة
-function log(tag, data) {
+function log(tag, data, top) {
   var el = document.getElementById('log');
   var time = new Date().toLocaleTimeString('en-GB');
   var body;
   try { body = typeof data === 'string' ? data : JSON.stringify(data, function (k, v) { return typeof v === 'bigint' ? v.toString() : v; }, 2); }
   catch (e) { body = String(data); }
-  el.innerHTML = '[' + time + '] ' + tag + '\n' + body + '\n\n' + el.innerHTML;
+  var line = '[' + time + '] ' + tag + '\n' + body + '\n\n';
+  if (top) { el.innerHTML = line + el.innerHTML; } else { el.innerHTML = el.innerHTML + line; }
   el.scrollTop = 0;
 }
-function fail(tag, e) { log('❌ ' + tag, (e && (e.message || e.code)) ? (e.message || e.code) : String(e)); if (e) console.error(e); }
+function fail(tag, e) {
+  var msg = (e && (e.message || e.code)) ? (e.message || e.code) : String(e);
+  log('❌ ' + tag, msg, true);
+  console.error(e);
+}
 function myAddress() { return window._piAddr; }
 function sub2() { return Pi.SmartContract.Subscription; }
 function asList(r) {
@@ -99,16 +104,27 @@ function fillSelect(id, arr, fmt) {
     o.value = String(x._val); o.textContent = fmt(x);
     sel.appendChild(o);
   });
-  return arr.length ? arr[0]._val : null;
 }
 function selectedService() { var s = document.getElementById('sel-service'); return s.value ? parseInt(s.value, 10) : null; }
 function selectedSub() { var s = document.getElementById('sel-sub'); return s.value ? parseInt(s.value, 10) : null; }
+function withRetry(fn, tries) {
+  tries = tries || 3;
+  return fn().catch(function (e) {
+    if (tries <= 1) throw e;
+    return new Promise(function (res) { setTimeout(res, 1500); }).then(function () { return withRetry(fn, tries - 1); });
+  });
+}
+function sleep(ms) { return new Promise(function (res) { setTimeout(res, ms); }); }
+function afterSubmit(label) {
+  log('⏳ انتظار تأكيد السلسلة (~10 ثوانٍ)…', label);
+  return sleep(10000).then(bootstrap);
+}
 
 // قسم: الدخول
 function setAddress(a) {
   window._piAddr = a;
   document.getElementById('me').textContent = '👤 ' + (window._piName || '') + '\n' + a;
-  ['b-refresh-svc', 'b-reg', 'b-reg2', 'b-sub', 'b-cancel', 'b-process'].forEach(function (id) { document.getElementById(id).disabled = !a; });
+  ['b-boot', 'b-reg', 'b-reg2', 'b-sub', 'b-cancel', 'b-process'].forEach(function (id) { document.getElementById(id).disabled = !a; });
 }
 function piLogin() {
   Pi.init({ version: "2.0", sandbox: false });
@@ -128,83 +144,83 @@ function piLogin() {
 }
 function manualAddr() {
   var a = (document.getElementById('in-addr').value || '').trim();
-  if (!/^G[A-Z2-7]{55}$/.test(a)) { log('❌ عنوان غير صالح', a); return; }
+  if (!/^G[A-Z2-7]{55}$/.test(a)) { log('❌ عنوان غير صالح', a, true); return; }
   setAddress(a); log('✅ عنوان يدوي معتمد', a);
+}
+function bootstrap() {
+  if (!myAddress()) { log('⚠️', 'سجّل الدخول أولاً', true); return; }
+  log('⚡ جارٍ التجهيز…', '3 قراءات من البلوكشين');
+  return myServices().then(mySubs).then(function () { return checkActive(true); });
 }
 
 // قسم: الخدمات
 function registerService() {
   log('⏳ تسجيل الخدمة الرسمية…', SERVICE_NAME + ' — 1 Pi / 30 يوم');
   sub2().registerService(myAddress(), SERVICE_NAME, 10000000, 2592000, 0, 3, { mode: 'submit' })
-    .then(function (r) { window._lastHash = r && r.hash; log('✅ سُجلت الخدمة', r); })
+    .then(function (r) { log('✅ سُجلت الخدمة', r); return afterSubmit('registerService'); })
     .catch(function (e) { fail('registerService', e); });
 }
 function registerQuick() {
-  log('⏳ تسجيل خدمة التجربة السريعة…', QUICK_NAME + ' — 0.1 Pi / دقيقتان');
+  log('⏳ تسجيل خدمة التجربة…', QUICK_NAME + ' — 0.1 Pi / دقيقتان');
   sub2().registerService(myAddress(), QUICK_NAME, 1000000, 120, 0, 3, { mode: 'submit' })
-    .then(function (r) { window._lastHash = r && r.hash; log('✅ سُجلت خدمة التجربة', r); })
+    .then(function (r) { log('✅ سُجلت خدمة التجربة', r); return afterSubmit('registerQuick'); })
     .catch(function (e) { fail('registerQuick', e); });
 }
 function myServices() {
-  sub2().getMerchantServices(myAddress(), { mode: 'simulate' })
-    .then(function (r) {
-      log('خدماتي', r);
-      var arr = asList(r).map(function (s) { s._val = parseInt(s.service_id, 10); return s; });
-      fillSelect('sel-service', arr, function (s) { return s.name + ' — #' + s._val; });
-      if (arr.length) log('📌 القائمة ممتلئة', arr.length + ' خدمة');
-    })
-    .catch(function (e) { fail('getMerchantServices', e); });
+  return withRetry(function () {
+    return sub2().getMerchantServices(myAddress(), { mode: 'simulate' });
+  }).then(function (r) {
+    log('خدماتي', r);
+    var arr = asList(r).map(function (s) { s._val = parseInt(s.service_id, 10); return s; });
+    fillSelect('sel-service', arr, function (s) { return s.name + ' — #' + s._val; });
+    if (!arr.length) log('⚠️', 'لا خدمات ظاهرة بعد');
+  }).catch(function (e) { fail('getMerchantServices (بعد 3 محاولات)', e); });
 }
+function onServiceChange() { checkActive(true); }
 
 // قسم: الاشتراك
 function doSubscribe() {
   var sid = selectedService();
-  if (sid === null) { log('⚠️', 'اضغط «جلب خدماتي» أولاً'); return; }
+  if (sid === null) { log('⚠️', 'اضغط «⚡ تجهيز» أو «تحديث الخدمات» أولاً', true); return; }
   log('⏳ اشتراك في الخدمة #' + sid + '…', 'ستظهر شاشة محفظتك للتوقيع');
   sub2().subscribe(myAddress(), sid, true, 3, { mode: 'submit' })
-    .then(function (r) { window._lastHash = r && r.hash; log('✅ أُرسل الاشتراك (انتظر ~10 ثوان للتأكيد)', r); })
+    .then(function (r) { log('✅ أُرسل الاشتراك', r); return afterSubmit('subscribe'); })
     .catch(function (e) { fail('subscribe', e); });
 }
-function checkActive() {
+function checkActive(quiet) {
   var sid = selectedService();
-  if (sid === null) { log('⚠️', 'اضغط «جلب خدماتي» أولاً'); return; }
-  sub2().isSubscriptionActive(myAddress(), sid, { mode: 'simulate' })
-    .then(function (r) { log('الحالة للخدمة #' + sid, { active: r }); })
+  if (sid === null) { if (!quiet) log('⚠️', 'لا خدمة مختارة', true); return; }
+  return withRetry(function () {
+    return sub2().isSubscriptionActive(myAddress(), sid, { mode: 'simulate' });
+  }).then(function (r) { log('الحالة للخدمة #' + sid, { active: r }); })
     .catch(function (e) { fail('isSubscriptionActive', e); });
 }
 function mySubs() {
-  sub2().getSubscriberSubscriptions(myAddress(), { mode: 'simulate' })
-    .then(function (r) {
-      log('اشتراكاتي', r);
-      var arr = asList(r).map(function (s) { s._val = parseInt(s.sub_id, 10); return s; });
-      fillSelect('sel-sub', arr, function (s) { return 'اشتراك #' + s._val + ' → خدمة #' + s.service_id; });
-      if (arr.length) log('📌 قائمة الاشتراكات ممتلئة', arr.length + ' اشتراك');
-    })
-    .catch(function (e) { fail('getSubscriberSubscriptions', e); });
+  return withRetry(function () {
+    return sub2().getSubscriberSubscriptions(myAddress(), { mode: 'simulate' });
+  }).then(function (r) {
+    log('اشتراكاتي', r);
+    var arr = asList(r).map(function (s) { s._val = parseInt(s.sub_id, 10); return s; });
+    fillSelect('sel-sub', arr, function (s) { return 'اشتراك #' + s._val + ' → خدمة #' + s.service_id; });
+    if (!arr.length) log('⚠️', 'لا اشتراكات ظاهرة بعد');
+  }).catch(function (e) { fail('getSubscriberSubscriptions (بعد 3 محاولات)', e); });
 }
 
 // قسم: الإدارة
 function doCancel() {
   var sub = selectedSub();
-  if (sub === null) { log('⚠️', 'اضغط «جلب اشتراكاتي» أولاً'); return; }
+  if (sub === null) { log('⚠️', 'حدّث قائمة الاشتراكات أولاً', true); return; }
   sub2().cancel(myAddress(), sub, { mode: 'submit' })
-    .then(function (r) { window._lastHash = r && r.hash; log('✅ أُلغي التجديد', r); })
+    .then(function (r) { log('✅ أُلغي التجديد', r); return afterSubmit('cancel'); })
     .catch(function (e) { fail('cancel', e); });
 }
 function doProcess() {
   var sid = selectedService();
-  if (sid === null) { log('⚠️', 'اضغط «جلب خدماتي» أولاً'); return; }
+  if (sid === null) { log('⚠️', 'حدّث قائمة الخدمات أولاً', true); return; }
   sub2().process(myAddress(), sid, 0, 50, { mode: 'submit' })
-    .then(function (r) { window._lastHash = r && r.hash; log('✅ نتيجة التحصيل', r); })
+    .then(function (r) { log('✅ نتيجة التحصيل', r); return afterSubmit('process'); })
     .catch(function (e) { fail('process', e); });
 }
-function pollLast() {
-  if (!window._lastHash) { log('⚠️', 'لا معاملة مسجلة بعد'); return; }
-  if (typeof Pi.SmartContract.pollTransaction !== 'function') { log('⚠️', 'pollTransaction غير متاحة'); return; }
-  Pi.SmartContract.pollTransaction(window._lastHash)
-    .then(function (r) { log('🔄 حالة آخر معاملة', r); })
-    .catch(function (e) { fail('pollTransaction', e); });
-}
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5fddf145ca0500a',t:'MTc5NTU4MDUzNw=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5fddf145ca0500a',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5fe61f5d93a0e4b',t:'MTc5NTU4NTg5Nw=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5fe61f5d93a0e4b',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
