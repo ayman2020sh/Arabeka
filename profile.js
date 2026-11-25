@@ -128,7 +128,7 @@ function ensurePremiumSection() {
     if (!walletP || !walletP.parentElement) return;
     const p = document.createElement('div');
     p.style.cssText = 'margin: 10px 0 0 0; padding-top: 10px; border-top: 1px dashed var(--border); text-align: center;';
-    p.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; gap:8px;"><span id="user-premium-badge" style="display:none; font-size:18px;">⭐</span><button id="premium-btn" class="btn" onclick="premiumAction()" style="background: linear-gradient(90deg,#b8860b,#ffd700); color:#1a1a1a; font-weight:bold; width:100%; padding:10px; border:none; border-radius:10px; font-size:14px;">⭐ الاشتراك المميز — 1 Pi / 30 يوم</button></div>';
+    p.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; gap:8px;"><button id="premium-btn" class="btn" onclick="premiumAction()" style="background: linear-gradient(90deg,#b8860b,#ffd700); color:#1a1a1a; font-weight:bold; width:100%; padding:10px; border:none; border-radius:10px; font-size:14px;">⭐ الاشتراك المميز — 1 Pi / 30 يوم</button></div>';
     walletP.parentElement.insertBefore(p, walletP.nextSibling); // بعد صف المحفظة مباشرة
 }
 
@@ -196,6 +196,17 @@ function loadUserBio() {
         applyNavAvatar(d.avatarUrl || null);
         renderUserWallet(d.walletAddress || null);
         if (typeof updatePremiumBadge === 'function') updatePremiumBadge();
+        // شارة ⭐ بجانب اسم المستخدم مباشرة
+        const nameEl = document.getElementById('user-name');
+        if (nameEl && !document.getElementById('user-premium-badge-name')) {
+            const b = document.createElement('span');
+            b.id = 'user-premium-badge-name';
+            b.style.cssText = 'display:none; font-size:18px; margin-inline-start:4px;';
+            b.textContent = '⭐';
+            nameEl.appendChild(b);
+        }
+        const badgeNameEl = document.getElementById('user-premium-badge-name');
+        if (badgeNameEl) badgeNameEl.style.display = (typeof premiumActive !== 'undefined' && premiumActive) ? 'inline-block' : 'none';
         renderMineState(d);
         const isAdminUser = d.isAdmin === true;
         const vb = document.getElementById('user-verified-badge');
