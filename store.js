@@ -99,7 +99,7 @@ function renderProductsFeed() {
         const safeImg = sanitizeURL(prod.imageUrl);
         const prodCategory = prod.category || 'tech';
         const imgHtml = safeImg ? `<img src="${safeImg}" class="prod-image" onerror="this.style.display='none'">` : '';
-        const badgeHtml = isKnownAdmin(prod.owner) ? `<span class="official-badge">⚜️ ارابيكا</span>` : '';
+        const badgeHtml = isKnownAdmin(prod.owner) ? `<span class="official-badge">⚜️ ارابيكا</span>` : (typeof premiumBadgeForOwner === 'function' ? premiumBadgeForOwner(prod.owner) : '');
         fetchAdminStatusAndRerender(prod.owner);
         const out = isOutOfStock(prod.quantity);
         const isMine = prod.owner === currentUser;
