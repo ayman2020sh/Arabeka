@@ -2,7 +2,9 @@
 // القراءة من البلوكشين مباشرة — لا قاعدة بيانات للشارة. الاشتراك يُدفع عبر Pi.SmartContract.
 const SUB_SERVICE_ID = 473; // Arabeka Premium Badge — 1 Pi / 30 يوم
 const SUB_BADGE_HTML = '<span class="premium-badge" title="عضو مميز ⭐">⭐</span>';
-let premiumActive = false; // حالة اشتراك المستخدم الحالي (تُحدَّث بعد الدخول)
+let premiumActive = false; // حالة اشتراك المستخدم الحالي
+let premiumAutoRenew = false; // هل التجديد التلقائي مفعّل
+let premiumEndDate = null; // تاريخ انتهاء الفترة الحالية
 
 // فحص فعالية اشتراك عنوان على الخدمة الرسمية
 function subIsActive(address, serviceId) {
@@ -26,14 +28,21 @@ function updatePremiumBadge() {
     el.style.display = premiumActive ? 'inline-block' : 'none';
     const btn = document.getElementById('premium-btn');
     if (!btn) return;
-    if (premiumActive) {
+    if (premiumActive && premiumAutoRenew) {
         btn.textContent = '✖️ إلغاء الاشتراك المميز';
         btn.style.background = '#4b2230';
         btn.style.color = '#ffb3c0';
+        btn.disabled = false;
+    } else if (premiumActive && !premiumAutoRenew) {
+        btn.textContent = '⭐ فعّال حتى ' + (premiumEndDate || 'نهاية الفترة') + ' (لن يُجدد)';
+        btn.style.background = '#2b3350';
+        btn.style.color = '#9aa3bb';
+        btn.disabled = true;
     } else {
         btn.textContent = '⭐ الاشتراك المميز — 1 Pi / 30 يوم';
         btn.style.background = 'linear-gradient(90deg,#b8860b,#ffd700)';
         btn.style.color = '#1a1a1a';
+        btn.disabled = false;
     }
 }
 
@@ -44,6 +53,23 @@ function initSubscription() {
         if (!w) { updatePremiumBadge(); return; }
         return subIsActive(w, SUB_SERVICE_ID).then(active => {
             premiumActive = active;
+            // نجلب تفاصيل الاشتراك (تجديد تلقائي؟ تاريخ انتهاء؟)
+            if (active) {
+                return Pi.SmartContract.Subscription.getSubscriberSubscriptions(w, { mode: 'simulate' })
+                    .then(r => {
+                        const subs = Array.isArray(r) ? r : (r && r.subscriptions) || [];
+                        const mine = subs.find(x => parseInt(x.service_id) === SUB_SERVICE_ID);
+                        if (mine) {
+                            premiumAutoRenew = mine.auto_renew === true;
+                            if (mine.service_end_ts) {
+                                const d = new Date(parseInt(mine.service_end_ts) * 1000);
+                                premiumEndDate = d.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' });
+                            }
+                        }
+                        updatePremiumBadge();
+                        if (window.lastProductsSnapshot) renderProductsFeed();
+                    });
+            }
             updatePremiumBadge();
             if (window.lastProductsSnapshot) renderProductsFeed();
         });
@@ -53,13 +79,15 @@ function initSubscription() {
 // إضافة ⭐ لمنتجات المشتركين — تُنادى من store.js عند بناء بطاقة المنتج
 function premiumBadgeForOwner(owner) {
     const elId = 'pb-' + owner;
-    if (adminStatusCache[owner]) return ''; // ⚜️ كافية
+    // نجلب حالة الاشتراك من العقد مباشرة — تُظهر ⭐ إن كان البائع مشتركاً
     setTimeout(() => {
+        const el = document.getElementById(elId);
+        if (!el) return;
         subWalletOf(owner).then(w => {
             if (!w) return;
             return subIsActive(w, SUB_SERVICE_ID).then(active => {
-                const el = document.getElementById(elId);
-                if (el && active) el.innerHTML = SUB_BADGE_HTML;
+                const el2 = document.getElementById(elId);
+                if (el2 && active) el2.innerHTML = SUB_BADGE_HTML;
             });
         });
     }, 0);
